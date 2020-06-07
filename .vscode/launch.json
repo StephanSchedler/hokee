@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "name": "HomeBanking.exe",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "HomeBanking.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false
+        },
+        {
+            "name": "selftest.exe",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "../selftest.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/testdata",
+            "environment": [],
+            "externalConsole": false
+        }
+
+    ]
+}
