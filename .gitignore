@@ -30,13 +30,3 @@
 *.exe
 *.out
 *.app
-selftest
-HomeBanking
-
-/bin
-/.clangd
-/third_party/build/
-/build/
-/input/
-/output/
-/testdata/output/
