@@ -11,7 +11,8 @@
                 "_UNICODE"
             ],
             "cStandard": "c11",
-            "cppStandard": "c++17"
+            "cppStandard": "c++17",
+            "compileCommands": "${workspaceFolder}/build/MSVC/Debug/compile_commands.json"
         }
     ],
     "version": 4
