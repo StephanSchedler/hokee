@@ -202,17 +202,10 @@ bool ExtractMissingString(std::string& extracted, const std::string& original, c
 
     size_t eo = original.size() - 1;
     size_t em = missing.size() - 1;
-    while (true)
+    while (em != ~0ull && missing[em] == original[eo])
     {
-        if (em != ~1ull && missing[em] == original[eo])
-        {
-            --eo;
-            --em;
-        }
-        else
-        {
-            break;
-        }
+        --eo;
+        --em;
     }
 
     extracted = original.substr(s, eo - s + 1);
