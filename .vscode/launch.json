@@ -1,21 +1,27 @@
 {
     "configurations": [
         {
-            "name": "homebanking.exe",
+            "name": "homebanking",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "homebanking.exe",
+            "program": "homebanking",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/bin",
             "environment": [],
-            "externalConsole": false
+            "externalConsole": true
         },
         {
-            "name": "selftest.exe",
+            "name": "Attach to process",
+            "type": "cppvsdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        },
+        {
+            "name": "selftest",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "../selftest.exe",
+            "program": "../selftest",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/testdata",
