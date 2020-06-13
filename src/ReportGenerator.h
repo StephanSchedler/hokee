@@ -1,13 +1,12 @@
 #pragma once
 
 #include "CsvDatabase.h"
+#include "Utils.h"
 
 #include <array>
-#include <filesystem>
 
-namespace HomeBanking
+namespace homebanking
 {
-namespace fs = std::filesystem;
 
 class ReportGenerator
 {
@@ -44,4 +43,4 @@ class ReportGenerator
     void PrintIssues();
 };
 
-} // namespace HomeBanking
+} // namespace homebanking

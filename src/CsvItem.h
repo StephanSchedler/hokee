@@ -1,15 +1,14 @@
 #pragma once
 
 #include "CsvDate.h"
+#include "Utils.h"
 
-#include <filesystem>
 #include <memory>
 #include <string>
 #include <vector>
 
-namespace HomeBanking
+namespace homebanking
 {
-namespace fs = std::filesystem;
 
 struct CsvItem
 {
@@ -39,4 +38,4 @@ struct CsvItem
 };
 
 typedef std::shared_ptr<CsvItem> CsvRowShared;
-} // namespace HomeBanking
+} // namespace homebanking

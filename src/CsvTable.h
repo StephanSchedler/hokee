@@ -2,7 +2,7 @@
 
 #include "CsvItem.h"
 
-namespace HomeBanking
+namespace homebanking
 {
 typedef std::vector<CsvRowShared> CsvTable;
 }

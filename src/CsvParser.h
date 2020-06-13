@@ -2,15 +2,14 @@
 
 #include "CsvTable.h"
 #include "CsvFormat.h"
+#include "Utils.h"
 
-#include <filesystem>
 #include <fstream>
 #include <memory>
 #include <type_traits>
 
-namespace HomeBanking
+namespace homebanking
 {
-namespace fs = std::filesystem;
 
 class CsvParser
 {
@@ -40,4 +39,4 @@ class CsvParser
     void Load(CsvTable& csvData);
 };
 
-} // namespace HomeBanking
+} // namespace homebanking

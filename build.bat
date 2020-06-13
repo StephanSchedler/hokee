@@ -1,33 +1,39 @@
 @echo off
 
+echo ==== Update submodules ====
 git submodule update --init --recursive
 
-echo third_party\build\fmt\%2\%1
-if not exist "third_party\build\fmt\%2\%1" (
-    md third_party\build\fmt\%2\%1
+echo ==== Prepare libfmt build directory ====
+md third_party\build\fmt\%2\%1
+pushd third_party\build\fmt\%2\%1
+echo ==== Genereate libfmt build system ====
+call cmake -DFMT_TEST=FALSE -DCMAKE_CONFIGURATION_TYPES=%1 -DCMAKE_BUILD_TYPE=%1 -DCMAKE_INSTALL_PREFIX=. ..\..\..\..\fmt
+if %errorlevel% neq 0 exit /b %errorlevel%
+echo ==== Run libfmt build ====
+call cmake --build . --config %1 --target install --parallel
+if %errorlevel% neq 0 exit /b %errorlevel%
+popd
 
-    pushd third_party\build\fmt\%2\%1
-
-    cmake -G Ninja -DFMT_TEST=FALSE -DCMAKE_BUILD_TYPE=%1 -DCMAKE_INSTALL_PREFIX=. ..\..\..\..\fmt
+echo ==== Prepare build directory ====
+md build\%2\%1    
+pushd build\%2\%1
+echo ==== Try to find ninja build system ====
+where ninja
+if %errorlevel% equ 0 (
+    echo ==== Genereate Ninja build system ====
+    call cmake -G Ninja -DCMAKE_BUILD_TYPE=%1 -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_INSTALL_PREFIX=..\..\.. ..\..\.. 
     if %errorlevel% neq 0 exit /b %errorlevel%
-
-    ninja -j8 install
-    if %errorlevel% neq 0 exit /b %errorlevel%
-
-    popd
+) else (
+    echo ==== Generate default build system ====
+    call cmake -DCMAKE_BUILD_TYPE=%1 -DCMAKE_INSTALL_PREFIX=..\..\.. ..\..\.. 
 )
 
-if not exist "build\%2\%1\build.ninja" (
-    md build\%2\%1    
-    pushd build\%2\%1
-    cmake -G Ninja -DCMAKE_BUILD_TYPE=%1 -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_INSTALL_PREFIX=..\..\.. ..\..\.. 
-    if %errorlevel% neq 0 exit /b %errorlevel%
-    popd
-)
-
-cd build\%2\%1
-ninja -j8 install
+echo ==== Run build ====
+call cmake --build . --config %1 --parallel
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-ctest --output-on-failure
+echo ==== Run test(s) ====
+call ctest -C %1 --output-on-failure 
 if %errorlevel% neq 0 exit /b %errorlevel%
+
+popd

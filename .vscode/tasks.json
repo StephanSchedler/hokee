@@ -22,9 +22,9 @@
             }
         },
         {
-            "label": "Run HomeBanking",
+            "label": "Run homebanking",
             "type": "shell",
-            "command": "./HomeBanking.exe",
+            "command": "./homebanking.exe",
             "options": {
                 "cwd": "${workspaceFolder}/bin"
             },

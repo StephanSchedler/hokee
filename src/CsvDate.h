@@ -4,7 +4,7 @@
 #include <string_view>
 #include <string>
 
-namespace HomeBanking
+namespace homebanking
 {
 class CsvDate
 {
@@ -49,4 +49,4 @@ class CsvDate
     friend std::ostream& operator<<(std::ostream& os, const CsvDate& date);
 };
 
-} // namespace HomeBanking
+} // namespace homebanking

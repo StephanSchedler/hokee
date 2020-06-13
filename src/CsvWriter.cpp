@@ -3,13 +3,11 @@
 
 #include <fmt/format.h>
 
-#include <filesystem>
 #include <sstream>
 #include <fstream>
 
-namespace HomeBanking
+namespace homebanking
 {
-namespace fs = std::filesystem;
 
 void CsvWriter::Write(const fs::path& file, const CsvTable& data)
 {
@@ -42,4 +40,4 @@ void CsvWriter::Write(const fs::path& file, const CsvTable& data)
     csvFile.close();
 }
 
-} // namespace HomeBanking
+} // namespace homebanking

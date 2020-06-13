@@ -14,7 +14,6 @@
 
 namespace Utils
 {
-
 const CsvFormat GetCsvFormat(const std::string& formatName)
 {
     CsvFormat format{};
@@ -95,7 +94,7 @@ const CsvFormat GetCsvFormat(const std::string& formatName)
     else if (formatName == "Postbank")
     {
         format.ColumnNames = {"Buchungstag",  "Wertstellung", "Umsatzart",  "Buchungsdetails",
-                              "Auftraggeber", "Empf_nger",  "Betrag (_)", "Saldo (_)"};
+                              "Auftraggeber", "Empf_nger",    "Betrag (_)", "Saldo (_)"};
         format.HasHeader = true;
         format.IgnoreLines = 8;
         format.HasDoubleQuotes = true;
@@ -184,7 +183,8 @@ bool ExtractMissingString(std::string& extracted, const std::string& original, c
 {
     if (missing.size() > original.size())
     {
-        throw CustomException(__FILE__, __LINE__, "ExtractMissingString(): 'original' must not be shorter than 'missing'!");
+        throw CustomException(__FILE__, __LINE__,
+                              "ExtractMissingString(): 'original' must not be shorter than 'missing'!");
     }
 
     size_t s = 0;
@@ -271,7 +271,11 @@ std::string Run(const char* cmd)
     std::array<char, 256> buffer;
     std::string result;
 
+#ifdef _WIN32
     std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd, "r"), _pclose);
+#else
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+#endif
     if (!pipe)
     {
         Utils::PrintError(fmt::format("popen({}) failed!", cmd));
