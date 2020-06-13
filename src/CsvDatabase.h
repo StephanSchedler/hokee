@@ -2,13 +2,12 @@
 
 #include "CsvParser.h"
 #include "CsvTable.h"
+#include "Utils.h"
 
 #include <array>
-#include <filesystem>
 
-namespace HomeBanking
+namespace homebanking
 {
-namespace fs = std::filesystem;
 
 class CsvDatabase
 {
@@ -37,4 +36,4 @@ class CsvDatabase
     void AddRules(const fs::path& rulesCsv, const fs::path& workingDirectory);
 };
 
-} // namespace HomeBanking
+} // namespace homebanking

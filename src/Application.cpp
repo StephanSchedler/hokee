@@ -10,14 +10,12 @@
 #include <chrono>
 #include <fmt/format.h>
 
-#include <filesystem>
 #include <memory>
 #include <thread>
 #include <unordered_map>
 
-namespace HomeBanking
+namespace homebanking
 {
-namespace fs = std::filesystem;
 
 std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
 {
@@ -75,9 +73,12 @@ std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
     {
         Utils::PrintInfo("");
         Utils::PrintInfo("Open report...");
-        std::system(fs::absolute(indexHtml).string().c_str());
+        if (std::system(fs::absolute(indexHtml).string().c_str()) < 0)
+        {
+            throw CustomException(__FILE__,__LINE__,"Could not open report.");
+        }
     }
 
     return std::move(_csvDatabase);
 }
-} // namespace HomeBanking
+} // namespace homebanking

@@ -1,7 +1,6 @@
 #include "ReportGenerator.h"
 #include "Utils.h"
 
-#include <filesystem>
 #include <fmt/core.h>
 #include <fmt/format.h>
 
@@ -13,9 +12,8 @@
 #include <memory>
 #include <sstream>
 
-namespace HomeBanking
+namespace homebanking
 {
-namespace fs = std::filesystem;
 
 ReportGenerator::ReportGenerator(CsvDatabase* database)
     : _csvDatabase{database}
@@ -386,4 +384,4 @@ std::string ReportGenerator::GetTableEnd()
     return "</table>\n";
 }
 
-} // namespace HomeBanking
+} // namespace homebanking

@@ -1,12 +1,10 @@
 #pragma once
 
 #include "CsvTable.h"
+#include "Utils.h"
 
-#include <filesystem>
-
-namespace HomeBanking
+namespace homebanking
 {
-namespace fs = std::filesystem;
 
 class CsvWriter
 {
@@ -22,4 +20,4 @@ class CsvWriter
     static void Write(const fs::path& file, const CsvTable& data);
 };
 
-} // namespace HomeBanking
+} // namespace homebanking

@@ -3,22 +3,21 @@
 #include "CsvItem.h"
 #include "CsvParser.h"
 #include "CsvWriter.h"
-#include "ReportGenerator.h"
 #include "CustomException.h"
+#include "ReportGenerator.h"
 #include "Utils.h"
 
 #include <fmt/format.h>
 
+#include <functional>
 #include <memory>
 #include <regex>
 
-namespace HomeBanking
+namespace homebanking
 {
-namespace fs = std::filesystem;
-
 void CsvDatabase::Sort(CsvTable& csvData)
 {
-    std::function compareDates
+    auto compareDates
         = [](const CsvRowShared& i, const CsvRowShared& j) -> bool { return (i->Date < j->Date); };
     std::sort(csvData.begin(), csvData.end(), compareDates);
 }
@@ -92,7 +91,10 @@ void CsvDatabase::FixRules(const fs::path& rulesCsv)
     ReportGenerator reportGenerator(this);
     reportGenerator.PrintIssues();
 
-    std::system(fmt::format("code --wait {}", fs::absolute(rulesCsv).string()).c_str());
+    if (std::system(fmt::format("code --wait {}", fs::absolute(rulesCsv).string()).c_str()) < 0)
+    {
+        throw CustomException(__FILE__, __LINE__, "Could not open rule editor.");
+    }
 }
 
 void CsvDatabase::AddRules(const fs::path& rulesCsv, const fs::path& workingDirectory)
@@ -127,8 +129,11 @@ void CsvDatabase::AddRules(const fs::path& rulesCsv, const fs::path& workingDire
     CsvWriter::Write(unassignedCsv, Unassigned);
 
     Utils::PrintInfo(fmt::format("Open {}", unassignedCsv.string()));
-    
-    std::system(fmt::format("code --wait {}", fs::absolute(unassignedCsv).string()).c_str());
+
+    if (std::system(fmt::format("code --wait {}", fs::absolute(unassignedCsv).string()).c_str()) < 0)
+    {
+        throw CustomException(__FILE__, __LINE__, "Could not open rule editor.");
+    }
 
     Utils::PrintInfo(fmt::format("Reload {}", unassignedCsv.string()));
     CsvParser csvParser(unassignedCsv, Utils::GetCsvFormat("Rules"));
@@ -145,15 +150,17 @@ void CsvDatabase::AddRules(const fs::path& rulesCsv, const fs::path& workingDire
         auto imported = importedTable[i].get();
         auto newRule = std::make_shared<CsvItem>();
 
-        bool isValid = Utils::ExtractMissingString(newRule->PayerPayee, unassigned->PayerPayee, imported->PayerPayee);
-        isValid |= Utils::ExtractMissingString(newRule->Description, unassigned->Description, imported->Description);
+        bool isValid
+            = Utils::ExtractMissingString(newRule->PayerPayee, unassigned->PayerPayee, imported->PayerPayee);
+        isValid
+            |= Utils::ExtractMissingString(newRule->Description, unassigned->Description, imported->Description);
         isValid |= Utils::ExtractMissingString(newRule->Type, unassigned->Type, imported->Type);
-        
-        if(unassigned->Date != imported->Date)
+
+        if (unassigned->Date != imported->Date)
         {
             newRule->Date = unassigned->Date;
         }
-        if(unassigned->Value != imported->Value)
+        if (unassigned->Value != imported->Value)
         {
             newRule->Value = unassigned->Value;
         }
@@ -232,13 +239,13 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& rulesCs
 
     for (const auto& dir : fs::directory_iterator(inputDirectory))
     {
-        if (dir.is_directory())
+        if (fs::is_directory(dir))
         {
             Utils::PrintInfo(fmt::format("  Found directory '{}':", dir.path().string()));
 
             for (const auto& file : fs::directory_iterator(dir.path()))
             {
-                if (!file.is_regular_file())
+                if (!fs::is_regular_file(file))
                 {
                     continue;
                 }
@@ -269,7 +276,8 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& rulesCs
                 }
                 else if (format == "Postbank")
                 {
-                    csvReader = std::make_unique<CsvParser>(file.path(), Utils::GetCsvFormat("Postbank"), "Sandra Wagner");
+                    csvReader = std::make_unique<CsvParser>(file.path(), Utils::GetCsvFormat("Postbank"),
+                                                            "Sandra Wagner");
                 }
                 else if (format == "ABC")
                 {
@@ -277,7 +285,8 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& rulesCs
                 }
                 else
                 {
-                    throw CustomException(__FILE__, __LINE__, fmt::format("Unknown input format: {}", format).c_str());
+                    throw CustomException(__FILE__, __LINE__,
+                                          fmt::format("Unknown input format: {}", format).c_str());
                 }
 
                 csvReader->Load(Data);
@@ -290,4 +299,4 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& rulesCs
     MatchRules();
     CheckRules();
 }
-} // namespace HomeBanking
+} // namespace homebanking

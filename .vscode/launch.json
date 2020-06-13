@@ -1,10 +1,10 @@
 {
     "configurations": [
         {
-            "name": "HomeBanking.exe",
+            "name": "homebanking.exe",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "HomeBanking.exe",
+            "program": "homebanking.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

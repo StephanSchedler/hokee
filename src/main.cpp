@@ -5,7 +5,7 @@
 #include <exception>
 #include <iostream>
 
-using namespace HomeBanking;
+using namespace homebanking;
 
 void TerminationHandler()
 {
@@ -29,8 +29,11 @@ void TerminationHandler()
     }
 
     std::cerr << std::endl;
-    
-    std::system("pause");
+
+    if (std::system("pause"))
+    {
+        Utils::PrintError("Could not pause.");
+    }
     std::abort();
 }
 
@@ -40,7 +43,10 @@ void TerminationHandler(const std::exception& e)
     std::cerr << "=> " << e.what() << std::endl;
     std::cerr << std::endl;
 
-    std::system("pause");
+    if (std::system("pause"))
+    {
+        Utils::PrintError("Could not pause.");
+    }
     std::abort();
 }
 
@@ -55,7 +61,10 @@ int main()
         app.Run();
 
         Utils::PrintInfo("DONE");
-        std::system("pause");
+        if (std::system("pause"))
+        {
+            Utils::PrintError("Could not pause.");
+        }
     }
     catch (const std::exception& e)
     {

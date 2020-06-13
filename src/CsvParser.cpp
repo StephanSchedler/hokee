@@ -6,15 +6,13 @@
 #include <fmt/core.h>
 #include <fmt/format.h>
 
-#include <filesystem>
 #include <memory>
 #include <sstream>
 #include <string>
 #include <string_view>
 
-namespace HomeBanking
+namespace homebanking
 {
-namespace fs = std::filesystem;
 
 CsvParser::CsvParser(const fs::path& file, const CsvFormat& format, const std::string accountOwner)
     : _file{file}
@@ -290,4 +288,4 @@ bool CsvParser::ParseLine(CsvRowShared& item)
     return result;
 }
 
-} // namespace HomeBanking
+} // namespace homebanking

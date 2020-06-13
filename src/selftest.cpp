@@ -8,7 +8,7 @@
 #include <iostream>
 #include <map>
 
-using namespace HomeBanking;
+using namespace homebanking;
 
 void TerminationHandler()
 {
