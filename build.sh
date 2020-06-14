@@ -23,6 +23,4 @@ cmake -DCMAKE_BUILD_TYPE=$1 -DCMAKE_INSTALL_PREFIX=../.. ../..
 echo ==== Run build ====
 cmake --build . --config $1 --target install --parallel
 
-echo ==== Run tests ====
-ctest -C %1 --output-on-failure
 popd

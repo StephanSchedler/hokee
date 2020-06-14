@@ -1,4 +1,4 @@
-name: CMake Windows
+name: CMake
 
 on:
   push:
@@ -9,9 +9,20 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-18.04, ubuntu-20.04]
+        config: [Debug, Release]
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build
-      run: cmd /C build.bat Release
+    - name: Run Build
+      run: bash build.sh ${{ matrix.config }}
+    - name: Run Tests
+      run: cd build/${{ matrix.config }}; ctest -C ${{ matrix.config }} --output-on-failure
