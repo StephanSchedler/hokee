@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.1.0)
-project(homebanking VERSION 0.1.0)
-enable_language(CXX)
+project(homebanking 
+    VERSION 0.1.0 
+    HOMEPAGE_URL https://github.com/StephanSchedler/Homebanking
+    LANGUAGES CXX
+)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_COLOR_MAKEFILE   ON)
@@ -35,7 +38,7 @@ endif()
 
 # 3rd party
 find_package(Threads REQUIRED)
-find_package(fmt REQUIRED PATHS third_party/build/fmt/${CMAKE_CXX_COMPILER_ID}/${CMAKE_BUILD_TYPE})
+find_package(fmt REQUIRED PATHS third_party/build/fmt/${CMAKE_BUILD_TYPE})
 
 # Includes
 include_directories(src)
@@ -74,6 +77,6 @@ install(TARGETS selftest RUNTIME DESTINATION ./bin)
 
 enable_testing()
 add_test(NAME Selftest 
-         WORKING_DIRECTORY ../../../testdata/input/
+         WORKING_DIRECTORY ../../testdata/input/
          COMMAND selftest)
 

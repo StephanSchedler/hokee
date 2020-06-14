@@ -128,39 +128,7 @@
                 "showReuseMessage": true,
                 "clear": true
             }
-        },
-        {
-            "label": "Build (mingw)",
-            "type": "shell",
-            "command": "./mingw.bat ${input:Configuration}",
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "problemMatcher": {
-                "owner": "cpp",
-                "fileLocation": [
-                    "relative",
-                    "${workspaceRoot}/build/GNU/${input:Configuration}"
-                ],
-                "pattern": {
-                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(error|warning|note):(.*)$",
-                    "file": 1,
-                    "line": 2,
-                    "column": 3,
-                    "severity": 4,
-                    "message": 5
-                }
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": true,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": true
-            }
-        },
+        }
     ],
     "inputs": [
       {

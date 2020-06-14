@@ -7,4 +7,4 @@ POPD
 SET CONFIG=%1
 IF [%CONFIG%] == [] SET CONFIG=Release
 
-CALL %~dp0build.bat %CONFIG% MSVC
+CALL %~dp0build.bat %CONFIG%
