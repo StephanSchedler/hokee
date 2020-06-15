@@ -30,13 +30,11 @@
 *.exe
 *.out
 *.app
-selftest
-hokeeboo
 
-/bin
-/.clangd
-/third_party/build/
+/.clangd/
+/bin/
 /build/
+/third_party/build/
 /input/
 /output/
 /testdata/output/

@@ -23,38 +23,10 @@
         },
         {
             "label": "Run hokeeboo",
-            "type": "shell",
-            "command": "./hokeeboo.exe",
+            "type": "process",
+            "command": "hokeeboo.exe",
             "options": {
                 "cwd": "${workspaceFolder}/bin"
-            },
-            "problemMatcher": {
-                "owner": "cpp",
-                "fileLocation": "absolute",
-                "pattern": {
-                    "regexp": "^(.*):(\\d+):\\s+(error|warning):(.*)$",
-                    "file": 1,
-                    "line": 2,
-                    "severity": 3,
-                    "message": 4
-                }
-            },
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": true,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": true
-            }
-        },
-        {
-            "label": "Run selftest",
-            "type": "shell",
-            "command": "../../bin/selftest.exe",
-            "options": {
-                "cwd": "${workspaceFolder}/testdata/input"
             },
             "problemMatcher": {
                 "owner": "cpp",
@@ -99,7 +71,7 @@
             }
         },
         {
-            "label": "Build (msbuild)",
+            "label": "Build (MSVC)",
             "type": "shell",
             "command": "./msbuild.bat ${input:Configuration}",
             "options": {

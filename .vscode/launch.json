@@ -18,13 +18,13 @@
             "processId": "${command:pickProcess}"
         },
         {
-            "name": "selftest",
+            "name": "match_rules_test",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "../selftest",
+            "program": "match_rules_test",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/testdata",
+            "cwd": "${workspaceFolder}/bin",
             "environment": [],
             "externalConsole": false
         }

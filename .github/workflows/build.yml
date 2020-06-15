@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-18.04, ubuntu-20.04]
+        os: [windows-2019, macos-15.10, ubuntu-18.04, ubuntu-20.04]
         config: [Debug, Release]
 
     steps:
@@ -27,9 +27,9 @@ jobs:
     - name: Run Tests
       run: cd build/${{ matrix.config }}; ctest -C ${{ matrix.config }} --output-on-failure
     - name: Tar artifacts
-      run: tar -cvzf homebanking_${{ matrix.os }}_${{ matrix.config }}.tar.gz bin/* testdata/*
+      run: tar -cvzf hokeeboo_${{ matrix.os }}_${{ matrix.config }}.tar.gz bin/* testdata/*
     - name: Upload build result
       uses: actions/upload-artifact@v1
       with:
         name: ${{ matrix.os }} ${{ matrix.config }}
-        path: homebanking_${{ matrix.os }}_${{ matrix.config }}.tar.gz
+        path: hokeeboo_${{ matrix.os }}_${{ matrix.config }}.tar.gz

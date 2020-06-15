@@ -58,25 +58,24 @@ set(PROJECT_SOURCE_FILES
 )
 
 # Execuables
-add_executable(hokeeboo src/main.cpp ${PROJECT_SOURCE_FILES})
-add_executable(selftest src/selftest.cpp ${PROJECT_SOURCE_FILES})
+add_executable(hokeeboo src/hokeeboo.cpp ${PROJECT_SOURCE_FILES})
+add_executable(match_rules_test src/match_rules_test.cpp ${PROJECT_SOURCE_FILES})
 
 target_link_libraries(hokeeboo Threads::Threads fmt::fmt)
-target_link_libraries(selftest Threads::Threads fmt::fmt)
+target_link_libraries(match_rules_test Threads::Threads fmt::fmt)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
     target_link_libraries(hokeeboo stdc++fs)
-    target_link_libraries(selftest stdc++fs)
+    target_link_libraries(match_rules_test stdc++fs)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang|Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
     target_link_libraries(hokeeboo c++fs)
-    target_link_libraries(selftest c++fs)
+    target_link_libraries(match_rules_test c++fs)
 endif()
 
 install(TARGETS hokeeboo RUNTIME DESTINATION ./bin)
-install(TARGETS selftest RUNTIME DESTINATION ./bin)
+install(TARGETS match_rules_test RUNTIME DESTINATION ./bin)
 
 enable_testing()
-add_test(NAME Selftest 
-         WORKING_DIRECTORY ../../testdata/input/
-         COMMAND selftest)
+add_test(NAME match_rules_test
+         COMMAND match_rules_test)
 

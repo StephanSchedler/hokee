@@ -53,7 +53,9 @@ int main()
     bool success = true;
     try
     {
-        Application app;
+        const fs::path inputDirectory = "../../testdata/match_rules_test/input/";
+        const fs::path outputDirectory = "../../testdata/match_rules_test/output/";
+        Application app(inputDirectory, outputDirectory);
         std::unique_ptr<CsvDatabase> database = app.Run(true);
 
         // Compute Hash
