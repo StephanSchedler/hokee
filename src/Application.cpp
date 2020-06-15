@@ -1,11 +1,12 @@
 #include "Application.h"
 #include "CsvDatabase.h"
-#include "CsvParser.h"
 #include "CsvItem.h"
+#include "CsvParser.h"
 #include "CsvWriter.h"
-#include "ReportGenerator.h"
 #include "CustomException.h"
+#include "ReportGenerator.h"
 #include "Utils.h"
+
 
 #include <chrono>
 #include <fmt/format.h>
@@ -16,13 +17,16 @@
 
 namespace hokeeboo
 {
+Application::Application(const fs::path& inputDirectory, const fs::path& outputDirectory)
+    : _inputDirectory{inputDirectory}
+    , _outputDirectory{outputDirectory}
+{
+}
 
 std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
 {
-    const fs::path inputDirectory = fs::path("..") / "input" / "csv";
-    const fs::path outputDirectory = fs::path("..") / "output";
-    const fs::path indexHtml = outputDirectory / "index.html";
-    const fs::path rulesCsv = fs::path("..") / "input" / "rules" / "rules.csv";
+    const fs::path indexHtml = _outputDirectory / "index.html";
+    const fs::path rulesCsv = _inputDirectory / "rules.csv";
 
     Utils::PrintInfo("Parse CSV files...");
 
@@ -31,7 +35,7 @@ std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
     {
         restart = false;
 
-        _csvDatabase = std::make_unique<CsvDatabase>(inputDirectory, rulesCsv);
+        _csvDatabase = std::make_unique<CsvDatabase>(_inputDirectory, rulesCsv);
 
         Utils::PrintInfo("");
         Utils::PrintInfo(fmt::format("Found {} items (assigned: {}, unassigned: {}, issues: {})",
@@ -54,7 +58,7 @@ std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
             char answer = batchMode ? 'n' : Utils::AskYesNoQuestion("Add rules?");
             if (answer == 'Y' || answer == 'y')
             {
-                _csvDatabase->AddRules(rulesCsv, outputDirectory);
+                _csvDatabase->AddRules(rulesCsv, _outputDirectory);
 
                 restart = true;
                 continue;
@@ -66,7 +70,7 @@ std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
     if (answer == 'Y' || answer == 'y')
     {
         ReportGenerator reportGenerator(_csvDatabase.get());
-        reportGenerator.Write(outputDirectory);
+        reportGenerator.Write(_outputDirectory);
     }
 
     if (!batchMode)
@@ -75,7 +79,7 @@ std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
         Utils::PrintInfo("Open report...");
         if (std::system(fs::absolute(indexHtml).string().c_str()) < 0)
         {
-            throw CustomException(__FILE__,__LINE__,"Could not open report.");
+            throw CustomException(__FILE__, __LINE__, "Could not open report.");
         }
     }
 

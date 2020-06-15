@@ -9,10 +9,12 @@ namespace hokeeboo
 {
 class Application
 {
+    fs::path _inputDirectory{};
+    fs::path _outputDirectory{};
     std::unique_ptr<CsvDatabase> _csvDatabase = nullptr;
     
   public:
-    Application() = default;
+    Application(const fs::path& inputDirectory, const fs::path& outputDirectory);
     ~Application() = default;
 
     Application(const Application&) = delete;

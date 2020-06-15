@@ -57,7 +57,9 @@ int main()
 
     try
     {
-        Application app;
+        const fs::path inputDirectory = "../input/";
+        const fs::path outputDirectory = "../output/";
+        Application app(inputDirectory, outputDirectory);
         app.Run();
 
         Utils::PrintInfo("DONE");
