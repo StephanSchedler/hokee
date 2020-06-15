@@ -14,7 +14,7 @@
 #include <thread>
 #include <unordered_map>
 
-namespace homebanking
+namespace hokeeboo
 {
 
 std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
@@ -81,4 +81,4 @@ std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
 
     return std::move(_csvDatabase);
 }
-} // namespace homebanking
+} // namespace hokeeboo

@@ -12,7 +12,7 @@
 #include <memory>
 #include <sstream>
 
-namespace homebanking
+namespace hokeeboo
 {
 
 ReportGenerator::ReportGenerator(CsvDatabase* database)
@@ -384,4 +384,4 @@ std::string ReportGenerator::GetTableEnd()
     return "</table>\n";
 }
 
-} // namespace homebanking
+} // namespace hokeeboo

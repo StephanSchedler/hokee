@@ -13,7 +13,7 @@
 #include <memory>
 #include <regex>
 
-namespace homebanking
+namespace hokeeboo
 {
 void CsvDatabase::Sort(CsvTable& csvData)
 {
@@ -299,4 +299,4 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& rulesCs
     MatchRules();
     CheckRules();
 }
-} // namespace homebanking
+} // namespace hokeeboo

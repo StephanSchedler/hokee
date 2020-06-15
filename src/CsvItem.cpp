@@ -1,7 +1,7 @@
 #include "CsvItem.h"
 #include <sstream>
 
-namespace homebanking
+namespace hokeeboo
 {
 std::string CsvItem::ToString()
 {
@@ -28,4 +28,4 @@ void CsvItem::Match(const std::shared_ptr<CsvItem>& rule)
         this->Category = rule->Category;
     }
 }
-} // namespace homebanking
+} // namespace hokeeboo

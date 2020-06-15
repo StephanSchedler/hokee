@@ -11,7 +11,7 @@
 #include <string>
 #include <string_view>
 
-namespace homebanking
+namespace hokeeboo
 {
 
 CsvParser::CsvParser(const fs::path& file, const CsvFormat& format, const std::string accountOwner)
@@ -288,4 +288,4 @@ bool CsvParser::ParseLine(CsvRowShared& item)
     return result;
 }
 
-} // namespace homebanking
+} // namespace hokeeboo

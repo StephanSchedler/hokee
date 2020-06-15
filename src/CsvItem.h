@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace homebanking
+namespace hokeeboo
 {
 
 struct CsvItem
@@ -38,4 +38,4 @@ struct CsvItem
 };
 
 typedef std::shared_ptr<CsvItem> CsvRowShared;
-} // namespace homebanking
+} // namespace hokeeboo

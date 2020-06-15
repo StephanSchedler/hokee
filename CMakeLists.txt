@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1.0)
-project(homebanking 
-    VERSION 0.1.0 
-    HOMEPAGE_URL https://github.com/StephanSchedler/Homebanking
+project(hokeeboo 
+    VERSION 0.1.0
+    HOMEPAGE_URL https://github.com/StephanSchedler/hokeeboo
     LANGUAGES CXX
 )
 
@@ -58,21 +58,21 @@ set(PROJECT_SOURCE_FILES
 )
 
 # Execuables
-add_executable(homebanking src/main.cpp ${PROJECT_SOURCE_FILES})
+add_executable(hokeeboo src/main.cpp ${PROJECT_SOURCE_FILES})
 add_executable(selftest src/selftest.cpp ${PROJECT_SOURCE_FILES})
 
-target_link_libraries(homebanking Threads::Threads fmt::fmt)
+target_link_libraries(hokeeboo Threads::Threads fmt::fmt)
 target_link_libraries(selftest Threads::Threads fmt::fmt)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
-    target_link_libraries(homebanking stdc++fs)
+    target_link_libraries(hokeeboo stdc++fs)
     target_link_libraries(selftest stdc++fs)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang|Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
-    target_link_libraries(homebanking c++fs)
+    target_link_libraries(hokeeboo c++fs)
     target_link_libraries(selftest c++fs)
 endif()
 
-install(TARGETS homebanking RUNTIME DESTINATION ./bin)
+install(TARGETS hokeeboo RUNTIME DESTINATION ./bin)
 install(TARGETS selftest RUNTIME DESTINATION ./bin)
 
 enable_testing()

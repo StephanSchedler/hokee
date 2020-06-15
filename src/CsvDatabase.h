@@ -6,7 +6,7 @@
 
 #include <array>
 
-namespace homebanking
+namespace hokeeboo
 {
 
 class CsvDatabase
@@ -36,4 +36,4 @@ class CsvDatabase
     void AddRules(const fs::path& rulesCsv, const fs::path& workingDirectory);
 };
 
-} // namespace homebanking
+} // namespace hokeeboo

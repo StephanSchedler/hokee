@@ -6,7 +6,7 @@
 #include <sstream>
 #include <fstream>
 
-namespace homebanking
+namespace hokeeboo
 {
 
 void CsvWriter::Write(const fs::path& file, const CsvTable& data)
@@ -40,4 +40,4 @@ void CsvWriter::Write(const fs::path& file, const CsvTable& data)
     csvFile.close();
 }
 
-} // namespace homebanking
+} // namespace hokeeboo
