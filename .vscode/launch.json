@@ -1,10 +1,10 @@
 {
     "configurations": [
         {
-            "name": "homebanking",
+            "name": "hokeeboo",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "homebanking",
+            "program": "hokeeboo",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin",

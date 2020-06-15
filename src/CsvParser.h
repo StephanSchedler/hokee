@@ -8,7 +8,7 @@
 #include <memory>
 #include <type_traits>
 
-namespace homebanking
+namespace hokeeboo
 {
 
 class CsvParser
@@ -39,4 +39,4 @@ class CsvParser
     void Load(CsvTable& csvData);
 };
 
-} // namespace homebanking
+} // namespace hokeeboo

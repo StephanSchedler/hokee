@@ -3,7 +3,7 @@
 #include "CsvTable.h"
 #include "Utils.h"
 
-namespace homebanking
+namespace hokeeboo
 {
 
 class CsvWriter
@@ -20,4 +20,4 @@ class CsvWriter
     static void Write(const fs::path& file, const CsvTable& data);
 };
 
-} // namespace homebanking
+} // namespace hokeeboo

@@ -22,9 +22,9 @@
             }
         },
         {
-            "label": "Run homebanking",
+            "label": "Run hokeeboo",
             "type": "shell",
-            "command": "./homebanking.exe",
+            "command": "./hokeeboo.exe",
             "options": {
                 "cwd": "${workspaceFolder}/bin"
             },

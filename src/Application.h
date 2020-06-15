@@ -5,7 +5,7 @@
 #include <memory>
 #include <cstdint>
 
-namespace homebanking
+namespace hokeeboo
 {
 class Application
 {
@@ -23,4 +23,4 @@ class Application
     std::unique_ptr<CsvDatabase> Run(bool batchMode = false);
 };
 
-} // namespace homebanking
+} // namespace hokeeboo

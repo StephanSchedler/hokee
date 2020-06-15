@@ -5,7 +5,7 @@
 
 #include <array>
 
-namespace homebanking
+namespace hokeeboo
 {
 
 class ReportGenerator
@@ -43,4 +43,4 @@ class ReportGenerator
     void PrintIssues();
 };
 
-} // namespace homebanking
+} // namespace hokeeboo

@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <fmt/format.h>
 
-namespace homebanking
+namespace hokeeboo
 {
 CsvDate::CsvDate(std::string_view formatStr, std::string_view dateStr)
 {
@@ -115,4 +115,4 @@ std::ostream& operator<<(std::ostream& os, const CsvDate& date)
     return os;
 }
 
-} // namespace homebanking
+} // namespace hokeeboo
