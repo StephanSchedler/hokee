@@ -241,8 +241,13 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& rulesCs
     {
         if (fs::is_directory(dir))
         {
-            Utils::PrintInfo(fmt::format("  Found directory '{}':", dir.path().string()));
+            if (dir.path().filename().string().rfind(".", 0) == 0)
+            {
+                Utils::PrintInfo(fmt::format("  Skip directory '{}':", dir.path().string()));
+                continue;
+            }
 
+            Utils::PrintInfo(fmt::format("  Found directory '{}':", dir.path().string()));
             for (const auto& file : fs::directory_iterator(dir.path()))
             {
                 if (!fs::is_regular_file(file))
