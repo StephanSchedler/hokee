@@ -75,27 +75,27 @@ int main(int argc, const char* argv[])
         }
 
         // Check results
-        const int64_t expectedHash = -2080778203735490432;
+        const int64_t expectedHash = -3911911711254564864;
         if (hash != expectedHash)
         {
             Utils::PrintError(
                 fmt::format("Computed hash {} does not match expeted hash {} !", hash, expectedHash));
             success = false;
         }
-        const int64_t expectedSum = -652;
+        const int64_t expectedSum = 8913;
         if (sum != expectedSum)
         {
             Utils::PrintError(fmt::format("Computed sum {} does not match expeted sum {} !", sum, expectedSum));
             success = false;
         }
-        const int64_t expectedAssignedSize = 25;
+        const int64_t expectedAssignedSize = 58;
         if (database->Assigned.size() != expectedAssignedSize)
         {
             Utils::PrintError(fmt::format("Number of assigned items {} does not match expeted count {} !",
-                                          database->Unassigned.size(), expectedAssignedSize));
+                                          database->Assigned.size(), expectedAssignedSize));
             success = false;
         }
-        const int64_t expectedUnassignedSize = 1;
+        const int64_t expectedUnassignedSize = 3;
         if (database->Unassigned.size() != expectedUnassignedSize)
         {
             Utils::PrintError(fmt::format("Number of unassigned items {} does not match expeted count {} !",

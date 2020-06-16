@@ -52,8 +52,8 @@ int main(int argc, const char* argv[])
     bool success = true;
     try
     {
-        const fs::path inputDirectory = "../../test_data/match_rules_test/";
-        const fs::path outputDirectory = "../../test_data/match_rules_test/.output/";
+        const fs::path inputDirectory = "../../test_data/add_rules_test/";
+        const fs::path outputDirectory = "../../test_data/add_rules_test/.output/";
         Application app(argc, argv, inputDirectory, outputDirectory);
         std::unique_ptr<CsvDatabase> database = app.Run(true);
 

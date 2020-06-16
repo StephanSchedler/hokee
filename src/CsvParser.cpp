@@ -43,7 +43,14 @@ void CsvParser::ValidateValue(const std::string value)
 void CsvParser::Load(CsvTable& csvData)
 {
     auto item = std::make_shared<CsvItem>();
-    while (ParseLine(item))
+
+    std::string line;
+    while (std::getline(_ifstream, line) && ++_lineCounter <= _format.IgnoreLines)
+    {
+        csvData.Header.push_back(line);
+    }
+
+    while (ParseItem(item))
     {
         csvData.push_back(item);
         item = std::make_shared<CsvItem>();
@@ -84,16 +91,12 @@ void CsvParser::AssignValue(std::string& value, std::vector<std::string> cells, 
     value = cells[id];
 }
 
-bool CsvParser::GetLine(CsvRowShared& item)
+bool CsvParser::GetItem(CsvRowShared& item)
 {
     std::string line;
     while (std::getline(_ifstream, line))
     {
         ++_lineCounter;
-        if (_lineCounter <= _format.IgnoreLines)
-        {
-            continue;
-        }
 
         // replace nonprintable characters
         for (auto& c : line)
@@ -197,9 +200,9 @@ bool CsvParser::GetLine(CsvRowShared& item)
     return false;
 }
 
-bool CsvParser::ParseLine(CsvRowShared& item)
+bool CsvParser::ParseItem(CsvRowShared& item)
 {
-    const bool result = GetLine(item);
+    const bool result = GetItem(item);
     if (!result)
     {
         return false;
