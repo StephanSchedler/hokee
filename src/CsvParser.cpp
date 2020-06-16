@@ -20,6 +20,10 @@ CsvParser::CsvParser(const fs::path& file, const CsvFormat& format, const std::s
     , _format{format}
     , _accountOwner{accountOwner}
 {
+    if(_ifstream.fail())
+    {
+        throw CustomException(__FILE__, __LINE__, fmt::format("Could not open file {}", file.string()));
+    }
 }
 
 void CsvParser::ValidateValue(const std::string value)

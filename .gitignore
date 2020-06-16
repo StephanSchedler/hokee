@@ -37,4 +37,4 @@
 /third_party/build/
 /input/
 /output/
-/testdata/output/
+/test_data/output/
