@@ -5,6 +5,20 @@ project(hokeeboo
     LANGUAGES CXX
 )
 
+if(WIN32)
+    message(STATUS "WIN32 detected, configure CPack generator(s)")
+    set(CPACK_GENERATOR ZIP 7Z)
+elseif(UNIX)
+    if(APPLE)
+        message(STATUS "APPLE detected, configure CPack generator(s)")
+        set(CPACK_GENERATOR TGZ Bundle DMG)
+    else()
+        message(STATUS "UNIX detected, configure CPack generator(s)")
+        set(CPACK_GENERATOR TGZ DEB RPM)
+    endif()
+endif()
+include(CPack)
+
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_COLOR_MAKEFILE   ON)
 set(CMAKE_CXX_STANDARD 17)
@@ -60,22 +74,33 @@ set(PROJECT_SOURCE_FILES
 # Execuables
 add_executable(hokeeboo src/hokeeboo.cpp ${PROJECT_SOURCE_FILES})
 add_executable(match_rules_test src/match_rules_test.cpp ${PROJECT_SOURCE_FILES})
+add_executable(add_rules_test src/add_rules_test.cpp ${PROJECT_SOURCE_FILES})
+add_executable(fix_rules_test src/fix_rules_test.cpp ${PROJECT_SOURCE_FILES})
 
 target_link_libraries(hokeeboo Threads::Threads fmt::fmt)
 target_link_libraries(match_rules_test Threads::Threads fmt::fmt)
+target_link_libraries(add_rules_test Threads::Threads fmt::fmt)
+target_link_libraries(fix_rules_test Threads::Threads fmt::fmt)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
     target_link_libraries(hokeeboo stdc++fs)
     target_link_libraries(match_rules_test stdc++fs)
+    target_link_libraries(add_rules_test stdc++fs)
+    target_link_libraries(fix_rules_test stdc++fs)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang|Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
     target_link_libraries(hokeeboo c++fs)
     target_link_libraries(match_rules_test c++fs)
+    target_link_libraries(add_rules_test c++fs)
+    target_link_libraries(fix_rules_test c++fs)
 endif()
 
 install(TARGETS hokeeboo RUNTIME DESTINATION ./bin)
 install(TARGETS match_rules_test RUNTIME DESTINATION ./bin)
+install(TARGETS add_rules_test RUNTIME DESTINATION ./bin)
+install(TARGETS fix_rules_test RUNTIME DESTINATION ./bin)
 
 enable_testing()
-add_test(NAME match_rules_test
-         COMMAND match_rules_test)
+add_test(NAME match_rules_test COMMAND match_rules_test)
+add_test(NAME add_rules_test COMMAND add_rules_test)
+add_test(NAME fix_rules_test COMMAND fix_rules_test)
 

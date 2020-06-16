@@ -26,10 +26,10 @@ jobs:
       run: bash build.sh ${{ matrix.config }}
     - name: Run Tests
       run: cd build/${{ matrix.config }}; ctest -C ${{ matrix.config }} --output-on-failure
-    - name: Tar artifacts
-      run: tar -cvzf hokeeboo_${{ matrix.os }}_${{ matrix.config }}.tar.gz bin/* testdata/*
-    - name: Upload build result
-      uses: actions/upload-artifact@v1
+    - name: Run CPack
+      run: cd build/${{ matrix.config }}; cmake --build . --config ${{ matrix.config }} --target package --parallel
+    - name: Upload Packages
+      uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.os }} ${{ matrix.config }}
-        path: hokeeboo_${{ matrix.os }}_${{ matrix.config }}.tar.gz
+        path: hokeeboo-*
