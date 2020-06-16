@@ -18,11 +18,12 @@
 
 namespace hokeeboo
 {
-Application::Application(int argc, const char* argv[], const fs::path& inputDirectory, const fs::path& outputDirectory)
+Application::Application(int argc, const char* argv[], const fs::path& inputDirectory,
+                         const fs::path& outputDirectory)
     : _inputDirectory{inputDirectory}
     , _outputDirectory{outputDirectory}
 {
-    if(argc > 1)
+    if (argc > 1)
     {
         Utils::PrintInfo(fmt::format("{} version {}", fs::path(argv[0]).filename().string(), PROJECT_VERSION));
         Utils::PrintInfo(fmt::format("{} ({})", PROJECT_DESCRIPTION, PROJECT_HOMEPAGE_URL));

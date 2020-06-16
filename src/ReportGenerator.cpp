@@ -59,8 +59,7 @@ std::string ReportGenerator::GetHeadline(const std::string& urlPrefix)
 
 std::string ReportGenerator::GetIndexPage()
 {
-    std::vector<std::string> categories;
-    categories.push_back("All");
+    std::vector<std::string> categories{"All"};
     for (auto& rule : _csvDatabase->Rules)
     {
         if (std::find(categories.begin(), categories.end(), rule->Category) == categories.end())

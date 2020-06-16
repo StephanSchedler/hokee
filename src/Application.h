@@ -2,8 +2,9 @@
 
 #include "CsvDatabase.h"
 
-#include <memory>
 #include <cstdint>
+#include <memory>
+
 
 namespace hokeeboo
 {
@@ -12,7 +13,7 @@ class Application
     fs::path _inputDirectory{};
     fs::path _outputDirectory{};
     std::unique_ptr<CsvDatabase> _csvDatabase = nullptr;
-    
+
   public:
     Application(int argc, const char* argv[], const fs::path& inputDirectory, const fs::path& outputDirectory);
     ~Application() = default;
