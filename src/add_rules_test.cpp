@@ -59,7 +59,6 @@ int main(int argc, const char* argv[])
 
         // Compute Hash
         std::map<std::string, int64_t> hashes;
-        std::vector<std::string> categories;
         int64_t sum = 0;
         for (auto& rule : database->Data)
         {

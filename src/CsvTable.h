@@ -4,5 +4,8 @@
 
 namespace hokeeboo
 {
-typedef std::vector<CsvRowShared> CsvTable;
+    class CsvTable : public std::vector<CsvRowShared>
+    {
+        public: 
+    };
 }
