@@ -17,8 +17,7 @@ namespace hokeeboo
 {
 void CsvDatabase::Sort(CsvTable& csvData)
 {
-    auto compareDates
-        = [](const CsvRowShared& i, const CsvRowShared& j) -> bool { return (i->Date < j->Date); };
+    auto compareDates = [](const CsvRowShared& i, const CsvRowShared& j) -> bool { return (i->Date < j->Date); };
     std::sort(csvData.begin(), csvData.end(), compareDates);
 }
 
@@ -300,6 +299,13 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& rulesCs
     }
 
     Sort(Data);
+
+    if (!fs::exists(rulesCsv))
+    {
+        Utils::PrintWarning(fmt::format("Could not find rules. Create empty rules file {}", rulesCsv.string()));
+        CsvTable empty;
+        CsvWriter::Write(rulesCsv, empty);
+    }
     LoadRules(rulesCsv);
     MatchRules();
     CheckRules();

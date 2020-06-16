@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.1.0)
 project(hokeeboo 
-    VERSION 0.1.0
-    HOMEPAGE_URL https://github.com/StephanSchedler/hokeeboo
+    VERSION 0.2.0
+    DESCRIPTION "Automated Housekeeping Book"
+    HOMEPAGE_URL "https://github.com/StephanSchedler/hokeeboo"
     LANGUAGES CXX
 )
+
+configure_file(src/hokeeboo.cmake.h hokeeboo.h)
 
 if(WIN32)
     message(STATUS "WIN32 detected, configure CPack generator(s)")
@@ -57,6 +60,7 @@ find_package(fmt REQUIRED PATHS third_party/build/fmt/${CMAKE_BUILD_TYPE})
 # Includes
 include_directories(src)
 include_directories(third_party)
+include_directories(${PROJECT_BINARY_DIR})
 
 # Src files
 set(PROJECT_SOURCE_FILES 

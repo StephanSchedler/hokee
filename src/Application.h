@@ -14,7 +14,7 @@ class Application
     std::unique_ptr<CsvDatabase> _csvDatabase = nullptr;
     
   public:
-    Application(const fs::path& inputDirectory, const fs::path& outputDirectory);
+    Application(int argc, const char* argv[], const fs::path& inputDirectory, const fs::path& outputDirectory);
     ~Application() = default;
 
     Application(const Application&) = delete;

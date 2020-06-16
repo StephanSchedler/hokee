@@ -50,16 +50,15 @@ void TerminationHandler(const std::exception& e)
     std::abort();
 }
 
-int main()
+int main(int argc, const char* argv[])
 {
-    Utils::PrintInfo("Set termination handler...");
     std::set_terminate(&TerminationHandler);
 
     try
     {
         const fs::path inputDirectory = "../input/";
         const fs::path outputDirectory = "../output/";
-        Application app(inputDirectory, outputDirectory);
+        Application app(argc, argv, inputDirectory, outputDirectory);
         app.Run();
 
         Utils::PrintInfo("DONE");
