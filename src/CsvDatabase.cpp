@@ -304,6 +304,10 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& rulesCs
     {
         Utils::PrintWarning(fmt::format("Could not find rules. Create empty rules file {}", rulesCsv.string()));
         CsvTable empty;
+        empty.Header.push_back("Categories:");
+        empty.Header.push_back("Categorie1;Categorie2;!Ignore");
+        empty.Header.push_back("");
+        empty.Header.push_back("Rules:");
         CsvWriter::Write(rulesCsv, empty);
     }
     LoadRules(rulesCsv);

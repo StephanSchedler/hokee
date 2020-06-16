@@ -16,6 +16,11 @@ void CsvWriter::Write(const fs::path& file, const CsvTable& data)
     Utils::PrintInfo(fmt::format("  Write CSV {}", file.string()));
     csvFile.open(file);
     
+    for (const auto& line : data.Header)
+    {
+        csvFile << line << std::endl;
+    }
+
     csvFile << "Category;";
     csvFile << "Payer/Payee;";
     csvFile << "Description;";

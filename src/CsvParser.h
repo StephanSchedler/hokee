@@ -24,8 +24,8 @@ class CsvParser
     std::vector<std::string> SplitLine(const std::string& s, const CsvFormat& format);
     void AssignValue(std::string& value, std::vector<std::string> cells, size_t id);
 
-    bool GetLine(CsvRowShared& item);
-    bool ParseLine(CsvRowShared& item);
+    bool GetItem(CsvRowShared& item);
+    bool ParseItem(CsvRowShared& item);
 
   public:
     CsvParser(const fs::path& file, const CsvFormat& format, const std::string accountOwner = "");

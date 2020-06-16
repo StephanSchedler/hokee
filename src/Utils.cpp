@@ -33,7 +33,7 @@ const CsvFormat GetCsvFormat(const std::string& formatName)
     {
         format.ColumnNames = {"Category", "Payer/Payee", "Description", "Type", "Date", "Account", "Value"};
         format.HasHeader = true;
-        format.IgnoreLines = 0;
+        format.IgnoreLines = 4;
         format.HasDoubleQuotes = false;
         format.HasTrailingDelimiter = false;
         format.Delimiter = ';';
