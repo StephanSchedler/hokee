@@ -1,5 +1,5 @@
 #include "Application.h"
-#include "CustomException.h"
+#include "InternalException.h"
 #include "Utils.h"
 
 #include <fmt/format.h>
@@ -8,7 +8,7 @@
 #include <iostream>
 #include <map>
 
-using namespace hokeeboo;
+using namespace hokee;
 
 void TerminationHandler()
 {
@@ -45,6 +45,17 @@ void TerminationHandler(const std::exception& e)
     std::exit(-2);
 }
 
+void TerminationHandler(const UserException& e)
+{
+    Utils::PrintError(e.what());
+
+    if (std::system("pause"))
+    {
+        Utils::PrintError("Could not pause.");
+    }
+    std::abort();
+}
+
 int main(int argc, const char* argv[])
 {
     std::set_terminate(&TerminationHandler);
@@ -52,10 +63,16 @@ int main(int argc, const char* argv[])
     bool success = true;
     try
     {
-        const fs::path inputDirectory = "../../test_data/match_rules_test/";
-        const fs::path outputDirectory = "../../test_data/match_rules_test/.output/";
-        Application app(argc, argv, inputDirectory, outputDirectory);
-        std::unique_ptr<CsvDatabase> database = app.Run(true);
+        const fs::path inputDirectory = "../../test_data/rules_match_test/";
+        const fs::path outputDirectory = "../../test_data/rules_match_test/.output/";
+        const fs::path ruleSetFile = "../../test_data/rules_match_test/rules_match_test.csv";
+        Application app(argc, argv, inputDirectory, outputDirectory, ruleSetFile);
+
+        const bool defaultAddRules = false;
+        const bool defaultUpdateRules = false;
+        const bool defaultGenerateReport = false;
+        const std::string editor = "<NOT_USED>";
+        std::unique_ptr<CsvDatabase> database = app.Run(true, defaultAddRules, defaultUpdateRules, defaultGenerateReport, editor);
 
         // Compute Hash
         std::map<std::string, int64_t> hashes;
@@ -75,27 +92,27 @@ int main(int argc, const char* argv[])
         }
 
         // Check results
-        const int64_t expectedHash = -3911911711254564864;
+        const int64_t expectedHash = -119767248432279296;
         if (hash != expectedHash)
         {
             Utils::PrintError(
                 fmt::format("Computed hash {} does not match expeted hash {} !", hash, expectedHash));
             success = false;
         }
-        const int64_t expectedSum = 8913;
+        const int64_t expectedSum = -19886;
         if (sum != expectedSum)
         {
             Utils::PrintError(fmt::format("Computed sum {} does not match expeted sum {} !", sum, expectedSum));
             success = false;
         }
-        const int64_t expectedAssignedSize = 58;
+        const int64_t expectedAssignedSize = 56;
         if (database->Assigned.size() != expectedAssignedSize)
         {
             Utils::PrintError(fmt::format("Number of assigned items {} does not match expeted count {} !",
                                           database->Assigned.size(), expectedAssignedSize));
             success = false;
         }
-        const int64_t expectedUnassignedSize = 3;
+        const int64_t expectedUnassignedSize = 5;
         if (database->Unassigned.size() != expectedUnassignedSize)
         {
             Utils::PrintError(fmt::format("Number of unassigned items {} does not match expeted count {} !",
@@ -116,6 +133,10 @@ int main(int argc, const char* argv[])
                                           database->Rules.size(), expectedRulesSize));
             success = false;
         }
+    }
+    catch (const UserException& e)
+    {
+        TerminationHandler(e);
     }
     catch (const std::exception& e)
     {

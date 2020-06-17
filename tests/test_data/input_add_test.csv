@@ -1,0 +1,66 @@
+# The table below lists all items that do not match a rule. If you delete strings in a cell, these are 
+# used to create a new rule. If you delete strings in multiple cells, all strings need to match. Do not
+# delete or reorder rows. If you do not want to add a rule, leave the row unmodified.
+
+Category;Payer/Payee;Description;Type;Date;Account;Value
+ Ins Sho Sal Onl Ign ;Mr. ;rent for the apartment;;01.01.2020;ABC (Mr. X);-720.00
+Ren  Sho Sal Onl Ign ;Automotive  Company;automobile insurance;;03.01.2020;ABC (Mr. X);-630.00
+Ren  Sho Sal Onl Ign ;Other Insurance 24;liability ;;04.01.2020;ABC (Mr. X);-23.00
+Ren Ins  Sal Onl Ign ; AAA;receipt 31232423987;;04.01.2020;ABC (Mr. X);-134.99
+Ren Ins Sho Sal Onl Ign ;Supermarket BBB;receipt 43453453422;;14.01.2020;ABC (Mr. X);-45.29
+Ren Ins Sho Sal  Ign ;My Online Portal;PC Software:  3D;;15.01.2020;ABC (Mr. X);-120.99
+Ren Ins Sho Sal Onl Ign ;Supermarket CCC;receipt 32497239893;;24.01.2020;ABC (Mr. X);-67.94
+Ren Ins Sho  Onl Ign ;Mr. Employer;;;31.01.2020;ABC (Mr. X);1920.92
+ Ins Sho Sal Onl Ign ;Mr. ;rent for the apartment;;01.02.2020;ABC (Mr. X);-720.00
+Ren Ins Sho Sal  Ign ;Supermarket AAA;receipt 86543234564;;03.02.2020;ABC (Mr. X);-155.93
+Ren Ins  Onl Ign ; AAA;receipt 13456789874;;15.02.2020;ABC (Mr. X);-53.29
+Ren Ins  Sal Onl Ign ;;;;;;
+Ren Ins Sho Sal Onl Ign ;Supermarket BBB;receipt 22346757543;;21.02.2020;ABC (Mr. X);-132.92
+Ren Ins Sho Sal Onl  ;Cheap Car Seller;fast blue car;;27.02.2020;ABC (Mr. X);-11.99
+Ren Ins Sho Sal Onl Ign ;Mr. Employer;Salary;;29.02.2020;ABC (Mr. X);1920.92
+Ren Ins Sho Sal Onl Ign ;Mr. Landlord;rent for the apartment;;01.03.2020;ABC (Mr. X);-720.00
+Ren Ins Sho Sal Onl Ign ;Supermarket AAA;receipt 31231323987;;07.03.2020;ABC (Mr. X);-144.94
+Ren Ins Sho Sal Onl Ign ;Supermarket AAA;receipt 43451353422;;16.03.2020;ABC (Mr. X);-34.69
+Ren Ins Sho Sal Onl Ign ;Supermarket CCC;receipt 32491139893;;27.03.2020;ABC (Mr. X);-177.29
+Ren Ins Sho Sal Onl Ign ;Online Supermarket;some food;;28.03.2020;ABC (Mr. X);-43.49
+Ren Ins Sho Sal Onl Ign ;Mr. Employer;Salary;;31.03.2020;ABC (Mr. X);1920.92
+Ren Ins Sho Sal Onl Ign ;Mr. Landlord;rent for the apartment;;01.04.2020;ABC (Mr. X);-730.00
+Ren Ins Sho Sal Onl Ign ;Supermarket AAA;receipt 86543334564;;02.04.2020;ABC (Mr. X);-84.39
+Ren Ins Sho Sal Onl Ign ;Supermarket AAA;receipt 13456785574;;13.04.2020;ABC (Mr. X);-156.79
+Ren Ins Sho Sal Onl Ign ;Supermarket BBB;receipt 22346752243;;24.04.2020;ABC (Mr. X);-146.59
+Ren Ins Sho Sal Onl Ign ;Mr. Employer;Salary;;30.04.2020;ABC (Mr. X);1920.92
+Ren Ins Sho Sal Onl Ign ;Mr. Landlord;rent for the apartment;;01.05.2020;ABC (Mr. X);-730.00
+Ren Ins Sho Sal Onl Ign ;Supermarket AAA;receipt 24456785574;;13.05.2020;ABC (Mr. X);-256.39
+Ren Ins Sho Sal Onl  ;Minimarket DDD;receipt 26353752243;;99.05.2020;ABC (Mr. X);-66.59
+Ren Ins Sho Sal Onl Ign ;Mr. Employer;Salary;;31.05.2020;ABC (Mr. X);1920.92
+Ren Ins Sho Sal Onl Ign ;Mr. Landlord;rent for the apartment;;01.06.2020;ABC (Mr. X);-730.00
+Ren Ins Sho Sal Onl Ign ;Supermarket AAA;receipt 13456780274;;15.06.2020;ABC (Mr. X);-53.29
+Ren Ins Sho Sal Onl Ign ;Supermarket BBB;receipt 22347257543;;21.06.2020;ABC (Mr. X);-132.92
+Ren Ins Sho Sal Onl Ign ;Mr. Employer;Salary;;30.06.2020;ABC (Mr. X);1920.92
+Ren Ins Sho Sal Onl Ign ;Mr. Landlord;rent for the apartment;;01.07.2020;ABC (Mr. X);-730.00
+Ren Ins Sho Sal Onl Ign ;Supermarket AAA;receipt 13246785574;;13.07.2020;ABC (Mr. X);-156.79
+Ren Ins Sho Sal Onl Ign ;Supermarket CCC;receipt 32791123893;;27.07.2020;ABC (Mr. X);-177.29
+Ren Ins Sho Sal Onl Ign ;Mr. Employer;Salary;;31.07.2020;ABC (Mr. X);1920.92
+Ren Ins Sho Sal Onl Ign ;Mr. Landlord;rent for the apartment;;01.08.2020;ABC (Mr. X);-730.00
+Ren Ins Sho Sal Onl Ign ;Supermarket BBB;receipt 31266554987;;07.08.2020;ABC (Mr. X);-163.94
+Ren Ins Sho Sal Onl Ign ;Supermarket AAA;receipt 63451213422;;16.08.2020;ABC (Mr. X);-84.49
+Ren Ins Sho Sal Onl Ign ;Supermarket CCC;receipt 32491243693;;27.08.2020;ABC (Mr. X);-88.89
+Ren Ins Sho Sal Onl Ign ;Mr. Employer;Salary;;31.08.2020;ABC (Mr. X);1920.92
+Ren Ins Sho Sal Onl Ign ;Mr. Landlord;rent for the apartment;;01.09.2020;ABC (Mr. X);-730.00
+Ren Ins Sho Sal Onl Ign ;Supermarket AAA;receipt 63451564422;;16.09.2020;ABC (Mr. X);-114.69
+Ren Ins Sho Sal Onl Ign ;Supermarket CCC;receipt 32491223693;;27.09.2020;ABC (Mr. X);7.39
+Ren Ins Sho Sal Onl Ign ;Mr. Employer;Salary;;30.09.2020;ABC (Mr. X);1920.92
+Ren Ins Sho Sal Onl Ign ;Mr. Landlord;rent for the apartment;;01.10.2020;ABC (Mr. X);-730.00
+Ren Ins Sho Sal Onl Ign ;Supermarket AAA;receipt 63451247422;;16.10.2020;ABC (Mr. X);-114.69
+Ren Ins Sho Sal Onl Ign ;Supermarket CCC;receipt 32491167693;;27.10.2020;ABC (Mr. X);-53.29
+Ren Ins Sho Sal Onl Ign ;Mr. Employer;Salary;;31.10.2020;ABC (Mr. X);1920.92
+Ren Ins Sho Sal Onl Ign ;Mr. Landlord;rent for the apartment;;01.11.2020;ABC (Mr. X);-730.00
+Ren Ins Sho Sal Onl Ign ;Supermarket AAA;receipt 63451353222;;16.11.2020;ABC (Mr. X);-144.69
+Ren Ins Sho Sal Onl Ign ;Supermarket CCC;receipt 32491132453;;27.11.2020;ABC (Mr. X);-26.59
+Ren Ins Sho Sal Onl Ign ;Mr. Employer;Salary;;30.11.2020;ABC (Mr. X);2920.92
+Ren Ins Sho Sal Onl Ign ;Mr. Landlord;rent for the apartment;;01.12.2020;ABC (Mr. X);-730.00
+Ren Ins Sho Sal Onl  ;123Jeweler;necklace;;;ABC (Mr. X);-99.99
+Ren Ins Sho Sal Onl Ign ;Supermarket AAA;receipt 63581353422;;16.12.2020;ABC (Mr. X);-144.69
+Ren Ins Sho Sal Onl  ;Aunt Rich;special christmas present;;24.12.2020;ABC (Mr. X);
+Ren Ins Sho Sal Onl Ign ;Supermarket EEE;receipt 30871132693;;27.12.2020;ABC (Mr. X);-327.29
+Ren Ins Sho Sal Onl Ign ;Mr. Employer;Salary;;31.12.2020;ABC (Mr. X);1920.92

@@ -1,9 +1,9 @@
-#include "CsvDatabase.h"
-#include "CsvDate.h"
-#include "CsvItem.h"
-#include "CsvParser.h"
-#include "CsvWriter.h"
-#include "CustomException.h"
+#include "csv/CsvDatabase.h"
+#include "csv/CsvDate.h"
+#include "csv/CsvItem.h"
+#include "csv/CsvParser.h"
+#include "csv/CsvWriter.h"
+#include "InternalException.h"
 #include "ReportGenerator.h"
 #include "Utils.h"
 
@@ -13,7 +13,7 @@
 #include <memory>
 #include <regex>
 
-namespace hokeeboo
+namespace hokee
 {
 void CsvDatabase::Sort(CsvTable& csvData)
 {
@@ -85,29 +85,22 @@ void CsvDatabase::CheckRules()
     }
 }
 
-void CsvDatabase::FixRules(const fs::path& rulesCsv)
+void CsvDatabase::UpdateRules(const fs::path& ruleSetFile, const std::string& editor)
 {
     ReportGenerator reportGenerator(this);
     reportGenerator.PrintIssues();
 
-    if (std::system(fmt::format("code --wait {}", fs::absolute(rulesCsv).string()).c_str()) < 0)
+    std::string cmd = fmt::format("{} \"{}\"", editor, fs::absolute(ruleSetFile).string());
+    Utils::PrintInfo(fmt::format("Run: {}", cmd));
+    if (std::system(cmd.c_str()) < 0)
     {
-        throw CustomException(__FILE__, __LINE__, "Could not open rule editor.");
+        throw UserException(fmt::format("Could not open editor: {}", cmd));
     }
 }
 
-void CsvDatabase::AddRules(const fs::path& rulesCsv, const fs::path& workingDirectory)
+void CsvDatabase::AddRules(const fs::path& ruleSetFile, const fs::path& workingDirectory, const std::string& editor)
 {
-    std::vector<std::string> categories;
-    for (auto& rule : Rules)
-    {
-        if (std::find(categories.begin(), categories.end(), rule->Category) == categories.end())
-        {
-            categories.push_back(rule->Category);
-        }
-    }
-    fs::path unassignedCsv = workingDirectory / "unassigned.csv";
-    Utils::PrintInfo(fmt::format("  Open {}", unassignedCsv.string()));
+    std::vector<std::string> categories = Rules.GetCategories();
     Utils::PrintInfo("  Supported categories:");
     std::string categoryString;
     int categoryCounter = 0;
@@ -125,13 +118,25 @@ void CsvDatabase::AddRules(const fs::path& rulesCsv, const fs::path& workingDire
     {
         row->Category = categoryString;
     }
+    
+    std::vector<std::string> header{};
+    header.push_back("# The table below lists all items that do not match a rule. If you delete strings in a cell, these are ");
+    header.push_back("# used to create a new rule. If you delete strings in multiple cells, all strings need to match. Do not");
+    header.push_back("# delete or reorder rows. If you do not want to add a rule, leave the row unmodified.");
+    header.push_back("");
+    Unassigned.SetCsvHeader(std::move(header));
+
+    fs::path unassignedCsv = workingDirectory / "unassigned.csv";
+    Utils::PrintInfo(fmt::format("  Open {}", unassignedCsv.string()));
     CsvWriter::Write(unassignedCsv, Unassigned);
 
     Utils::PrintInfo(fmt::format("Open {}", unassignedCsv.string()));
 
-    if (std::system(fmt::format("code --wait {}", fs::absolute(unassignedCsv).string()).c_str()) < 0)
+    std::string cmd = fmt::format("{} \"{}\"", editor, fs::absolute(unassignedCsv).string());
+    Utils::PrintInfo(fmt::format("Run: {}", cmd));
+    if (std::system(cmd.c_str()) < 0)
     {
-        throw CustomException(__FILE__, __LINE__, "Could not open rule editor.");
+        throw UserException(fmt::format("Could not open editor: {}", cmd));
     }
 
     Utils::PrintInfo(fmt::format("Reload {}", unassignedCsv.string()));
@@ -140,7 +145,7 @@ void CsvDatabase::AddRules(const fs::path& rulesCsv, const fs::path& workingDire
     csvParser.Load(importedTable);
     if (Unassigned.size() != importedTable.size())
     {
-        throw CustomException(__FILE__, __LINE__, "(Re-)Imported table has different line count.");
+        throw UserException(fmt::format("Imported item count {} does not match expected value {}. You must not delete, add or reorder rows!", importedTable.size(), Unassigned.size()));
     }
 
     for (size_t i = 0; i < Unassigned.size(); ++i)
@@ -157,10 +162,12 @@ void CsvDatabase::AddRules(const fs::path& rulesCsv, const fs::path& workingDire
 
         if (unassigned->Date != imported->Date)
         {
+            isValid = true;
             newRule->Date = unassigned->Date;
         }
         if (unassigned->Value != imported->Value)
         {
+            isValid = true;
             newRule->Value = unassigned->Value;
         }
 
@@ -179,15 +186,15 @@ void CsvDatabase::AddRules(const fs::path& rulesCsv, const fs::path& workingDire
             }
         }
     }
-    CsvWriter::Write(rulesCsv, Rules);
+    CsvWriter::Write(ruleSetFile, Rules);
 }
 
-void CsvDatabase::LoadRules(const fs::path& rulesCsv)
+void CsvDatabase::LoadRules(const fs::path& ruleSetFile)
 {
     std::unique_ptr<CsvParser> csvReader;
-    Utils::PrintInfo(fmt::format("Parse {}...", rulesCsv.string()));
+    Utils::PrintInfo(fmt::format("Parse {}...", ruleSetFile.string()));
 
-    csvReader = std::make_unique<CsvParser>(rulesCsv, Utils::GetCsvFormat("Rules"));
+    csvReader = std::make_unique<CsvParser>(ruleSetFile, Utils::GetCsvFormat("Rules"));
     csvReader->Load(Rules);
 }
 
@@ -228,7 +235,7 @@ void CsvDatabase::MatchRules()
     }
 }
 
-CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& rulesCsv)
+CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& ruleSetFile)
 {
     // detect number of file
     int fileCounter = 0;
@@ -289,7 +296,7 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& rulesCs
                 }
                 else
                 {
-                    throw CustomException(__FILE__, __LINE__,
+                    throw InternalException(__FILE__, __LINE__,
                                           fmt::format("Unknown input format: {}", format).c_str());
                 }
 
@@ -300,18 +307,21 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& rulesCs
 
     Sort(Data);
 
-    if (!fs::exists(rulesCsv))
+    if (!fs::exists(ruleSetFile))
     {
-        Utils::PrintWarning(fmt::format("Could not find rules. Create empty rules file {}", rulesCsv.string()));
+        Utils::PrintWarning(fmt::format("Could not find rules. Create empty rules file {}", ruleSetFile.string()));
+        std::vector<std::string> header{};
+        header.push_back("Categories:");
+        header.push_back("Categorie1;Categorie2;Ignore!");
+        header.push_back("");
+        header.push_back("Rules:");
+        
         CsvTable empty;
-        empty.Header.push_back("Categories:");
-        empty.Header.push_back("Categorie1;Categorie2;!Ignore");
-        empty.Header.push_back("");
-        empty.Header.push_back("Rules:");
-        CsvWriter::Write(rulesCsv, empty);
+        empty.SetCsvHeader(std::move(header));
+        CsvWriter::Write(ruleSetFile, empty);
     }
-    LoadRules(rulesCsv);
+    LoadRules(ruleSetFile);
     MatchRules();
     CheckRules();
 }
-} // namespace hokeeboo
+} // namespace hokee

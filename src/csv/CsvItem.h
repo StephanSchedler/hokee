@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CsvDate.h"
+#include "csv/CsvDate.h"
 #include "Utils.h"
 
 #include <memory>
 #include <string>
 #include <vector>
 
-namespace hokeeboo
+namespace hokee
 {
 
 struct CsvItem
@@ -38,4 +38,4 @@ struct CsvItem
 };
 
 typedef std::shared_ptr<CsvItem> CsvRowShared;
-} // namespace hokeeboo
+} // namespace hokee

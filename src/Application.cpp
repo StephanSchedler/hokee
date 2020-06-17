@@ -1,12 +1,12 @@
 #include "Application.h"
-#include "CsvDatabase.h"
-#include "CsvItem.h"
-#include "CsvParser.h"
-#include "CsvWriter.h"
-#include "CustomException.h"
+#include "InternalException.h"
 #include "ReportGenerator.h"
 #include "Utils.h"
-#include "hokeeboo.h"
+#include "csv/CsvDatabase.h"
+#include "csv/CsvItem.h"
+#include "csv/CsvParser.h"
+#include "csv/CsvWriter.h"
+#include "hokee.h"
 
 #include <chrono>
 #include <fmt/format.h>
@@ -16,12 +16,13 @@
 #include <thread>
 #include <unordered_map>
 
-namespace hokeeboo
+namespace hokee
 {
 Application::Application(int argc, const char* argv[], const fs::path& inputDirectory,
-                         const fs::path& outputDirectory)
+                         const fs::path& outputDirectory, const fs::path& ruleSetFile)
     : _inputDirectory{inputDirectory}
     , _outputDirectory{outputDirectory}
+    , _ruleSetFile{ruleSetFile}
 {
     if (argc > 1)
     {
@@ -29,53 +30,70 @@ Application::Application(int argc, const char* argv[], const fs::path& inputDire
         Utils::PrintInfo(fmt::format("{} ({})", PROJECT_DESCRIPTION, PROJECT_HOMEPAGE_URL));
         std::exit(EXIT_SUCCESS);
     }
+
+    if (!fs::exists(inputDirectory))
+    {
+        throw UserException(
+            fmt::format("Input directory {} does not exits.", fs::absolute(inputDirectory).string()));
+    }
+    if (!fs::exists(outputDirectory))
+    {
+        Utils::PrintWarning(
+            fmt::format("Output directory {} does not exits. Create new one.", fs::absolute(outputDirectory).string()));
+        fs::create_directories(outputDirectory);
+    }
+    if (!fs::exists(ruleSetFile))
+    {
+        throw UserException(fmt::format("Ruleset file {} does not exits.", fs::absolute(ruleSetFile).string()));
+    }
 }
 
-std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
+std::unique_ptr<CsvDatabase> Application::Run(bool batchMode, bool defaultAddRules, bool defaultUpdateRules,
+                                              bool defaultGenerateReport, const std::string& editor)
 {
     const fs::path indexHtml = _outputDirectory / "index.html";
-    const fs::path rulesCsv = _inputDirectory / "rules.csv";
-
     Utils::PrintInfo("Parse CSV files...");
 
+    int maxIterations = 1000;
     bool restart = false;
     do
     {
         restart = false;
+        if (batchMode && --maxIterations <= 0)
+        {
+            throw InternalException(__FILE__, __LINE__, "Infinte loop in batchMode.");
+        }
 
-        _csvDatabase = std::make_unique<CsvDatabase>(_inputDirectory, rulesCsv);
+        _csvDatabase = std::make_unique<CsvDatabase>(_inputDirectory, _ruleSetFile);
 
         Utils::PrintInfo("");
         Utils::PrintInfo(fmt::format("Found {} items (assigned: {}, unassigned: {}, issues: {})",
                                      _csvDatabase->Data.size(), _csvDatabase->Assigned.size(),
                                      _csvDatabase->Unassigned.size(), _csvDatabase->Issues.size()));
 
-        if (_csvDatabase->Issues.size() > 0)
+        if (_csvDatabase->Unassigned.size() > 0)
         {
-            char answer = batchMode ? 'n' : Utils::AskYesNoQuestion("Fix rules?");
-            if (answer == 'Y' || answer == 'y')
+            if (Utils::AskYesNoQuestion("Add rules?", defaultAddRules, batchMode))
             {
-                _csvDatabase->FixRules(rulesCsv);
+                _csvDatabase->AddRules(_ruleSetFile, _outputDirectory, editor);
+
                 restart = true;
                 continue;
             }
         }
 
-        if (_csvDatabase->Unassigned.size() > 0)
+        if (_csvDatabase->Issues.size() > 0 || _csvDatabase->Unassigned.size() > 0)
         {
-            char answer = batchMode ? 'n' : Utils::AskYesNoQuestion("Add rules?");
-            if (answer == 'Y' || answer == 'y')
+            if (Utils::AskYesNoQuestion("Update rules & categories?", defaultUpdateRules, batchMode))
             {
-                _csvDatabase->AddRules(rulesCsv, _outputDirectory);
-
+                _csvDatabase->UpdateRules(_ruleSetFile, editor);
                 restart = true;
                 continue;
             }
         }
     } while (restart);
 
-    char answer = batchMode ? 'n' : Utils::AskYesNoQuestion("Generate full report?");
-    if (answer == 'Y' || answer == 'y')
+    if (Utils::AskYesNoQuestion("Generate full report?", defaultGenerateReport, batchMode))
     {
         ReportGenerator reportGenerator(_csvDatabase.get());
         reportGenerator.Write(_outputDirectory);
@@ -87,10 +105,10 @@ std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
         Utils::PrintInfo("Open report...");
         if (std::system(fs::absolute(indexHtml).string().c_str()) < 0)
         {
-            throw CustomException(__FILE__, __LINE__, "Could not open report.");
+            throw UserException("Could not open report.");
         }
     }
 
     return std::move(_csvDatabase);
 }
-} // namespace hokeeboo
+} // namespace hokee

@@ -1,5 +1,5 @@
 #include "Utils.h"
-#include "CustomException.h"
+#include "InternalException.h"
 
 #include <fmt/format.h>
 
@@ -14,6 +14,25 @@
 
 namespace Utils
 {
+
+std::vector<std::string> SplitLine(const std::string& s, const CsvFormat& format)
+{
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s);
+    while (std::getline(tokenStream, token, format.Delimiter))
+    {
+        tokens.push_back(token);
+    }
+
+    // Check for last cell empty if !HasTrailingDelimiter
+    if (!format.HasTrailingDelimiter && !s.empty() && s[s.size() - 1] == format.Delimiter)
+    {
+        tokens.push_back("");
+    }
+    return tokens;
+}
+
 const CsvFormat GetCsvFormat(const std::string& formatName)
 {
     CsvFormat format{};
@@ -183,8 +202,7 @@ bool ExtractMissingString(std::string& extracted, const std::string& original, c
 {
     if (missing.size() > original.size())
     {
-        throw CustomException(__FILE__, __LINE__,
-                              "ExtractMissingString(): 'original' must not be shorter than 'missing'!");
+        throw UserException(fmt::format("Modified cell \"{}\" must be shorter than original cell \"{}\"!", missing, original));
     }
 
     size_t s = 0;
@@ -234,8 +252,13 @@ void PrintError(std::string_view msg)
     std::cerr << "ERROR: " << msg << std::endl;
 }
 
-char AskYesNoQuestion(const std::string& question, bool defaultYes)
+bool AskYesNoQuestion(const std::string& question, bool defaultYes, bool batchMode)
 {
+    if (batchMode)
+    {
+        return defaultYes;
+    }
+
     Utils::PrintInfo("");
     char answer;
     if (defaultYes)
@@ -256,7 +279,7 @@ char AskYesNoQuestion(const std::string& question, bool defaultYes)
         std::istringstream stream(input);
         stream >> answer;
     }
-    return answer;
+    return defaultYes ? (answer == 'Y' || answer == 'y') : (answer == 'N' || answer == 'n');
 }
 
 std::string Run(const char* cmd)

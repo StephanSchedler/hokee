@@ -1,4 +1,4 @@
-#include "CsvWriter.h"
+#include "csv/CsvWriter.h"
 #include "Utils.h"
 
 #include <fmt/format.h>
@@ -6,7 +6,7 @@
 #include <sstream>
 #include <fstream>
 
-namespace hokeeboo
+namespace hokee
 {
 
 void CsvWriter::Write(const fs::path& file, const CsvTable& data)
@@ -16,7 +16,7 @@ void CsvWriter::Write(const fs::path& file, const CsvTable& data)
     Utils::PrintInfo(fmt::format("  Write CSV {}", file.string()));
     csvFile.open(file);
     
-    for (const auto& line : data.Header)
+    for (const auto& line : data.GetCsvHeader())
     {
         csvFile << line << std::endl;
     }
@@ -45,4 +45,4 @@ void CsvWriter::Write(const fs::path& file, const CsvTable& data)
     csvFile.close();
 }
 
-} // namespace hokeeboo
+} // namespace hokee

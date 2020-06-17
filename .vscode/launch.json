@@ -1,10 +1,10 @@
 {
     "configurations": [
         {
-            "name": "hokeeboo",
+            "name": "hokee",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "hokeeboo",
+            "program": "hokee",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin",
@@ -18,13 +18,24 @@
             "processId": "${command:pickProcess}"
         },
         {
-            "name": "match_rules_test",
+            "name": "rules_match_test",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "match_rules_test",
+            "program": "rules_match_test",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/bin",
+            "cwd": "${workspaceFolder}/build/Debug",
+            "environment": [],
+            "externalConsole": false
+        },
+        {
+            "name": "rules_add_test",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "rules_add_test",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/Debug",
             "environment": [],
             "externalConsole": false
         }

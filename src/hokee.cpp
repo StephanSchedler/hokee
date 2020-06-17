@@ -1,11 +1,11 @@
 #include "Application.h"
-#include "CustomException.h"
+#include "InternalException.h"
 #include "Utils.h"
 
 #include <exception>
 #include <iostream>
 
-using namespace hokeeboo;
+using namespace hokee;
 
 void TerminationHandler()
 {
@@ -50,6 +50,17 @@ void TerminationHandler(const std::exception& e)
     std::abort();
 }
 
+void TerminationHandler(const UserException& e)
+{
+    Utils::PrintError(e.what());
+
+    if (std::system("pause"))
+    {
+        Utils::PrintError("Could not pause.");
+    }
+    std::abort();
+}
+
 int main(int argc, const char* argv[])
 {
     std::set_terminate(&TerminationHandler);
@@ -58,14 +69,25 @@ int main(int argc, const char* argv[])
     {
         const fs::path inputDirectory = "../input/";
         const fs::path outputDirectory = "../output/";
-        Application app(argc, argv, inputDirectory, outputDirectory);
-        app.Run();
+        const fs::path ruleSetFile = "../input/rules.csv";
+        Application app(argc, argv, inputDirectory, outputDirectory, ruleSetFile);
+        
+        const bool defaultAddRules = true;
+        const bool defaultUpdateRules = true;
+        const bool defaultGenerateReport = true;
+        const std::string editor = "code --wait";
+        std::unique_ptr<CsvDatabase> database = app.Run(false, defaultAddRules, defaultUpdateRules, defaultGenerateReport, editor);
+
 
         Utils::PrintInfo("DONE");
         if (std::system("pause"))
         {
             Utils::PrintError("Could not pause.");
         }
+    }
+    catch (const UserException& e)
+    {
+        TerminationHandler(e);
     }
     catch (const std::exception& e)
     {

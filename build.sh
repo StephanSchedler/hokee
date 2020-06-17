@@ -1,4 +1,9 @@
 #!/bin/bash
+
+#
+# Shell script to build hokee project
+# usage: build.sh Release|Debug
+#
 set -e
 
 echo ==== Update submodules ====
