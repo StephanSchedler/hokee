@@ -1,5 +1,5 @@
 Categories:
-Categorie1;Categorie2;!Ignore
+Rent;Insurance;Shopping;Salary;Online;Ignore!
 
 Rules:
 Category;Payer/Payee;Description;Type;Date;Account;Value

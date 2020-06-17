@@ -1,10 +1,11 @@
-#include "CsvDate.h"
-#include "CustomException.h"
+#include "csv/CsvDate.h"
+#include "InternalException.h"
+#include "Utils.h"
 
 #include <cstdint>
 #include <fmt/format.h>
 
-namespace hokeeboo
+namespace hokee
 {
 CsvDate::CsvDate(std::string_view formatStr, std::string_view dateStr)
 {
@@ -12,13 +13,12 @@ CsvDate::CsvDate(std::string_view formatStr, std::string_view dateStr)
     {
         return;
     }
-    
+
     if (formatStr.size() != dateStr.size())
     {
-        throw CustomException(
-            __FILE__, __LINE__,
-            fmt::format("Could not parse date string. Format string size {} does not match date string size {}",
-                        formatStr.size(), dateStr.size()));
+        throw std::runtime_error(
+            fmt::format("Could not parse date string. Format string '{}' does not match date string '{}'",
+                        formatStr, dateStr));
     }
     if (formatStr == "dd.mm.yy")
     {
@@ -53,12 +53,11 @@ CsvDate::CsvDate(std::string_view formatStr, std::string_view dateStr)
     }
     else
     {
-        throw CustomException(__FILE__, __LINE__,
-                              fmt::format("Could not parse date string. Unsupported format string \"{}\" "
-                                          "(Supported formats: \"dd.mm.yy\", \"dd.mm.yyyy\")",
-                                          formatStr));
+        throw UserException(fmt::format("Could not parse date string. Unsupported format string \"{}\" "
+                                        "(Supported formats: \"dd.mm.yy\", \"dd.mm.yyyy\")",
+                                        formatStr));
     }
-    
+
     _dateStr = fmt::format("{:#02}.{:#02}.{:#04}", _day, _month, _year);
 }
 
@@ -115,4 +114,4 @@ std::ostream& operator<<(std::ostream& os, const CsvDate& date)
     return os;
 }
 
-} // namespace hokeeboo
+} // namespace hokee

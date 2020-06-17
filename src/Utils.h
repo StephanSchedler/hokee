@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CsvFormat.h"
+#include "csv/CsvFormat.h"
 
 #include <string>
 #include <string_view>
@@ -21,6 +21,8 @@ namespace fs = std::filesystem;
 
 namespace Utils
 {
+std::vector<std::string> SplitLine(const std::string& s, const CsvFormat& format);
+
 const CsvFormat GetCsvFormat(const std::string& formatName);
 
 void PrintInfo(std::string_view msg);
@@ -29,7 +31,7 @@ void PrintError(std::string_view msg);
 
 std::string Run(const char* cmd);
 
-char AskYesNoQuestion(const std::string& question, bool defaultYes = true);
+bool AskYesNoQuestion(const std::string& question, bool defaultYes = true, bool batchMode = false);
 int GetUniqueId();
 bool ExtractMissingString(std::string& extracted, const std::string& original, const std::string& missing);
 

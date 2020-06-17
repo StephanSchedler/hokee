@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CsvDatabase.h"
+#include "csv/CsvDatabase.h"
 #include "Utils.h"
 
 #include <array>
 
-namespace hokeeboo
+namespace hokee
 {
 
 class ReportGenerator
@@ -43,4 +43,4 @@ class ReportGenerator
     void PrintIssues();
 };
 
-} // namespace hokeeboo
+} // namespace hokee

@@ -1,14 +1,14 @@
 #pragma once
 
-#include "CsvTable.h"
-#include "CsvFormat.h"
+#include "csv/CsvTable.h"
+#include "csv/CsvFormat.h"
 #include "Utils.h"
 
 #include <fstream>
 #include <memory>
 #include <type_traits>
 
-namespace hokeeboo
+namespace hokee
 {
 
 class CsvParser
@@ -39,4 +39,4 @@ class CsvParser
     void Load(CsvTable& csvData);
 };
 
-} // namespace hokeeboo
+} // namespace hokee

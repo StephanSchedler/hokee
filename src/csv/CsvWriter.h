@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CsvTable.h"
+#include "csv/CsvTable.h"
 #include "Utils.h"
 
-namespace hokeeboo
+namespace hokee
 {
 
 class CsvWriter
@@ -20,4 +20,4 @@ class CsvWriter
     static void Write(const fs::path& file, const CsvTable& data);
 };
 
-} // namespace hokeeboo
+} // namespace hokee

@@ -1,3 +1,7 @@
+REM
+REM Shell script to build hokee project and run tests
+REM usage: build.bat Release|Debug
+REM
 @echo off
 
 echo ==== Update submodules ====
@@ -30,10 +34,6 @@ if %errorlevel% equ 0 (
 
 echo ==== Run build ====
 call cmake --build . --config %1 --target install --parallel
-if %errorlevel% neq 0 exit /b %errorlevel%
-
-echo ==== Run CPack ====
-call cmake --build . --config %1 --target package --parallel
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 echo ==== Run test(s) ====

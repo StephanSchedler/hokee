@@ -1,1 +1,1 @@
-# hokeeboo - Automated Housekeeping Book
+# hokee - Automated Housekeeping Book

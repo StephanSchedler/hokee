@@ -31,10 +31,11 @@
 *.out
 *.app
 
+compile_commands.json
 /.clangd/
 /bin/
 /build/
 /third_party/build/
 /input/
 /output/
-/test_data/output/
+/test_data/

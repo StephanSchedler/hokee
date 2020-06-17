@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.1.0)
-project(hokeeboo 
+project(hokee 
     VERSION 0.2.0
     DESCRIPTION "Automated Housekeeping Book"
-    HOMEPAGE_URL "https://github.com/StephanSchedler/hokeeboo"
+    HOMEPAGE_URL "https://github.com/StephanSchedler/hokee"
     LANGUAGES CXX
 )
 
-configure_file(src/hokeeboo.cmake.h hokeeboo.h)
+configure_file(src/hokee.cmake.h hokee.h)
 
 if(WIN32)
     message(STATUS "WIN32 detected, configure CPack generator(s)")
@@ -63,48 +63,50 @@ include_directories(third_party)
 include_directories(${PROJECT_BINARY_DIR})
 
 # Src files
-set(PROJECT_SOURCE_FILES 
+set(PROJECT_SOURCE_FILES
+    src/csv/CsvParser.cpp
+    src/csv/CsvItem.cpp
+    src/csv/CsvWriter.cpp
+    src/csv/CsvDate.cpp
+    src/csv/CsvDatabase.cpp 
     src/Application.cpp
-    src/CsvParser.cpp
-    src/CsvItem.cpp
-    src/CsvWriter.cpp
-    src/CsvDate.cpp
-    src/CsvDatabase.cpp
     src/ReportGenerator.cpp
-    src/CustomException.cpp
+    src/InternalException.cpp
+    src/UserException.cpp
     src/Utils.cpp
 )
 
 # Execuables
-add_executable(hokeeboo src/hokeeboo.cpp ${PROJECT_SOURCE_FILES})
-add_executable(match_rules_test src/match_rules_test.cpp ${PROJECT_SOURCE_FILES})
-add_executable(add_rules_test src/add_rules_test.cpp ${PROJECT_SOURCE_FILES})
-add_executable(fix_rules_test src/fix_rules_test.cpp ${PROJECT_SOURCE_FILES})
+add_executable(hokee src/hokee.cpp ${PROJECT_SOURCE_FILES})
+add_executable(rules_match_test tests/rules_match_test.cpp ${PROJECT_SOURCE_FILES})
+add_executable(rules_add_test tests/rules_add_test.cpp ${PROJECT_SOURCE_FILES})
 
-target_link_libraries(hokeeboo Threads::Threads fmt::fmt)
-target_link_libraries(match_rules_test Threads::Threads fmt::fmt)
-target_link_libraries(add_rules_test Threads::Threads fmt::fmt)
-target_link_libraries(fix_rules_test Threads::Threads fmt::fmt)
+target_link_libraries(hokee Threads::Threads fmt::fmt)
+target_link_libraries(rules_match_test Threads::Threads fmt::fmt)
+target_link_libraries(rules_add_test Threads::Threads fmt::fmt)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
-    target_link_libraries(hokeeboo stdc++fs)
-    target_link_libraries(match_rules_test stdc++fs)
-    target_link_libraries(add_rules_test stdc++fs)
-    target_link_libraries(fix_rules_test stdc++fs)
+    target_link_libraries(hokee stdc++fs)
+    target_link_libraries(rules_match_test stdc++fs)
+    target_link_libraries(rules_add_test stdc++fs)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang|Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
-    target_link_libraries(hokeeboo c++fs)
-    target_link_libraries(match_rules_test c++fs)
-    target_link_libraries(add_rules_test c++fs)
-    target_link_libraries(fix_rules_test c++fs)
+    target_link_libraries(hokee c++fs)
+    target_link_libraries(rules_match_test c++fs)
+    target_link_libraries(rules_add_test c++fs)
 endif()
 
-install(TARGETS hokeeboo RUNTIME DESTINATION ./bin)
-install(TARGETS match_rules_test RUNTIME DESTINATION ./bin)
-install(TARGETS add_rules_test RUNTIME DESTINATION ./bin)
-install(TARGETS fix_rules_test RUNTIME DESTINATION ./bin)
+install(TARGETS hokee RUNTIME DESTINATION ./bin)
+install(TARGETS rules_match_test RUNTIME DESTINATION ./bin)
+install(TARGETS rules_add_test RUNTIME DESTINATION ./bin)
+if(CMAKE_EXPORT_COMPILE_COMMANDS)
+    install(FILES ${PROJECT_BINARY_DIR}/compile_commands.json DESTINATION .)
+endif()
 
 enable_testing()
-add_test(NAME match_rules_test COMMAND match_rules_test)
-add_test(NAME add_rules_test COMMAND add_rules_test)
-add_test(NAME fix_rules_test COMMAND fix_rules_test)
-
+add_test(NAME rules_match_test COMMAND rules_match_test)
+add_test(NAME rules_add_test COMMAND rules_add_test)
+install(FILES tests/test_data/rules_match_test.csv DESTINATION ./test_data/rules_match_test)
+install(FILES tests/test_data/ABC/Account_123456790_2020.csv DESTINATION ./test_data/rules_match_test/ABC)
+install(FILES tests/test_data/input_add_test.csv DESTINATION ./test_data/rules_add_test)
+install(FILES tests/test_data/rules_add_test.csv DESTINATION ./test_data/rules_add_test)
+install(FILES tests/test_data/ABC/Account_123456790_2020.csv DESTINATION ./test_data/rules_add_test/ABC)

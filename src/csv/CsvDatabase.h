@@ -1,17 +1,17 @@
 #pragma once
 
-#include "CsvParser.h"
-#include "CsvTable.h"
+#include "csv/CsvParser.h"
+#include "csv/CsvRules.h"
 #include "Utils.h"
 
 #include <array>
 
-namespace hokeeboo
+namespace hokee
 {
 
 class CsvDatabase
 {
-    void LoadRules(const fs::path& rulesCsv);
+    void LoadRules(const fs::path& ruleSetFile);
     void MatchRules();
     void CheckRules();
     void Sort(CsvTable& csvData);
@@ -21,10 +21,10 @@ class CsvDatabase
     CsvTable Unassigned;
     CsvTable Assigned;
 
-    CsvTable Rules;
+    CsvRules Rules;
     CsvTable Issues;
 
-    CsvDatabase(const fs::path& inputDirectory, const fs::path& rulesCsv);
+    CsvDatabase(const fs::path& inputDirectory, const fs::path& ruleSetFile);
     ~CsvDatabase() = default;
 
     CsvDatabase(const CsvDatabase&) = delete;
@@ -32,8 +32,8 @@ class CsvDatabase
     CsvDatabase(CsvDatabase&&) = delete;
     CsvDatabase& operator=(CsvDatabase&&) = delete;
 
-    void FixRules(const fs::path& rulesCsv);
-    void AddRules(const fs::path& rulesCsv, const fs::path& workingDirectory);
+    void UpdateRules(const fs::path& ruleSetFile, const std::string& editor);
+    void AddRules(const fs::path& ruleSetFile, const fs::path& workingDirectory, const std::string& editor);
 };
 
-} // namespace hokeeboo
+} // namespace hokee

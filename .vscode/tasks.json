@@ -22,9 +22,9 @@
             }
         },
         {
-            "label": "Run hokeeboo",
+            "label": "Run hokee",
             "type": "process",
-            "command": "hokeeboo.exe",
+            "command": "hokee.exe",
             "options": {
                 "cwd": "${workspaceFolder}/bin"
             },
