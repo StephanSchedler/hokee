@@ -48,11 +48,6 @@ void TerminationHandler(const std::exception& e)
 void TerminationHandler(const UserException& e)
 {
     Utils::PrintError(e.what());
-
-    if (std::system("pause"))
-    {
-        Utils::PrintError("Could not pause.");
-    }
     std::abort();
 }
 

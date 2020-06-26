@@ -14,10 +14,15 @@ if(WIN32)
 elseif(UNIX)
     if(APPLE)
         message(STATUS "APPLE detected, configure CPack generator(s)")
-        set(CPACK_GENERATOR TGZ Bundle DMG)
+        set(CPACK_GENERATOR TGZ) #DragNDrop #Bundle
+        #set(CPACK_BUNDLE_NAME "${CMAKE_PROJECT_NAME}")
+        #set(CPACK_BUNDLE_PLIST "Info.plist")
+        #set(CPACK_BUNDLE_ICON "hokee.png")
     else()
         message(STATUS "UNIX detected, configure CPack generator(s)")
         set(CPACK_GENERATOR TGZ DEB RPM)
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
+        set(CPACK_PACKAGE_CONTACT "schedler@paderborn.com")
     endif()
 endif()
 include(CPack)
@@ -65,6 +70,7 @@ include_directories(${PROJECT_BINARY_DIR})
 # Src files
 set(PROJECT_SOURCE_FILES
     src/csv/CsvParser.cpp
+    src/csv/CsvSettings.cpp
     src/csv/CsvItem.cpp
     src/csv/CsvWriter.cpp
     src/csv/CsvDate.cpp
@@ -98,7 +104,7 @@ endif()
 install(TARGETS hokee RUNTIME DESTINATION ./bin)
 install(TARGETS rules_match_test RUNTIME DESTINATION ./bin)
 install(TARGETS rules_add_test RUNTIME DESTINATION ./bin)
-if(CMAKE_EXPORT_COMPILE_COMMANDS)
+if(CMAKE_EXPORT_COMPILE_COMMANDS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     install(FILES ${PROJECT_BINARY_DIR}/compile_commands.json DESTINATION .)
 endif()
 

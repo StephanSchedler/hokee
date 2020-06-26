@@ -24,7 +24,7 @@
             "program": "rules_match_test",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/build/Debug",
+            "cwd": "${workspaceFolder}/bin",
             "environment": [],
             "externalConsole": false
         },
@@ -35,7 +35,7 @@
             "program": "rules_add_test",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/build/Debug",
+            "cwd": "${workspaceFolder}/bin",
             "environment": [],
             "externalConsole": false
         }

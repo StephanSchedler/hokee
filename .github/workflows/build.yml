@@ -15,21 +15,31 @@ jobs:
       run:
         shell: bash
 
+    timeout-minutes: 5
     strategy:
+      fail-fast: false
       matrix:
-        os: [windows-2019, macos-15.10, ubuntu-18.04, ubuntu-20.04]
+        os: [windows-latest, macos-latest, ubuntu-latest]
         config: [Debug, Release]
 
     steps:
     - uses: actions/checkout@v2
-    - name: Run Build
+    - name: Run build
       run: bash build.sh ${{ matrix.config }}
-    - name: Run Tests
-      run: cd build/${{ matrix.config }}; ctest -C ${{ matrix.config }} --output-on-failure
     - name: Run CPack
       run: cd build/${{ matrix.config }}; cmake --build . --config ${{ matrix.config }} --target package --parallel
-    - name: Upload Packages
-      uses: actions/upload-artifact@v2
+    - name: Run tests
+      run: cd build/${{ matrix.config }}; ctest -C ${{ matrix.config }} --output-on-failure
+    - uses: c-hive/gha-remove-artifacts@v1
+      name: Remove old artifacts
       with:
-        name: ${{ matrix.os }} ${{ matrix.config }}
-        path: hokee-*
+        age: '1 day'
+        # Optional inputs
+        # skip-tags: true
+        # skip-recent: 5
+    - uses: actions/upload-artifact@v2
+      if: ${{ matrix.config == Release }}
+      name: Upload packages
+      with:
+        name: ${{ matrix.os }}-${{ matrix.config }}-packages
+        path: build/**/hokee-*
