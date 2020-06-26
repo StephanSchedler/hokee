@@ -6,7 +6,7 @@ Category;Payer/Payee;Description;Type;Date;Account;Value
  Ins Sho Sal Onl Ign ;Mr. ;rent for the apartment;;01.01.2020;ABC (Mr. X);-720.00
 Ren  Sho Sal Onl Ign ;Automotive  Company;automobile insurance;;03.01.2020;ABC (Mr. X);-630.00
 Ren  Sho Sal Onl Ign ;Other Insurance 24;liability ;;04.01.2020;ABC (Mr. X);-23.00
-Ren Ins  Sal Onl Ign ; AAA;receipt 31232423987;;04.01.2020;ABC (Mr. X);-134.99
+Ren Ins  Sal Onl Ign ; AAA;receipt 31232423987;;05.01.2020;ABC (Mr. X);-134.99
 Ren Ins Sho Sal Onl Ign ;Supermarket BBB;receipt 43453453422;;14.01.2020;ABC (Mr. X);-45.29
 Ren Ins Sho Sal  Ign ;My Online Portal;PC Software:  3D;;15.01.2020;ABC (Mr. X);-120.99
 Ren Ins Sho Sal Onl Ign ;Supermarket CCC;receipt 32497239893;;24.01.2020;ABC (Mr. X);-67.94
