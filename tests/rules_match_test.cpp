@@ -48,11 +48,6 @@ void TerminationHandler(const std::exception& e)
 void TerminationHandler(const UserException& e)
 {
     Utils::PrintError(e.what());
-
-    if (std::system("pause"))
-    {
-        Utils::PrintError("Could not pause.");
-    }
     std::abort();
 }
 
@@ -92,7 +87,7 @@ int main(int argc, const char* argv[])
         }
 
         // Check results
-        const int64_t expectedHash = -119767248432279296;
+        const int64_t expectedHash = -198114973815180800;
         if (hash != expectedHash)
         {
             Utils::PrintError(

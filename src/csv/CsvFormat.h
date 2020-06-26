@@ -15,7 +15,7 @@ struct CsvFormat
     bool HasHeader{true};
 
     /// Parser ignores the first rows in the csv file
-    int IgnoreLines{0};
+    size_t IgnoreLines{0};
 
     /// Specifies if the parser has to remove double quotes (") from each cell
     bool HasDoubleQuotes{false};
