@@ -67,6 +67,24 @@ const CsvFormat GetCsvFormat(const std::string& formatName)
         format.Account = 5;
         format.Value = 6;
     }
+    else if (formatName == "Settings")
+    {
+        format.ColumnNames = {"setting", "value"};
+        format.HasHeader = false;
+        format.IgnoreLines = 0;
+        format.HasDoubleQuotes = false;
+        format.HasTrailingDelimiter = false;
+        format.Delimiter = '=';
+        format.Category = -1;
+        format.PayerPayee = -1;
+        format.Payer = -1;
+        format.Payee = -1;
+        format.Description = -1;
+        format.Type = 0;
+        format.Date = -1;
+        format.Account = -1;
+        format.Value = 1;
+    }
     else if (formatName == "ABC")
     {
         format.ColumnNames = {"date", "description", "payer/payee", "value"};

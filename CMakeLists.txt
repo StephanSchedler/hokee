@@ -70,6 +70,7 @@ include_directories(${PROJECT_BINARY_DIR})
 # Src files
 set(PROJECT_SOURCE_FILES
     src/csv/CsvParser.cpp
+    src/csv/CsvSettings.cpp
     src/csv/CsvItem.cpp
     src/csv/CsvWriter.cpp
     src/csv/CsvDate.cpp
@@ -103,7 +104,7 @@ endif()
 install(TARGETS hokee RUNTIME DESTINATION ./bin)
 install(TARGETS rules_match_test RUNTIME DESTINATION ./bin)
 install(TARGETS rules_add_test RUNTIME DESTINATION ./bin)
-if(CMAKE_EXPORT_COMPILE_COMMANDS)
+if(CMAKE_EXPORT_COMPILE_COMMANDS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     install(FILES ${PROJECT_BINARY_DIR}/compile_commands.json DESTINATION .)
 endif()
 
