@@ -15,11 +15,11 @@ jobs:
       run:
         shell: bash
 
-    timeout-minutes: 10
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-18.04, ubuntu-20.04]
+        os: [windows-latest, macos-latest, ubuntu-latest]
         config: [Debug, Release]
 
     steps:
@@ -30,7 +30,15 @@ jobs:
       run: cd build/${{ matrix.config }}; cmake --build . --config ${{ matrix.config }} --target package --parallel
     - name: Run tests
       run: cd build/${{ matrix.config }}; ctest -C ${{ matrix.config }} --output-on-failure
+    - uses: c-hive/gha-remove-artifacts@v1
+      name: Remove old artifacts
+      with:
+        age: '1 day'
+        # Optional inputs
+        # skip-tags: true
+        # skip-recent: 5
     - uses: actions/upload-artifact@v2
+      if: ${{ matrix.config == Release }}
       name: Upload packages
       with:
         name: ${{ matrix.os }}-${{ matrix.config }}-packages
