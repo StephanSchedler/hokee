@@ -51,23 +51,25 @@ void TerminationHandler(const UserException& e)
     std::abort();
 }
 
-int main(int argc, const char* argv[])
+int main(int /*unused*/, const char* argv[])
 {
     std::set_terminate(&TerminationHandler);
 
     bool success = true;
     try
     {
-        const fs::path inputDirectory = "../../test_data/rules_match_test/";
-        const fs::path outputDirectory = "../../test_data/rules_match_test/.output/";
-        const fs::path ruleSetFile = "../../test_data/rules_match_test/rules_match_test.csv";
-        Application app(argc, argv, inputDirectory, outputDirectory, ruleSetFile);
-
-        const bool defaultAddRules = false;
-        const bool defaultUpdateRules = false;
-        const bool defaultGenerateReport = false;
-        const std::string editor = "<NOT_USED>";
-        std::unique_ptr<CsvDatabase> database = app.Run(true, defaultAddRules, defaultUpdateRules, defaultGenerateReport, editor);
+        int testArgc = 2;
+        
+        CsvConfig config;
+        std::string configPath = "../test_data/rules_match_test/rules_match_test.ini";
+        config.SetAddRules(false);
+        config.SetUpdateRules(false);
+        config.SetGenerateReport(false);
+        config.SetRuleSetFile("rules_match_test.csv");
+        config.Save(configPath);
+        const char* testArgv[] = {argv[0], configPath.c_str(), nullptr};
+        auto app = std::make_unique<Application>(testArgc, testArgv);
+        std::unique_ptr<CsvDatabase> database = app->Run(true);
 
         // Compute Hash
         std::map<std::string, int64_t> hashes;
@@ -127,6 +129,15 @@ int main(int argc, const char* argv[])
             Utils::PrintError(fmt::format("Number of found rules {} does not match expeted count {} !",
                                           database->Rules.size(), expectedRulesSize));
             success = false;
+        }
+
+        if(success)
+        {
+            Utils::PrintInfo("TEST PASSED");
+        }
+        else
+        {
+            Utils::PrintInfo("TEST FAILED");
         }
     }
     catch (const UserException& e)

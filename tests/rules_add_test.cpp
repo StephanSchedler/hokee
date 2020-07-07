@@ -2,6 +2,7 @@
 #include "InternalException.h"
 #include "Utils.h"
 
+#include <filesystem>
 #include <fmt/format.h>
 
 #include <exception>
@@ -51,24 +52,24 @@ void TerminationHandler(const UserException& e)
     std::abort();
 }
 
-int main(int argc, const char* argv[])
+int main(int /*unused*/, const char* argv[])
 {
     std::set_terminate(&TerminationHandler);
 
     bool success = true;
     try
     {
-        const fs::path inputDirectory = "../../test_data/rules_add_test/";
-        const fs::path outputDirectory = "../../test_data/rules_add_test/.output/";
-        const fs::path ruleSetFile = "../../test_data/rules_add_test/rules.csv";
-        fs::copy_file("../../test_data/rules_add_test/rules_add_test.csv", ruleSetFile ,fs::copy_options::overwrite_existing);
-        Application app(argc, argv, inputDirectory, outputDirectory, ruleSetFile);
-
-        bool defaultAddRules = false;
-        bool defaultUpdateRules = false;
-        bool defaultGenerateReport = false;
-        std::string editor = "<NOT_USED>";
-        std::unique_ptr<CsvDatabase> database = app.Run(true, defaultAddRules, defaultUpdateRules, defaultGenerateReport, editor);
+        int testArgc = 2;
+        CsvConfig config;
+        std::string configPath = "../test_data/rules_add_test/rules_add_test.ini";
+        config.SetAddRules(false);
+        config.SetUpdateRules(false);
+        config.SetGenerateReport(false);
+        config.SetRuleSetFile("rules_add_test.csv");
+        config.Save(configPath);
+        const char* testArgv[] = {argv[0], configPath.c_str(), nullptr};
+        auto app = std::make_unique<Application>(testArgc, testArgv);
+        std::unique_ptr<CsvDatabase> database = app->Run(true);
 
         // Check results
         uint64_t expectedAssignedSize = 0;
@@ -92,16 +93,18 @@ int main(int argc, const char* argv[])
                                           database->Issues.size(), expectedIssuesSize));
             success = false;
         }
-        
-        // Add rules
-        defaultAddRules = true;
-        fs::path inputFile = "../../test_data/rules_add_test/input_add_test.csv";
+
+        // Add rules        
+        config.SetAddRules(true);
+        fs::path csvFile = fs::absolute("../test_data/rules_add_test/input_add_test.csv");
 #ifdef _MSC_VER
-        editor = fmt::format("copy /Y \"{}\"", inputFile.make_preferred().string());
+        config.SetEditor(fmt::format("copy /Y {}", csvFile.make_preferred().string()));
 #else
-        editor = fmt::format("cp -f \"{}\"", inputFile.string());
+        config.SetEditor(fmt::format("cp -f {}", csvFile.string()));
 #endif
-        database = app.Run(true, defaultAddRules, defaultUpdateRules, defaultGenerateReport, editor);
+        config.Save(configPath);
+        Application app2(testArgc, testArgv);
+        database = app2.Run(true);
 
         // Check result
         expectedAssignedSize = database->Data.size();
@@ -124,6 +127,15 @@ int main(int argc, const char* argv[])
             Utils::PrintError(fmt::format("Number of issues {} does not match expeted count {} !",
                                           database->Issues.size(), expectedIssuesSize));
             success = false;
+        }
+
+        if(success)
+        {
+            Utils::PrintInfo("TEST PASSED");
+        }
+        else
+        {
+            Utils::PrintInfo("TEST FAILED");
         }
     }
     catch (const UserException& e)

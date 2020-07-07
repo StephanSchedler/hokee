@@ -67,17 +67,8 @@ int main(int argc, const char* argv[])
 
     try
     {
-        const fs::path inputDirectory = "../input/";
-        const fs::path outputDirectory = "../output/";
-        const fs::path ruleSetFile = "../input/rules.csv";
-        Application app(argc, argv, inputDirectory, outputDirectory, ruleSetFile);
-        
-        const bool defaultAddRules = true;
-        const bool defaultUpdateRules = true;
-        const bool defaultGenerateReport = true;
-        const std::string editor = "code --wait";
-        std::unique_ptr<CsvDatabase> database = app.Run(false, defaultAddRules, defaultUpdateRules, defaultGenerateReport, editor);
-
+        Application app(argc, argv);
+        std::unique_ptr<CsvDatabase> database = app.Run(false);
 
         Utils::PrintInfo("DONE");
         if (std::system("pause"))
