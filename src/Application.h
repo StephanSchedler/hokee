@@ -1,7 +1,7 @@
 #pragma once
 
 #include "csv/CsvDatabase.h"
-#include "csv/CsvConfig.h"
+#include "Settings.h"
 
 #include <cstdint>
 #include <memory>
@@ -11,7 +11,7 @@ namespace hokee
 {
 class Application
 {
-    CsvConfig _config;
+    Settings _config;
     fs::path _inputDirectory{};
     fs::path _outputDirectory{};
     fs::path _ruleSetFile{};
