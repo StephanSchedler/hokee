@@ -40,7 +40,7 @@ endif()
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     message(STATUS "MSVC detected, adding compile flags")
 
-    set(CMAKE_CXX_FLAGS "/W4 /nologo /EHsc /MP")
+    set(CMAKE_CXX_FLAGS "/W4 /nologo /EHsc /MP /D_CRT_SECURE_NO_WARNINGS")
     set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Od /DEBUG:FASTLINK /Ob0 /Zi /RTC1 /DDEBUG /D_DEBUG")
     set(CMAKE_CXX_FLAGS_RELEASE "/MD /O2 /Ob2 /DNDEBUG")
 
@@ -70,7 +70,7 @@ include_directories(${PROJECT_BINARY_DIR})
 # Src files
 set(PROJECT_SOURCE_FILES
     src/csv/CsvParser.cpp
-    src/csv/CsvSettings.cpp
+    src/csv/CsvConfig.cpp
     src/csv/CsvItem.cpp
     src/csv/CsvWriter.cpp
     src/csv/CsvDate.cpp
@@ -112,7 +112,7 @@ enable_testing()
 add_test(NAME rules_match_test COMMAND rules_match_test)
 add_test(NAME rules_add_test COMMAND rules_add_test)
 install(FILES tests/test_data/rules_match_test.csv DESTINATION ./test_data/rules_match_test)
-install(FILES tests/test_data/ABC/Account_123456790_2020.csv DESTINATION ./test_data/rules_match_test/ABC)
+install(FILES tests/test_data/ABC/Account_123456790_2020.csv DESTINATION ./test_data/rules_match_test/input/ABC)
 install(FILES tests/test_data/input_add_test.csv DESTINATION ./test_data/rules_add_test)
 install(FILES tests/test_data/rules_add_test.csv DESTINATION ./test_data/rules_add_test)
-install(FILES tests/test_data/ABC/Account_123456790_2020.csv DESTINATION ./test_data/rules_add_test/ABC)
+install(FILES tests/test_data/ABC/Account_123456790_2020.csv DESTINATION ./test_data/rules_add_test/input/ABC)

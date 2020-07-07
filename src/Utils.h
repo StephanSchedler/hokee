@@ -35,4 +35,8 @@ bool AskYesNoQuestion(const std::string& question, bool defaultYes = true, bool 
 int GetUniqueId();
 bool ExtractMissingString(std::string& extracted, const std::string& original, const std::string& missing);
 
+
+std::string GetEnv(const std::string& name);
+fs::path GetHomePath();
+
 } // namespace Utils

@@ -44,8 +44,10 @@ void CsvParser::Load(CsvTable& csvData)
 
     std::string line;
     std::vector<std::string> header{};
-    while (std::getline(_ifstream, line) && ++_lineCounter <= _format.IgnoreLines)
+    while (_lineCounter < _format.IgnoreLines)
     {
+        _lineCounter++;
+        std::getline(_ifstream, line);
         header.push_back(line);
     }
     csvData.SetCsvHeader(std::move(header));

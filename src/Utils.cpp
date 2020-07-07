@@ -3,8 +3,10 @@
 
 #include <fmt/format.h>
 
-#include <array>
 #include <cstdio>
+#include <cstdlib>
+
+#include <array>
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -14,7 +16,6 @@
 
 namespace Utils
 {
-
 std::vector<std::string> SplitLine(const std::string& s, const CsvFormat& format)
 {
     std::vector<std::string> tokens;
@@ -37,18 +38,7 @@ const CsvFormat GetCsvFormat(const std::string& formatName)
 {
     CsvFormat format{};
     format.FormatName = formatName;
-    if (formatName == "Settings")
-    {
-        format.ColumnNames = {"Setting", "Value"};
-        format.HasHeader = false;
-        format.IgnoreLines = 0;
-        format.HasDoubleQuotes = false;
-        format.HasTrailingDelimiter = false;
-        format.Delimiter = '=';
-        format.Category = 0;
-        format.Description = 1;
-    }
-    else if (formatName == "Rules")
+    if (formatName == "Rules")
     {
         format.ColumnNames = {"Category", "Payer/Payee", "Description", "Type", "Date", "Account", "Value"};
         format.HasHeader = true;
@@ -67,23 +57,23 @@ const CsvFormat GetCsvFormat(const std::string& formatName)
         format.Account = 5;
         format.Value = 6;
     }
-    else if (formatName == "Settings")
+    else if (formatName == "Config")
     {
-        format.ColumnNames = {"setting", "value"};
+        format.ColumnNames = {"name", "value"};
         format.HasHeader = false;
         format.IgnoreLines = 0;
         format.HasDoubleQuotes = false;
         format.HasTrailingDelimiter = false;
         format.Delimiter = '=';
-        format.Category = -1;
+        format.Category = 0;
         format.PayerPayee = -1;
         format.Payer = -1;
         format.Payee = -1;
-        format.Description = -1;
-        format.Type = 0;
+        format.Description = 1;
+        format.Type = -1;
         format.Date = -1;
         format.Account = -1;
-        format.Value = 1;
+        format.Value = -1;
     }
     else if (formatName == "ABC")
     {
@@ -220,7 +210,8 @@ bool ExtractMissingString(std::string& extracted, const std::string& original, c
 {
     if (missing.size() > original.size())
     {
-        throw UserException(fmt::format("Modified cell \"{}\" must be shorter than original cell \"{}\"!", missing, original));
+        throw UserException(
+            fmt::format("Modified cell \"{}\" must be shorter than original cell \"{}\"!", missing, original));
     }
 
     size_t s = 0;
@@ -321,4 +312,22 @@ std::string Run(const char* cmd)
     }
     return result;
 }
+
+std::string GetEnv(const std::string& name)
+{
+    const char* pValue = std::getenv(name.c_str());
+    return pValue == nullptr ? "" : std::string(pValue);
+}
+
+fs::path GetHomePath()
+{
+#ifdef unix
+    return Utils::GetEnv("HOME");
+#elif defined(_WIN32)
+    return Utils::GetEnv("HOMEDRIVE") + Utils::GetEnv("HOMEPATH");
+#else
+#error Unsupported OS
+#endif
+}
+
 } // namespace Utils

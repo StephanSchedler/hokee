@@ -19,20 +19,21 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 popd
 
 echo ==== Prepare build directory ====
-md build\%1    
-pushd build\%1
+md build
+pushd build
 echo ==== Try to find ninja build system ====
 where ninja
 if %errorlevel% equ 0 (
     echo ==== Genereate Ninja build system ====
-    call cmake -G Ninja -DCMAKE_BUILD_TYPE=%1 -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_INSTALL_PREFIX=..\.. ..\.. 
+    call cmake -G Ninja -DCMAKE_BUILD_TYPE=%1 -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_INSTALL_PREFIX=.. .. 
     if %errorlevel% neq 0 exit /b %errorlevel%
 ) else (
     echo ==== Generate default build system ====
-    call cmake -DCMAKE_BUILD_TYPE=%1 -DCMAKE_INSTALL_PREFIX=..\.. ..\..
+    call cmake -DCMAKE_BUILD_TYPE=%1 -DCMAKE_INSTALL_PREFIX=.. ..
 )
 
 echo ==== Run build ====
+rm -r ../bin/* ../test_data/*
 call cmake --build . --config %1 --target install --parallel
 if %errorlevel% neq 0 exit /b %errorlevel%
 

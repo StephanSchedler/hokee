@@ -19,11 +19,11 @@ cmake --build . --config $1 --target install --parallel
 popd
 
 echo ==== Prepare build directory ====
-mkdir -p build/$1 
-pushd build/$1
+mkdir -p build
+pushd build
 
 echo ==== Generate default build system ====
-cmake -DCMAKE_BUILD_TYPE=$1 -DCMAKE_INSTALL_PREFIX=../.. ../..
+cmake -DCMAKE_BUILD_TYPE=$1 -DCMAKE_INSTALL_PREFIX=.. ..
 
 echo ==== Run build ====
 cmake --build . --config $1 --target install --parallel
