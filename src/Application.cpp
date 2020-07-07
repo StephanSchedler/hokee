@@ -33,7 +33,7 @@ Application::Application(int argc, const char* argv[])
                 fs::create_directories(configPath.parent_path());
             }
 
-            CsvConfig config;
+            Settings config;
             config.Save(configPath);
         }
     }
@@ -55,7 +55,7 @@ Application::Application(int argc, const char* argv[])
         Utils::PrintInfo("         (default: ~/hokee/hokee.ini)");
         std::exit(EXIT_SUCCESS);
     }
-    _config = CsvConfig(configPath);
+    _config = Settings(configPath);
 
     _inputDirectory = configPath.parent_path() / _config.GetInputDirectory();
     _outputDirectory = configPath.parent_path() / _config.GetOutputDirectory();

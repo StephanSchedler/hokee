@@ -76,6 +76,7 @@ set(PROJECT_SOURCE_FILES
     src/csv/CsvDate.cpp
     src/csv/CsvDatabase.cpp 
     src/Application.cpp
+    src/Settings.cpp
     src/ReportGenerator.cpp
     src/InternalException.cpp
     src/UserException.cpp

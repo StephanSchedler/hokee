@@ -60,7 +60,7 @@ int main(int /*unused*/, const char* argv[])
     {
         int testArgc = 2;
         
-        CsvConfig config;
+        Settings config;
         std::string configPath = "../test_data/rules_match_test/rules_match_test.ini";
         config.SetAddRules(false);
         config.SetUpdateRules(false);
