@@ -30,10 +30,20 @@ void CsvParser::ValidateValue(const std::string value)
     {
         return;
     }
-    if (value != fmt::format("{:.2f}", std::stod(value)))
+    double doubleValue;
+    try
+    {
+        doubleValue = std::stod(value);
+    }
+    catch (const std::exception& e)
+    {
+        throw InternalException(__FILE__, __LINE__,
+                                fmt::format("Could not convert '{}' to 'double'. ({})", value, e.what()));
+    }
+    if (value != fmt::format("{:.2f}", doubleValue))
     {
         throw UserException(fmt::format("{}:{}: Could not parse value {} != stod({})", _file.string(),
-                                        _lineCounter, value, fmt::format("{:.2f}", std::stod(value))));
+                                        _lineCounter, value, fmt::format("{:.2f}", doubleValue)));
     }
 }
 
@@ -98,7 +108,7 @@ bool CsvParser::GetItem(CsvRowShared& item)
             }
         }
 
-        std::vector<std::string> cells = Utils::SplitLine(line, _format);
+        std::vector<std::string> cells = Utils::SplitLine(line, _format.GetDelimiter(), _format.GetHasTrailingDelimiter());
         if (_format.GetColumnNames().size() != cells.size())
         {
             throw UserException(

@@ -28,7 +28,7 @@ class CsvFormat final : public CsvConfig
     bool GetHasHeader() const;
 
     /// Parser ignores the first rows in the csv file
-    size_t GetIgnoreLines() const;
+    int GetIgnoreLines() const;
     
     /// Specifies if the parser has to remove double quotes (") from each cell
     bool GetHasDoubleQuotes() const;
@@ -73,7 +73,7 @@ class CsvFormat final : public CsvConfig
     void SetAccountOwner(const std::string& value);
     void SetColumnNames(const std::vector<std::string>& value);
     void SetHasHeader(bool value);
-    void SetIgnoreLines(size_t value);
+    void SetIgnoreLines(int value);
     void SetHasDoubleQuotes(bool value);
     void SetHasTrailingDelimiter(bool value);
     void SetDelimiter(char value);

@@ -72,7 +72,7 @@ bool Settings::GetAddRules() const
 
 void Settings::SetAddRules(bool value)
 {
-    SetString("AddRules", value ? "true" : "false");
+    SetBool("AddRules", value);
 }
 
 bool Settings::GetUpdateRules() const
@@ -82,7 +82,7 @@ bool Settings::GetUpdateRules() const
 
 void Settings::SetUpdateRules(bool value)
 {
-    SetString("UpdateRules", value ? "true" : "false");
+    SetBool("UpdateRules", value);
 }
 
 bool Settings::GetGenerateReport() const
@@ -92,7 +92,7 @@ bool Settings::GetGenerateReport() const
 
 void Settings::SetGenerateReport(bool value)
 {
-    SetString("GenerateReport", value ? "true" : "false");
+    SetBool("GenerateReport", value);
 }
 
 } // namespace hokee

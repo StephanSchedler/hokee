@@ -1,11 +1,12 @@
 #include "csv/CsvDatabase.h"
+#include "InternalException.h"
+#include "ReportGenerator.h"
+#include "Utils.h"
 #include "csv/CsvDate.h"
 #include "csv/CsvItem.h"
 #include "csv/CsvParser.h"
 #include "csv/CsvWriter.h"
-#include "InternalException.h"
-#include "ReportGenerator.h"
-#include "Utils.h"
+
 
 #include <fmt/format.h>
 
@@ -98,7 +99,8 @@ void CsvDatabase::UpdateRules(const fs::path& ruleSetFile, const std::string& ed
     }
 }
 
-void CsvDatabase::AddRules(const fs::path& ruleSetFile, const fs::path& workingDirectory, const std::string& editor)
+void CsvDatabase::AddRules(const fs::path& ruleSetFile, const fs::path& workingDirectory,
+                           const std::string& editor)
 {
     std::vector<std::string> categories = Rules.GetCategories();
     Utils::PrintInfo("  Supported categories:");
@@ -118,10 +120,12 @@ void CsvDatabase::AddRules(const fs::path& ruleSetFile, const fs::path& workingD
     {
         row->Category = categoryString;
     }
-    
+
     std::vector<std::string> header{};
-    header.push_back("# The table below lists all items that do not match a rule. If you delete strings in a cell, these are ");
-    header.push_back("# used to create a new rule. If you delete strings in multiple cells, all strings need to match. Do not");
+    header.push_back(
+        "# The table below lists all items that do not match a rule. If you delete strings in a cell, these are ");
+    header.push_back(
+        "# used to create a new rule. If you delete strings in multiple cells, all strings need to match. Do not");
     header.push_back("# delete or reorder rows. If you do not want to add a rule, leave the row unmodified.");
     header.push_back("");
     Unassigned.SetCsvHeader(std::move(header));
@@ -145,7 +149,9 @@ void CsvDatabase::AddRules(const fs::path& ruleSetFile, const fs::path& workingD
     csvParser.Load(importedTable);
     if (Unassigned.size() != importedTable.size())
     {
-        throw UserException(fmt::format("Imported item count {} does not match expected value {}. You must not delete, add or reorder rows!", importedTable.size(), Unassigned.size()));
+        throw UserException(fmt::format(
+            "Imported item count {} does not match expected value {}. You must not delete, add or reorder rows!",
+            importedTable.size(), Unassigned.size()));
     }
 
     for (size_t i = 0; i < Unassigned.size(); ++i)
@@ -263,7 +269,7 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& ruleSet
 
             for (const auto& file : fs::directory_iterator(dir.path()))
             {
-                if (!fs::is_regular_file(file))
+                if (!fs::is_regular_file(file) || Utils::ToLower(file.path().filename().string()) == "format.ini")
                 {
                     continue;
                 }
@@ -287,7 +293,7 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& ruleSet
         header.push_back("Categorie1;Categorie2;Ignore!");
         header.push_back("");
         header.push_back("Rules:");
-        
+
         CsvTable empty;
         empty.SetCsvHeader(std::move(header));
         CsvWriter::Write(ruleSetFile, empty);

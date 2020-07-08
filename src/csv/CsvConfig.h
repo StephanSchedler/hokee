@@ -12,12 +12,21 @@ class CsvConfig
 {
     fs::path _file{};
     std::unordered_map<std::string, std::string> _config{};
-    static CsvFormat GetFormat();
+    static const CsvFormat GetFormat();
 
   protected:
-    void SetString(const std::string& key, const std::string& value);
-    std::string GetString(const std::string& key) const;
+
+    const std::string GetString(const std::string& key) const;
+    const std::vector<std::string> GetStrings(const std::string& key) const;
     bool GetBool(const std::string& key) const;
+    char GetChar(const std::string& key) const;
+    int GetInt(const std::string& key) const;
+
+    void SetString(const std::string& key, const std::string& value);
+    void SetStrings(const std::string& key, const std::vector<std::string>& value);
+    void SetBool(const std::string& key, bool value);
+    void SetChar(const std::string& key, char value);
+    void SetInt(const std::string& key, int value);
 
     CsvConfig() = default;
     CsvConfig(const fs::path& file);

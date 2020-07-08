@@ -7,7 +7,9 @@
 
 namespace hokee::Utils
 {
-std::vector<std::string> SplitLine(const std::string& s, const CsvFormat& format);
+std::vector<std::string> SplitLine(const std::string& s, char delimiter, bool hasTrailingDelimiter = false);
+std::string ToLower(const std::string& str);
+std::string ToUpper(const std::string& str);
 
 void PrintInfo(std::string_view msg);
 void PrintWarning(std::string_view msg);

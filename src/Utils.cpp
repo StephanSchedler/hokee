@@ -16,18 +16,38 @@
 
 namespace hokee::Utils
 {
-std::vector<std::string> SplitLine(const std::string& s, const CsvFormat& format)
+std::string ToLower(const std::string& str)
+{
+    std::string result = str;
+    for(char& c : result)
+    {
+        c = std::tolower(c);
+    }
+    return result;
+}
+
+std::string ToUpper(const std::string& str)
+{
+    std::string result = str;
+    for(char& c : result)
+    {
+        c = std::toupper(c);
+    }
+    return result;
+}
+
+std::vector<std::string> SplitLine(const std::string& s, char delimiter, bool hasTrailingDelimiter)
 {
     std::vector<std::string> tokens;
     std::string token;
     std::istringstream tokenStream(s);
-    while (std::getline(tokenStream, token, format.GetDelimiter()))
+    while (std::getline(tokenStream, token, delimiter))
     {
         tokens.push_back(token);
     }
 
     // Check for last cell empty if !HasTrailingDelimiter
-    if (!format.GetHasTrailingDelimiter() && !s.empty() && s[s.size() - 1] == format.GetDelimiter())
+    if (!hasTrailingDelimiter && !s.empty() && s[s.size() - 1] == delimiter)
     {
         tokens.push_back("");
     }

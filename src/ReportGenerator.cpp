@@ -1,4 +1,5 @@
 #include "ReportGenerator.h"
+#include "InternalException.h"
 #include "Utils.h"
 
 #include <fmt/core.h>
@@ -14,7 +15,6 @@
 
 namespace hokee
 {
-
 ReportGenerator::ReportGenerator(CsvDatabase* database)
     : _csvDatabase{database}
 {
@@ -134,7 +134,17 @@ std::string ReportGenerator::GetIndexPage()
                     {
                         continue;
                     }
-                    sum += std::stod(item->Value);
+
+                    try
+                    {
+                        sum += std::stod(item->Value);
+                    }
+                    catch (const std::exception& e)
+                    {
+                        throw InternalException(
+                            __FILE__, __LINE__,
+                            fmt::format("Could not convert '{}' to 'double'. ({})", item->Value, e.what()));
+                    }
                 }
 
                 std::string cellStyle = "";
@@ -373,8 +383,8 @@ std::string ReportGenerator::GetTableRow(CsvItem* row, const std::string& urlPre
                                   "td><td>{2}</td><td>{3}</td><td>{4}</"
                                   "td><td>{5}</td><td>{6}</td><td>{7}</td></tr>\n";
     std::string htmlTableRow
-        = fmt::format(rowFormat, row->Id, row->Category, row->PayerPayee, row->Description, row->Type, row->Date.ToString(),
-                      row->Account, row->Value, _itemsDirectory.string(), style, urlPrefix);
+        = fmt::format(rowFormat, row->Id, row->Category, row->PayerPayee, row->Description, row->Type,
+                      row->Date.ToString(), row->Account, row->Value, _itemsDirectory.string(), style, urlPrefix);
     return htmlTableRow;
 }
 
