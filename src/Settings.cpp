@@ -20,12 +20,12 @@ Settings::Settings()
     SetGenerateReport("true");
 }
 
-Settings::Settings(fs::path file)
+Settings::Settings(const fs::path& file)
     : CsvConfig(file)
 {
 }
 
-fs::path Settings::GetInputDirectory()
+const fs::path Settings::GetInputDirectory() const
 {
     return GetString("InputDirectory");
 }
@@ -35,7 +35,7 @@ void Settings::SetInputDirectory(const fs::path& value)
     SetString("InputDirectory", value.string());
 }
 
-fs::path Settings::GetOutputDirectory()
+const fs::path Settings::GetOutputDirectory() const
 {
     return GetString("OutputDirectory");
 }
@@ -45,7 +45,7 @@ void Settings::SetOutputDirectory(const fs::path& value)
     SetString("OutputDirectory", value.string());
 }
 
-fs::path Settings::GetRuleSetFile()
+const fs::path Settings::GetRuleSetFile() const
 {
     return GetString("RuleSetFile");
 }
@@ -55,7 +55,7 @@ void Settings::SetRuleSetFile(const fs::path& value)
     SetString("RuleSetFile", value.string());
 }
 
-std::string Settings::GetEditor()
+const std::string Settings::GetEditor() const
 {
     return GetString("Editor");
 }
@@ -65,7 +65,7 @@ void Settings::SetEditor(const std::string& value)
     SetString("Editor", value);
 }
 
-bool Settings::GetAddRules()
+bool Settings::GetAddRules() const
 {
     return GetBool("AddRules");
 }
@@ -75,7 +75,7 @@ void Settings::SetAddRules(bool value)
     SetString("AddRules", value ? "true" : "false");
 }
 
-bool Settings::GetUpdateRules()
+bool Settings::GetUpdateRules() const
 {
     return GetBool("UpdateRules");
 }
@@ -85,7 +85,7 @@ void Settings::SetUpdateRules(bool value)
     SetString("UpdateRules", value ? "true" : "false");
 }
 
-bool Settings::GetGenerateReport()
+bool Settings::GetGenerateReport() const
 {
     return GetBool("GenerateReport");
 }

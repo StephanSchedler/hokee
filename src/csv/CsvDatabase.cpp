@@ -140,7 +140,7 @@ void CsvDatabase::AddRules(const fs::path& ruleSetFile, const fs::path& workingD
     }
 
     Utils::PrintInfo(fmt::format("Reload {}", unassignedCsv.string()));
-    CsvParser csvParser(unassignedCsv, Utils::GetCsvFormat("Rules"));
+    CsvParser csvParser(unassignedCsv, CsvRules::GetFormat());
     CsvTable importedTable;
     csvParser.Load(importedTable);
     if (Unassigned.size() != importedTable.size())
@@ -194,7 +194,7 @@ void CsvDatabase::LoadRules(const fs::path& ruleSetFile)
     std::unique_ptr<CsvParser> csvReader;
     Utils::PrintInfo(fmt::format("Parse {}...", ruleSetFile.string()));
 
-    csvReader = std::make_unique<CsvParser>(ruleSetFile, Utils::GetCsvFormat("Rules"));
+    csvReader = std::make_unique<CsvParser>(ruleSetFile, CsvRules::GetFormat());
     csvReader->Load(Rules);
 }
 
@@ -254,6 +254,13 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& ruleSet
             }
 
             Utils::PrintInfo(fmt::format("  Found directory '{}':", dir.path().string()));
+            fs::path formatFile = dir.path() / "format.ini";
+            if (!fs::exists(formatFile))
+            {
+                throw UserException(fmt::format("Could not find format description: {}", formatFile.string()));
+            }
+            CsvFormat format(formatFile);
+
             for (const auto& file : fs::directory_iterator(dir.path()))
             {
                 if (!fs::is_regular_file(file))
@@ -264,42 +271,7 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& ruleSet
                     fmt::format("    Parse '{}' {}/{}...", file.path().string(), ++fileCounter, numberOfFiles));
 
                 std::unique_ptr<CsvParser> csvReader;
-                std::string format = dir.path().filename().string();
-                if (format == "DKB")
-                {
-                    csvReader = std::make_unique<CsvParser>(file.path(), Utils::GetCsvFormat("DKB"), "VISA");
-                }
-                else if (format == "OSPA_Stephan")
-                {
-                    csvReader = std::make_unique<CsvParser>(file.path(), Utils::GetCsvFormat("OSPA"), "Stephan");
-                }
-                else if (format == "OSPA2_Stephan")
-                {
-                    csvReader = std::make_unique<CsvParser>(file.path(), Utils::GetCsvFormat("OSPA2"), "Stephan");
-                }
-                else if (format == "OSPA_Sandra")
-                {
-                    csvReader = std::make_unique<CsvParser>(file.path(), Utils::GetCsvFormat("OSPA"), "Sandra");
-                }
-                else if (format == "OSPA2_Sandra")
-                {
-                    csvReader = std::make_unique<CsvParser>(file.path(), Utils::GetCsvFormat("OSPA2"), "Sandra");
-                }
-                else if (format == "Postbank")
-                {
-                    csvReader = std::make_unique<CsvParser>(file.path(), Utils::GetCsvFormat("Postbank"),
-                                                            "Sandra Wagner");
-                }
-                else if (format == "ABC")
-                {
-                    csvReader = std::make_unique<CsvParser>(file.path(), Utils::GetCsvFormat("ABC"), "Mr. X");
-                }
-                else
-                {
-                    throw InternalException(__FILE__, __LINE__,
-                                          fmt::format("Unknown input format: {}", format).c_str());
-                }
-
+                csvReader = std::make_unique<CsvParser>(file.path(), format);
                 csvReader->Load(Data);
             }
         }

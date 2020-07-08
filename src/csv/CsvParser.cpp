@@ -13,11 +13,10 @@
 
 namespace hokee
 {
-CsvParser::CsvParser(const fs::path& file, const CsvFormat& format, const std::string accountOwner)
+CsvParser::CsvParser(const fs::path& file, const CsvFormat& format)
     : _file{file}
     , _ifstream{file}
     , _format{format}
-    , _accountOwner{accountOwner}
 {
     if (_ifstream.fail())
     {
@@ -44,7 +43,7 @@ void CsvParser::Load(CsvTable& csvData)
 
     std::string line;
     std::vector<std::string> header{};
-    while (_lineCounter < _format.IgnoreLines)
+    while (_lineCounter < _format.GetIgnoreLines())
     {
         _lineCounter++;
         std::getline(_ifstream, line);
@@ -100,11 +99,11 @@ bool CsvParser::GetItem(CsvRowShared& item)
         }
 
         std::vector<std::string> cells = Utils::SplitLine(line, _format);
-        if (_format.ColumnNames.size() != cells.size())
+        if (_format.GetColumnNames().size() != cells.size())
         {
             throw UserException(
                 fmt::format("{}:{}: Could not parse file. Line does not match expected column count ({} != {})",
-                            _file.string(), _lineCounter, _format.ColumnNames.size(), cells.size()));
+                            _file.string(), _lineCounter, _format.GetColumnNames().size(), cells.size()));
         }
 
         std::vector<std::string> trimmedCells = {};
@@ -115,7 +114,7 @@ bool CsvParser::GetItem(CsvRowShared& item)
                 trimmedCells.push_back("");
                 continue;
             }
-            if (!_format.HasDoubleQuotes)
+            if (!_format.GetHasDoubleQuotes())
             {
                 trimmedCells.push_back(cell);
             }
@@ -145,35 +144,36 @@ bool CsvParser::GetItem(CsvRowShared& item)
         }
 
         // Check header
-        if (_format.HasHeader && _lineCounter == _format.IgnoreLines + 1)
+        if (_format.GetHasHeader() && _lineCounter == _format.GetIgnoreLines() + 1)
         {
+            auto columnNames = _format.GetColumnNames();
             for (size_t i = 0; i < trimmedCells.size(); ++i)
             {
-                if (trimmedCells[i] != _format.ColumnNames[i])
+                if (trimmedCells[i] != columnNames[i])
                 {
                     throw UserException(fmt::format(
                         "{}:{}: Could not parse file. Header column {} does not match expected column {}",
-                        _file.string(), _lineCounter, trimmedCells[i], _format.ColumnNames[i]));
+                        _file.string(), _lineCounter, trimmedCells[i], columnNames[i]));
                 }
             }
             continue;
         }
 
-        AssignValue(item->Account, trimmedCells, _format.Account);
-        AssignValue(item->Value, trimmedCells, _format.Value);
-        AssignValue(item->Category, trimmedCells, _format.Category);
-        AssignValue(item->Description, trimmedCells, _format.Description);
-        AssignValue(item->Type, trimmedCells, _format.Type);
-        AssignValue(item->Payer, trimmedCells, _format.Payer);
-        AssignValue(item->Payee, trimmedCells, _format.Payee);
-        AssignValue(item->PayerPayee, trimmedCells, _format.PayerPayee);
+        AssignValue(item->Account, trimmedCells, _format.GetAccount());
+        AssignValue(item->Value, trimmedCells, _format.GetValue());
+        AssignValue(item->Category, trimmedCells, _format.GetCategory());
+        AssignValue(item->Description, trimmedCells, _format.GetDescription());
+        AssignValue(item->Type, trimmedCells, _format.GetType());
+        AssignValue(item->Payer, trimmedCells, _format.GetPayer());
+        AssignValue(item->Payee, trimmedCells, _format.GetPayee());
+        AssignValue(item->PayerPayee, trimmedCells, _format.GetPayerPayee());
 
         std::string dateStr;
-        AssignValue(dateStr, trimmedCells, _format.Date);
+        AssignValue(dateStr, trimmedCells, _format.GetDate());
 
         try
         {
-            item->Date = CsvDate(_format.DateFormat, dateStr);
+            item->Date = CsvDate(_format.GetDateFormat(), dateStr);
         }
         catch (const std::exception& e)
         {
@@ -194,16 +194,9 @@ bool CsvParser::ParseItem(CsvRowShared& item)
     }
 
     // Set Account name
-    if (_format.Account < 0)
+    if (_format.GetAccount() < 0)
     {
-        if (_accountOwner.empty())
-        {
-            item->Account = fmt::format("{}", _format.FormatName);
-        }
-        else
-        {
-            item->Account = fmt::format("{} ({})", _format.FormatName, _accountOwner);
-        }
+        item->Account = fmt::format("{} ({})", _format.GetFormatName(), _format.GetAccountOwner());
     }
 
     // Fix value
@@ -234,23 +227,23 @@ bool CsvParser::ParseItem(CsvRowShared& item)
     // The csv file may contain separate Payer and Payee columns, or a single
     // PayerPayee column. As Payer or Payee is always the account owner, the
     // two columns can always be merged into a single column
-    if (_format.PayerPayee < 0)
+    if (_format.GetPayerPayee() < 0)
     {
-        if (_format.Payer < 0 && _format.Payee >= 0)
+        if (_format.GetPayer() < 0 && _format.GetPayee() >= 0)
         {
             // Assign Payee
             item->PayerPayee = item->Payee;
         }
-        else if (_format.Payer >= 0 && _format.Payee < 0)
+        else if (_format.GetPayer() >= 0 && _format.GetPayee() < 0)
         {
             // Assign Payer
             item->PayerPayee = item->Payer;
         }
-        else if (_format.Payer >= 0 && _format.Payee >= 0)
+        else if (_format.GetPayer() >= 0 && _format.GetPayee() >= 0)
         {
             // Merge Payer/Payee by not selecting the owner
-            // (Assumption: Payer or Payee equals _accountOwner)
-            if (item->Payer == _accountOwner)
+            // (Assumption: Payer or Payee equals AccountOwner)
+            if (item->Payer == _format.GetAccountOwner())
             {
                 item->PayerPayee = item->Payee;
             }
@@ -262,11 +255,11 @@ bool CsvParser::ParseItem(CsvRowShared& item)
     }
     else
     {
-        if (_format.Payer >= 0 || _format.Payee >= 0)
+        if (_format.GetPayer() >= 0 || _format.GetPayee() >= 0)
         {
             throw UserException(fmt::format("{}:{}: Could not parse file. Invalid CSV format {}. You must not "
                                             "specify 'PayerPayee' along with 'Payer' or 'Payee'",
-                                            _file.string(), _lineCounter, _format.FormatName)
+                                            _file.string(), _lineCounter, _format.GetFormatName())
                                     .c_str());
         }
     }

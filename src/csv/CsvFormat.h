@@ -1,58 +1,92 @@
 #pragma once
 
-#include <vector>
-#include <string>
+#include "CsvConfig.h"
 
-struct CsvFormat
+namespace hokee
 {
+class CsvFormat final : public CsvConfig
+{
+  public:
+    CsvFormat();
+    CsvFormat(const fs::path& file);
+
+    CsvFormat(const CsvFormat&) = default;
+    CsvFormat& operator=(const CsvFormat&) = default;
+    CsvFormat(CsvFormat&&) = default;
+    CsvFormat& operator=(CsvFormat&&) = default;
+
     /// Name of the Format. If the Account property is unspecified, the format name will be assigned.
-    std::string FormatName{};
+    const std::string GetFormatName() const;
+
+    /// Name of the account owner
+    const std::string GetAccountOwner() const;
 
     /// CSV header
-    std::vector<std::string> ColumnNames{};
+    const std::vector<std::string> GetColumnNames() const;
 
-    /// Parser checks that header in the csv file matches the ColumnNames property
-    bool HasHeader{true};
+    /// If true, parser checks that header in the csv file matches the ColumnNames property
+    bool GetHasHeader() const;
 
     /// Parser ignores the first rows in the csv file
-    size_t IgnoreLines{0};
-
+    size_t GetIgnoreLines() const;
+    
     /// Specifies if the parser has to remove double quotes (") from each cell
-    bool HasDoubleQuotes{false};
+    bool GetHasDoubleQuotes() const;
 
     /// Specifies if the parser has to remove a tailing delimter char at the end of each row
-    bool HasTrailingDelimiter{false};
-
+    bool GetHasTrailingDelimiter() const;
+    
     /// Delimiter character inbetween columns
-    char Delimiter{';'};
+    char GetDelimiter() const;
 
     /// Format of date string in the csv file
-    std::string DateFormat{"dd.mm.yy"};
-
+    const std::string GetDateFormat() const;
+    
     // Column of Category string. (Set to -1, if it is not supported in the csv file)
-    int Category{-1};
+    int GetCategory() const;
 
     // Column of PayerPayee string. (Set to -1, if it is not supported in the csv file)
-    int PayerPayee{-1};
+    int GetPayerPayee() const;
 
     // Column of Payer string. (Set to -1, if it is not supported in the csv file)
-    int Payer{-1};
+    int GetPayer() const;
 
     // Column of Payee string. (Set to -1, if it is not supported in the csv file)
-    int Payee{-1};
+    int GetPayee() const;
 
     // Column of Description string. (Set to -1, if it is not supported in the csv file)
-    int Description{-1};
+    int GetDescription() const;
 
     // Column of Type string. (Set to -1, if it is not supported in the csv file)
-    int Type{-1};
+    int GetType() const;
 
     // Column of Date string. (Set to -1, if it is not supported in the csv file)
-    int Date{-1};
+    int GetDate() const;
 
     // Column of Account string (== name of account). (Set to -1, if it is not supported in the csv file)
-    int Account{-1};
+    int GetAccount() const;
 
     // Column of Value string. (Set to -1, if it is not supported in the csv file)
-    int Value{-1};
+    int GetValue() const;
+
+    void SetFormatName(const std::string& value);
+    void SetAccountOwner(const std::string& value);
+    void SetColumnNames(const std::vector<std::string>& value);
+    void SetHasHeader(bool value);
+    void SetIgnoreLines(size_t value);
+    void SetHasDoubleQuotes(bool value);
+    void SetHasTrailingDelimiter(bool value);
+    void SetDelimiter(char value);
+    void SetDateFormat(const std::string& value);
+    void SetCategory(int value);
+    void SetPayerPayee(int value);
+    void SetPayer(int value);
+    void SetPayee(int value);
+    void SetDescription(int value);
+    void SetType(int value);
+    void SetDate(int value);
+    void SetAccount(int value);
+    void SetValue(int value);
 };
+
+} // namespace hokee

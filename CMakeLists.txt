@@ -73,8 +73,10 @@ set(PROJECT_SOURCE_FILES
     src/csv/CsvConfig.cpp
     src/csv/CsvItem.cpp
     src/csv/CsvWriter.cpp
+    src/csv/CsvFormat.cpp
     src/csv/CsvDate.cpp
-    src/csv/CsvDatabase.cpp 
+    src/csv/CsvDatabase.cpp
+    src/csv/CsvRules.cpp 
     src/Application.cpp
     src/Settings.cpp
     src/ReportGenerator.cpp
@@ -113,7 +115,11 @@ enable_testing()
 add_test(NAME rules_match_test COMMAND rules_match_test)
 add_test(NAME rules_add_test COMMAND rules_add_test)
 install(FILES tests/test_data/rules_match_test.csv DESTINATION ./test_data/rules_match_test)
-install(FILES tests/test_data/ABC/Account_123456790_2020.csv DESTINATION ./test_data/rules_match_test/input/ABC)
+install(FILES tests/test_data/ABC/Account_123456790_2020_1.csv DESTINATION ./test_data/rules_match_test/input/ABC)
+install(FILES tests/test_data/ABC/Account_123456790_2020_2.csv DESTINATION ./test_data/rules_match_test/input/ABC)
+install(FILES tests/test_data/ABC/format.ini DESTINATION ./test_data/rules_match_test/input/ABC)
 install(FILES tests/test_data/input_add_test.csv DESTINATION ./test_data/rules_add_test)
 install(FILES tests/test_data/rules_add_test.csv DESTINATION ./test_data/rules_add_test)
-install(FILES tests/test_data/ABC/Account_123456790_2020.csv DESTINATION ./test_data/rules_add_test/input/ABC)
+install(FILES tests/test_data/ABC/Account_123456790_2020_1.csv DESTINATION ./test_data/rules_add_test/input/ABC)
+install(FILES tests/test_data/ABC/Account_123456790_2020_2.csv DESTINATION ./test_data/rules_add_test/input/ABC)
+install(FILES tests/test_data/ABC/format.ini DESTINATION ./test_data/rules_add_test/input/ABC)
