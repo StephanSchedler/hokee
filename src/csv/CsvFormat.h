@@ -6,8 +6,30 @@ namespace hokee
 {
 class CsvFormat final : public CsvConfig
 {
+    std::string _formatName;
+    std::string _accountOwner;
+    std::vector<std::string> _columnNames;
+    bool _hasHeader;
+    bool _hasDoubleQuotes;
+    bool _hasTrailingDelimiter;
+    char _delimiter;
+    std::string _dateFormat;
+    int _ignoreLines;
+    int _category;
+    int _payerPayee;
+    int _payer;
+    int _payee;
+    int _description;
+    int _type;
+    int _date;
+    int _account;
+    int _value;
+
+    void InitializeProperties();
+
   public:
-    CsvFormat();
+    CsvFormat() = delete;
+    CsvFormat(const std::unordered_map<std::string, std::string>& config, const fs::path file);
     CsvFormat(const fs::path& file);
 
     CsvFormat(const CsvFormat&) = default;
@@ -29,19 +51,19 @@ class CsvFormat final : public CsvConfig
 
     /// Parser ignores the first rows in the csv file
     int GetIgnoreLines() const;
-    
+
     /// Specifies if the parser has to remove double quotes (") from each cell
     bool GetHasDoubleQuotes() const;
 
     /// Specifies if the parser has to remove a tailing delimter char at the end of each row
     bool GetHasTrailingDelimiter() const;
-    
+
     /// Delimiter character inbetween columns
     char GetDelimiter() const;
 
     /// Format of date string in the csv file
     const std::string GetDateFormat() const;
-    
+
     // Column of Category string. (Set to -1, if it is not supported in the csv file)
     int GetCategory() const;
 
@@ -68,25 +90,6 @@ class CsvFormat final : public CsvConfig
 
     // Column of Value string. (Set to -1, if it is not supported in the csv file)
     int GetValue() const;
-
-    void SetFormatName(const std::string& value);
-    void SetAccountOwner(const std::string& value);
-    void SetColumnNames(const std::vector<std::string>& value);
-    void SetHasHeader(bool value);
-    void SetIgnoreLines(int value);
-    void SetHasDoubleQuotes(bool value);
-    void SetHasTrailingDelimiter(bool value);
-    void SetDelimiter(char value);
-    void SetDateFormat(const std::string& value);
-    void SetCategory(int value);
-    void SetPayerPayee(int value);
-    void SetPayer(int value);
-    void SetPayee(int value);
-    void SetDescription(int value);
-    void SetType(int value);
-    void SetDate(int value);
-    void SetAccount(int value);
-    void SetValue(int value);
 };
 
 } // namespace hokee

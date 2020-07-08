@@ -10,7 +10,7 @@ class CsvFormat;
 
 class CsvConfig
 {
-    fs::path _file{};
+    fs::path _file{"???"};
     std::unordered_map<std::string, std::string> _config{};
     static const CsvFormat GetFormat();
 
@@ -29,6 +29,7 @@ class CsvConfig
     void SetInt(const std::string& key, int value);
 
     CsvConfig() = default;
+    CsvConfig(const std::unordered_map<std::string, std::string>& config, const fs::path file);
     CsvConfig(const fs::path& file);
     virtual ~CsvConfig() = default;
 
