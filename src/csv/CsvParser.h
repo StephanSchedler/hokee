@@ -20,7 +20,6 @@ class CsvParser
     std::ifstream _ifstream = {};
     CsvFormat _format = {};
 
-    std::vector<std::string> SplitLine(const std::string& s, const CsvFormat& format);
     void AssignValue(std::string& value, std::vector<std::string> cells, size_t id);
 
     bool GetItem(CsvRowShared& item);

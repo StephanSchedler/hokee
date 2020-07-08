@@ -2,7 +2,7 @@
 
 namespace hokee
 {
-    CsvFormat CsvRules::GetFormat()
+    const CsvFormat CsvRules::GetFormat()
     {
         CsvFormat format;
         format.SetColumnNames({"Category", "Payer/Payee", "Description", "Type", "Date", "Account", "Value"});
@@ -28,11 +28,11 @@ namespace hokee
     {
         auto rulesFormat = CsvRules::GetFormat();
         const auto rulesHeader = this->GetCsvHeader();
-        if (rulesHeader.size() != rulesFormat.GetIgnoreLines())
+        if (rulesHeader.size() != static_cast<size_t>(rulesFormat.GetIgnoreLines()))
         {
             throw InternalException(__FILE__, __LINE__, "Internal header of rule set does not match expected format!");
         }
         
-        return Utils::SplitLine(rulesHeader[1], rulesFormat);
+        return Utils::SplitLine(rulesHeader[1], rulesFormat.GetDelimiter(), rulesFormat.GetHasTrailingDelimiter());
     }
 } // namespace hokee

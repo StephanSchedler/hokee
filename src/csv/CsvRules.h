@@ -9,7 +9,7 @@ namespace hokee
 class CsvRules final : public CsvTable
 {
   public:
-    static CsvFormat GetFormat();
+    static const CsvFormat GetFormat();
     std::vector<std::string> GetCategories();
 };
 } // namespace hokee

@@ -17,19 +17,40 @@ CsvDate::CsvDate(std::string_view formatStr, std::string_view dateStr)
     if (formatStr.size() != dateStr.size())
     {
         throw std::runtime_error(
-            fmt::format("Could not parse date string. Format string '{}' does not match date string '{}'",
+            fmt::format("Could not parse date string. Format string '{}' does not match date string '{}'.",
                         formatStr, dateStr));
     }
     if (formatStr == "dd.mm.yy")
     {
         const std::string_view dayStr = dateStr.substr(0, 2);
-        _day = std::stoi(std::string(dayStr.data(), dayStr.size()));
+        try
+        {
+            _day = std::stoi(std::string(dayStr.data(), dayStr.size()));
+        }
+        catch (const std::exception& e)
+        {
+            throw std::runtime_error(fmt::format("Could not convert '{}' to 'int'. ({})", dayStr, e.what()));
+        }
 
         const std::string_view monthStr = dateStr.substr(3, 2);
-        _month = std::stoi(std::string(monthStr.data(), monthStr.size()));
+        try
+        {
+            _month = std::stoi(std::string(monthStr.data(), monthStr.size()));
+        }
+        catch (const std::exception& e)
+        {
+            throw std::runtime_error(fmt::format("Could not convert '{}' to 'int'. ({})", monthStr, e.what()));
+        }
 
         const std::string_view yearStr = dateStr.substr(6, 2);
-        _year = std::stoi(std::string(yearStr.data(), yearStr.size()));
+        try
+        {
+            _year = std::stoi(std::string(yearStr.data(), yearStr.size()));
+        }
+        catch (const std::exception& e)
+        {
+            throw std::runtime_error(fmt::format("Could not convert '{}' to 'int'. ({})", yearStr, e.what()));
+        }
 
         if (_year >= 70)
         {
@@ -43,13 +64,34 @@ CsvDate::CsvDate(std::string_view formatStr, std::string_view dateStr)
     else if (formatStr == "dd.mm.yyyy")
     {
         const std::string_view dayStr = dateStr.substr(0, 2);
-        _day = std::stoi(std::string(dayStr.data(), dayStr.size()));
+        try
+        {
+            _day = std::stoi(std::string(dayStr.data(), dayStr.size()));
+        }
+        catch (const std::exception& e)
+        {
+            throw std::runtime_error(fmt::format("Could not convert '{}' to 'int'. ({})", dayStr, e.what()));
+        }
 
         const std::string_view monthStr = dateStr.substr(3, 2);
-        _month = std::stoi(std::string(monthStr.data(), monthStr.size()));
+        try
+        {
+            _month = std::stoi(std::string(monthStr.data(), monthStr.size()));
+        }
+        catch (const std::exception& e)
+        {
+            throw std::runtime_error(fmt::format("Could not convert '{}' to 'int'. ({})", monthStr, e.what()));
+        }
 
         const std::string_view yearStr = dateStr.substr(6, 4);
-        _year = std::stoi(std::string(yearStr.data(), yearStr.size()));
+        try
+        {
+            _year = std::stoi(std::string(yearStr.data(), yearStr.size()));
+        }
+        catch (const std::exception& e)
+        {
+            throw std::runtime_error(fmt::format("Could not convert '{}' to 'int'. ({})", yearStr, e.what()));
+        }
     }
     else
     {

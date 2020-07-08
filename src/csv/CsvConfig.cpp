@@ -1,5 +1,8 @@
-#include "csv/CsvFormat.h"
+#include "csv/CsvConfig.h"
+#include "InternalException.h"
 #include "UserException.h"
+#include "Utils.h"
+#include "csv/CsvFormat.h"
 #include "csv/CsvParser.h"
 #include "csv/CsvTable.h"
 
@@ -30,7 +33,36 @@ void CsvConfig::SetString(const std::string& key, const std::string& value)
     _config[key] = value;
 }
 
-std::string CsvConfig::GetString(const std::string& key) const
+void CsvConfig::SetStrings(const std::string& key, const std::vector<std::string>& value)
+{
+    std::string valueString = "";
+    if (!value.empty())
+    {
+        valueString += value[0];
+    }
+    for (int i = 1; i < value.size(); ++i)
+    {
+        valueString += ";" + value[i];
+    }
+    SetString(key, valueString);
+}
+
+void CsvConfig::SetBool(const std::string& key, bool value)
+{
+    SetString(key, value ? "true" : "false");
+}
+
+void CsvConfig::SetChar(const std::string& key, char value)
+{
+    SetString(key, std::string(1, value));
+}
+
+void CsvConfig::SetInt(const std::string& key, int value)
+{
+    SetString(key, std::to_string(value));
+}
+
+const std::string CsvConfig::GetString(const std::string& key) const
 {
     auto item = _config.find(key);
     if (item == _config.end())
@@ -40,6 +72,39 @@ std::string CsvConfig::GetString(const std::string& key) const
     }
     Utils::PrintInfo(fmt::format("Read setting: {}={}", key, item->second));
     return item->second;
+}
+
+int CsvConfig::GetInt(const std::string& key) const
+{
+    std::string value = GetString(key);
+    int intValue = 0;
+    try
+    {
+        intValue = std::stoi(value);
+    }
+    catch (const std::exception& e)
+    {
+        throw UserException(fmt::format("Could not convert '{}' in {} to 'int'. ({})", value, _file.string(), e.what()));
+    }
+    return intValue;
+}
+
+const std::vector<std::string> CsvConfig::GetStrings(const std::string& key) const
+{
+    std::string value = GetString(key);
+    return Utils::SplitLine(value, ';');
+}
+
+char CsvConfig::GetChar(const std::string& key) const
+{
+    std::string value = GetString(key);
+    if (value.size() != 1)
+    {
+        throw UserException(
+            fmt::format("Delimiter property '{}' in {} must have length 1.", value, _file.string()));
+    }
+
+    return value[0];
 }
 
 bool CsvConfig::GetBool(const std::string& key) const
@@ -59,7 +124,7 @@ void CsvConfig::Save(const fs::path& path)
     }
 }
 
-CsvFormat GetFormat()
+const CsvFormat CsvConfig::GetFormat()
 {
     CsvFormat format;
     format.SetColumnNames({"name", "value"});
