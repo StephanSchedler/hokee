@@ -19,7 +19,6 @@ class CsvParser
     fs::path _file = {};
     std::ifstream _ifstream = {};
     CsvFormat _format = {};
-    std::string _accountOwner = {};
 
     std::vector<std::string> SplitLine(const std::string& s, const CsvFormat& format);
     void AssignValue(std::string& value, std::vector<std::string> cells, size_t id);
@@ -28,7 +27,7 @@ class CsvParser
     bool ParseItem(CsvRowShared& item);
 
   public:
-    CsvParser(const fs::path& file, const CsvFormat& format, const std::string accountOwner = "");
+    CsvParser(const fs::path& file, const CsvFormat& format);
     ~CsvParser() = default;
 
     CsvParser(const CsvParser&) = delete;

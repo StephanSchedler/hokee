@@ -14,196 +14,24 @@
 #include <string>
 #include <string_view>
 
-namespace Utils
+namespace hokee::Utils
 {
 std::vector<std::string> SplitLine(const std::string& s, const CsvFormat& format)
 {
     std::vector<std::string> tokens;
     std::string token;
     std::istringstream tokenStream(s);
-    while (std::getline(tokenStream, token, format.Delimiter))
+    while (std::getline(tokenStream, token, format.GetDelimiter()))
     {
         tokens.push_back(token);
     }
 
     // Check for last cell empty if !HasTrailingDelimiter
-    if (!format.HasTrailingDelimiter && !s.empty() && s[s.size() - 1] == format.Delimiter)
+    if (!format.GetHasTrailingDelimiter() && !s.empty() && s[s.size() - 1] == format.GetDelimiter())
     {
         tokens.push_back("");
     }
     return tokens;
-}
-
-const CsvFormat GetCsvFormat(const std::string& formatName)
-{
-    CsvFormat format{};
-    format.FormatName = formatName;
-    if (formatName == "Rules")
-    {
-        format.ColumnNames = {"Category", "Payer/Payee", "Description", "Type", "Date", "Account", "Value"};
-        format.HasHeader = true;
-        format.IgnoreLines = 4;
-        format.HasDoubleQuotes = false;
-        format.HasTrailingDelimiter = false;
-        format.Delimiter = ';';
-        format.DateFormat = "dd.mm.yyyy";
-        format.Category = 0;
-        format.PayerPayee = 1;
-        format.Payer = -1;
-        format.Payee = -1;
-        format.Description = 2;
-        format.Type = 3;
-        format.Date = 4;
-        format.Account = 5;
-        format.Value = 6;
-    }
-    else if (formatName == "Config")
-    {
-        format.ColumnNames = {"name", "value"};
-        format.HasHeader = false;
-        format.IgnoreLines = 0;
-        format.HasDoubleQuotes = false;
-        format.HasTrailingDelimiter = false;
-        format.Delimiter = '=';
-        format.Category = 0;
-        format.PayerPayee = -1;
-        format.Payer = -1;
-        format.Payee = -1;
-        format.Description = 1;
-        format.Type = -1;
-        format.Date = -1;
-        format.Account = -1;
-        format.Value = -1;
-    }
-    else if (formatName == "ABC")
-    {
-        format.ColumnNames = {"date", "description", "payer/payee", "value"};
-        format.HasHeader = true;
-        format.IgnoreLines = 2;
-        format.HasDoubleQuotes = true;
-        format.HasTrailingDelimiter = false;
-        format.Delimiter = ';';
-        format.DateFormat = "dd.mm.yyyy";
-        format.Category = -1;
-        format.PayerPayee = 2;
-        format.Payer = -1;
-        format.Payee = -1;
-        format.Description = 1;
-        format.Type = -1;
-        format.Date = 0;
-        format.Account = -1;
-        format.Value = 3;
-    }
-    else if (formatName == "DKB")
-    {
-        format.ColumnNames = {"Umsatz abgerechnet und nicht im Saldo enthalten",
-                              "Wertstellung",
-                              "Belegdatum",
-                              "Beschreibung",
-                              "Betrag (EUR)",
-                              "Urspr__nglicher Betrag"};
-        format.HasHeader = true;
-        format.IgnoreLines = 7;
-        format.HasDoubleQuotes = true;
-        format.HasTrailingDelimiter = true;
-        format.Delimiter = ';';
-        format.DateFormat = "dd.mm.yyyy";
-        format.Category = -1;
-        format.PayerPayee = -1;
-        format.Payer = -1;
-        format.Payee = -1;
-        format.Description = 3;
-        format.Type = -1;
-        format.Date = 2;
-        format.Account = -1;
-        format.Value = 4;
-    }
-    else if (formatName == "Postbank")
-    {
-        format.ColumnNames = {"Buchungstag",  "Wertstellung", "Umsatzart",  "Buchungsdetails",
-                              "Auftraggeber", "Empf_nger",    "Betrag (_)", "Saldo (_)"};
-        format.HasHeader = true;
-        format.IgnoreLines = 8;
-        format.HasDoubleQuotes = true;
-        format.HasTrailingDelimiter = false;
-        format.Delimiter = ';';
-        format.DateFormat = "dd.mm.yyyy";
-        format.Category = -1;
-        format.PayerPayee = -1;
-        format.Payer = 4;
-        format.Payee = 5;
-        format.Description = 3;
-        format.Type = 2;
-        format.Date = 0;
-        format.Account = -1;
-        format.Value = 6;
-    }
-    else if (formatName == "OSPA")
-    {
-        format.ColumnNames = {"Auftragskonto",
-                              "Buchungstag",
-                              "Valutadatum",
-                              "Buchungstext",
-                              "Verwendungszweck",
-                              "Beguenstigter/Zahlungspflichtiger",
-                              "Kontonummer",
-                              "BLZ",
-                              "Betrag",
-                              "Waehrung",
-                              "Info"};
-        format.HasHeader = true;
-        format.IgnoreLines = 0;
-        format.HasDoubleQuotes = true;
-        format.HasTrailingDelimiter = false;
-        format.Delimiter = ';';
-        format.DateFormat = "dd.mm.yy";
-        format.Category = -1;
-        format.PayerPayee = 5;
-        format.Payer = -1;
-        format.Payee = -1;
-        format.Description = 4;
-        format.Type = 3;
-        format.Date = 1;
-        format.Account = 0;
-        format.Value = 8;
-    }
-    else if (formatName == "OSPA2")
-    {
-        format.ColumnNames = {"Auftragskonto",
-                              "Buchungstag",
-                              "Valutadatum",
-                              "Buchungstext",
-                              "Verwendungszweck",
-                              "Glaeubiger ID",
-                              "Mandatsreferenz",
-                              "Kundenreferenz (End-to-End)",
-                              "Sammlerreferenz",
-                              "Lastschrift Ursprungsbetrag",
-                              "Auslagenersatz Ruecklastschrift",
-                              "Beguenstigter/Zahlungspflichtiger",
-                              "Kontonummer/IBAN",
-                              "BIC (SWIFT-Code)",
-                              "Betrag",
-                              "Waehrung",
-                              "Info"};
-        format.HasHeader = true;
-        format.IgnoreLines = 0;
-        format.HasDoubleQuotes = true;
-        format.HasTrailingDelimiter = false;
-        format.Delimiter = ';';
-        format.DateFormat = "dd.mm.yy";
-        format.Category = -1;
-        format.PayerPayee = 11;
-        format.Payer = -1;
-        format.Payee = -1;
-        format.Description = 4;
-        format.Type = 3;
-        format.Date = 1;
-        format.Account = 0;
-        format.Value = 14;
-    }
-
-    return format;
 }
 
 bool ExtractMissingString(std::string& extracted, const std::string& original, const std::string& missing)
@@ -324,10 +152,10 @@ fs::path GetHomePath()
 #ifdef unix
     return Utils::GetEnv("HOME");
 #elif defined(_WIN32)
-    return Utils::GetEnv("HOMEDRIVE") + Utils::GetEnv("HOMEPATH");
+    return fs::path(Utils::GetEnv("HOMEDRIVE") + Utils::GetEnv("HOMEPATH")) / "Documents";
 #else
 #error Unsupported OS
 #endif
 }
 
-} // namespace Utils
+} // namespace hokee::Utils
