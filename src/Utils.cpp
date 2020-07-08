@@ -21,7 +21,7 @@ std::string ToLower(const std::string& str)
     std::string result = str;
     for(char& c : result)
     {
-        c = std::tolower(c);
+        c = static_cast<char>(std::tolower(c));
     }
     return result;
 }
@@ -31,7 +31,7 @@ std::string ToUpper(const std::string& str)
     std::string result = str;
     for(char& c : result)
     {
-        c = std::toupper(c);
+        c = static_cast<char>(std::toupper(c));
     }
     return result;
 }

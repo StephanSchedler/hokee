@@ -10,6 +10,12 @@
 
 namespace hokee
 {
+CsvConfig::CsvConfig(const std::unordered_map<std::string, std::string>& config, const fs::path file)
+    : _file{file}
+    , _config{config}
+{
+}
+
 CsvConfig::CsvConfig(const fs::path& file)
     : _file{file}
 {
@@ -70,7 +76,7 @@ const std::string CsvConfig::GetString(const std::string& key) const
         throw UserException(
             fmt::format("Missing property. Could not find property '{}' in {}", key, _file.string()));
     }
-    Utils::PrintInfo(fmt::format("Read setting: {}={}", key, item->second));
+    Utils::PrintInfo(fmt::format("Read setting {}={} from in {}", key, item->second, _file.string()));
     return item->second;
 }
 
@@ -84,7 +90,8 @@ int CsvConfig::GetInt(const std::string& key) const
     }
     catch (const std::exception& e)
     {
-        throw UserException(fmt::format("Could not convert '{}' in {} to 'int'. ({})", value, _file.string(), e.what()));
+        throw UserException(
+            fmt::format("Could not convert '{}' in {} to 'int'. ({})", value, _file.string(), e.what()));
     }
     return intValue;
 }
@@ -126,22 +133,26 @@ void CsvConfig::Save(const fs::path& path)
 
 const CsvFormat CsvConfig::GetFormat()
 {
-    CsvFormat format;
-    format.SetColumnNames({"name", "value"});
-    format.SetHasHeader(false);
-    format.SetIgnoreLines(0);
-    format.SetHasDoubleQuotes(false);
-    format.SetHasTrailingDelimiter(false);
-    format.SetDelimiter('=');
-    format.SetCategory(0);
-    format.SetPayerPayee(-1);
-    format.SetPayer(-1);
-    format.SetPayee(-1);
-    format.SetDescription(1);
-    format.SetType(-1);
-    format.SetDate(-1);
-    format.SetAccount(-1);
-    format.SetValue(-1);
+    std::unordered_map<std::string, std::string> config;
+    config["FormatName"] = "builtin CsvConfig";
+    config["AccountOwner"] = "hokee";
+    config["ColumnNames"] = "name;value";
+    config["HasHeader"] = "false";
+    config["IgnoreLines"] = "0";
+    config["HasDoubleQuotes"] = "false";
+    config["HasTrailingDelimiter"] = "false";
+    config["Delimiter"] = "=";
+    config["DateFormat"] = "dd.mm.yyyy";
+    config["Category"] = "0";
+    config["PayerPayee"] = "-1";
+    config["Payer"] = "-1";
+    config["Payee"] = "-1";
+    config["Description"] = "1";
+    config["Type"] = "-1";
+    config["Date"] = "-1";
+    config["Account"] = "-1";
+    config["Value"] = "-1";
+    CsvFormat format(config, "builtin CsvConfig format");
     return format;
 }
 

@@ -4,212 +4,128 @@
 
 namespace hokee
 {
-CsvFormat::CsvFormat()
-    : CsvConfig()
-{
-    SetFormatName("Default");
-    SetAccountOwner("John Doe");
-    SetColumnNames(std::vector<std::string>{"description", "value"});
-    SetHasHeader(true);
-    SetIgnoreLines(0);
-    SetHasDoubleQuotes(false);
-    SetHasTrailingDelimiter(false);
-    SetDelimiter(';');
-    SetDateFormat("dd.mm.yy");
-    SetCategory(-1);
-    SetPayerPayee(-1);
-    SetPayer(-1);
-    SetPayee(-1);
-    SetDescription(-1);
-    SetType(-1);
-    SetDate(-1);
-    SetAccount(-1);
-    SetValue(-1);
-}
-
 CsvFormat::CsvFormat(const fs::path& file)
     : CsvConfig(file)
 {
+    InitializeProperties();
+}
+
+CsvFormat::CsvFormat(const std::unordered_map<std::string, std::string>& config, const fs::path file)
+    : CsvConfig(config, file)
+{
+    InitializeProperties();
+}
+
+void CsvFormat::InitializeProperties()
+{
+    _formatName = GetString("FormatName");
+    _accountOwner = GetString("AccountOwner");
+    _columnNames = GetStrings("ColumnNames");
+    _hasHeader = GetBool("HasHeader");
+    _hasDoubleQuotes = GetBool("HasDoubleQuotes");
+    _hasTrailingDelimiter = GetBool("HasTrailingDelimiter");
+    _delimiter = GetChar("Delimiter");
+    _dateFormat = GetString("DateFormat");
+    _ignoreLines = GetInt("IgnoreLines");
+    _category = GetInt("Category");
+    _payerPayee = GetInt("PayerPayee");
+    _payer = GetInt("Payer");
+    _payee = GetInt("Payee");
+    _description = GetInt("Description");
+    _type = GetInt("Type");
+    _date = GetInt("Date");
+    _account = GetInt("Account");
+    _value = GetInt("Value");
 }
 
 const std::string CsvFormat::GetFormatName() const
 {
-    return GetString("FormatName");
+    return _formatName;
 }
 
 const std::string CsvFormat::GetAccountOwner() const
 {
-    return GetString("AccountOwner");
+    return _accountOwner;
 }
 
 const std::vector<std::string> CsvFormat::GetColumnNames() const
 {
-    return GetStrings("ColumnNames");
+    return _columnNames;
 }
 
 bool CsvFormat::GetHasHeader() const
 {
-    return GetBool("HasHeader");
+    return _hasHeader;
 }
 
 bool CsvFormat::GetHasDoubleQuotes() const
 {
-    return GetBool("HasDoubleQuotes");
+    return _hasDoubleQuotes;
 }
 
 bool CsvFormat::GetHasTrailingDelimiter() const
 {
-    return GetBool("HasTrailingDelimiter");
+    return _hasTrailingDelimiter;
 }
 
 char CsvFormat::GetDelimiter() const
 {
-    return GetChar("Delimiter");
+    return _delimiter;
 }
 
 const std::string CsvFormat::GetDateFormat() const
 {
-    return GetString("DateFormat");
+    return _dateFormat;
 }
 
 int CsvFormat::GetIgnoreLines() const
 {
-    return GetInt("IgnoreLines");
+    return _ignoreLines;
 }
 
 int CsvFormat::GetCategory() const
 {
-    return GetInt("Category");
+    return _category;
 }
 
 int CsvFormat::GetPayerPayee() const
 {
-    return GetInt("PayerPayee");
+    return _payerPayee;
 }
 
 int CsvFormat::GetPayer() const
 {
-    return GetInt("Payer");
+    return _payer;
 }
 
 int CsvFormat::GetPayee() const
 {
-    return GetInt("Payee");
+    return _payee;
 }
 
 int CsvFormat::GetDescription() const
 {
-    return GetInt("Description");
+    return _description;
 }
 
 int CsvFormat::GetType() const
 {
-    return GetInt("Type");
+    return _type;
 }
 
 int CsvFormat::GetDate() const
 {
-    return GetInt("Date");
+    return _date;
 }
 
 int CsvFormat::GetAccount() const
 {
-    return GetInt("Account");
+    return _account;
 }
 
 int CsvFormat::GetValue() const
 {
-    return GetInt("Value");
-}
-
-void CsvFormat::SetFormatName(const std::string& value)
-{
-    SetString("FormatName", value);
-}
-
-void CsvFormat::SetAccountOwner(const std::string& value)
-{
-    SetString("AccountOwner", value);
-}
-
-void CsvFormat::SetColumnNames(const std::vector<std::string>& value)
-{
-    SetStrings("ColumnNames", value);
-}
-
-void CsvFormat::SetHasHeader(bool value)
-{
-    SetBool("HasHeader", value);
-}
-
-void CsvFormat::SetHasDoubleQuotes(bool value)
-{
-    SetBool("HasDoubleQuotes", value);
-}
-
-void CsvFormat::SetHasTrailingDelimiter(bool value)
-{
-    SetBool("HasTrailingDelimiter", value);
-}
-
-void CsvFormat::SetDelimiter(char value)
-{
-    SetChar("Delimiter", value);
-}
-
-void CsvFormat::SetDateFormat(const std::string& value)
-{
-    SetString("DateFormat", value);
-}
-
-void CsvFormat::SetIgnoreLines(int value)
-{
-    SetInt("IgnoreLines", value);
-}
-
-void CsvFormat::SetCategory(int value)
-{
-    SetInt("Category", value);
-}
-
-void CsvFormat::SetPayerPayee(int value)
-{
-    SetInt("PayerPayee", value);
-}
-
-void CsvFormat::SetPayer(int value)
-{
-    SetInt("Payer", value);
-}
-
-void CsvFormat::SetPayee(int value)
-{
-    SetInt("Payee", value);
-}
-
-void CsvFormat::SetDescription(int value)
-{
-    SetInt("Description", value);
-}
-
-void CsvFormat::SetType(int value)
-{
-    SetInt("Type", value);
-}
-
-void CsvFormat::SetDate(int value)
-{
-    SetInt("Date", value);
-}
-
-void CsvFormat::SetAccount(int value)
-{
-    SetInt("Account", value);
-}
-
-void CsvFormat::SetValue(int value)
-{
-    SetInt("Value", value);
+    return _value;
 }
 
 } // namespace hokee

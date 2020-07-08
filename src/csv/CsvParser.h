@@ -18,7 +18,7 @@ class CsvParser
     size_t _lineCounter = 0;
     fs::path _file = {};
     std::ifstream _ifstream = {};
-    CsvFormat _format = {};
+    CsvFormat _format;
 
     void AssignValue(std::string& value, std::vector<std::string> cells, size_t id);
 
