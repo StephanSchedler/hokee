@@ -53,7 +53,7 @@ void CsvParser::Load(CsvTable& csvData)
 
     std::string line;
     std::vector<std::string> header{};
-    while (_lineCounter < _format.GetIgnoreLines())
+    while (_lineCounter < static_cast<size_t>(_format.GetIgnoreLines()))
     {
         _lineCounter++;
         std::getline(_ifstream, line);
@@ -154,7 +154,7 @@ bool CsvParser::GetItem(CsvRowShared& item)
         }
 
         // Check header
-        if (_format.GetHasHeader() && _lineCounter == _format.GetIgnoreLines() + 1)
+        if (_format.GetHasHeader() && _lineCounter == static_cast<size_t>(_format.GetIgnoreLines()) + 1)
         {
             auto columnNames = _format.GetColumnNames();
             for (size_t i = 0; i < trimmedCells.size(); ++i)

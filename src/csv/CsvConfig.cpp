@@ -40,7 +40,7 @@ void CsvConfig::SetStrings(const std::string& key, const std::vector<std::string
     {
         valueString += value[0];
     }
-    for (int i = 1; i < value.size(); ++i)
+    for (size_t i = 1; i < value.size(); ++i)
     {
         valueString += ";" + value[i];
     }
