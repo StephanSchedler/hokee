@@ -169,7 +169,7 @@ std::string GetEnv(const std::string& name)
 
 fs::path GetHomePath()
 {
-#ifdef unix
+#if defined(unix) || defined (__APPLE__)
     return Utils::GetEnv("HOME");
 #elif defined(_WIN32)
     return fs::path(Utils::GetEnv("HOMEDRIVE") + Utils::GetEnv("HOMEPATH")) / "Documents";

@@ -20,17 +20,18 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
-        config: [Debug, Release]
+        #config: [Debug, Release]
+        config: [Release]
 
     steps:
     - uses: actions/checkout@v2
     - name: Run build
       run: bash build.sh ${{ matrix.config }}
     - name: Run tests
-      run: cd build/${{ matrix.config }}; ctest -C ${{ matrix.config }} --output-on-failure
+      run: cd build; ctest -C ${{ matrix.config }} --output-on-failure
     - name: Run CPack
       if: ${{ matrix.config == 'Release' }}
-      run: cd build/${{ matrix.config }}; cmake --build . --config ${{ matrix.config }} --target package --parallel
+      run: cd build; cmake --build . --config ${{ matrix.config }} --target package --parallel
     - name: Remove old artifacts
       uses: c-hive/gha-remove-artifacts@v1
       if: ${{ matrix.config == 'Release' && matrix.os == 'windows-latest' }}
@@ -44,4 +45,4 @@ jobs:
       if: ${{ matrix.config == 'Release' }}
       with:
         name: ${{ matrix.os }}-${{ matrix.config }}-packages
-        path: build/**/hokee-*
+        path: build/hokee-*

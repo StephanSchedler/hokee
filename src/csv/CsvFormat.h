@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CsvConfig.h"
+#include <vector>
 
 namespace hokee
 {
