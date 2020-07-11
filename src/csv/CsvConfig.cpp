@@ -74,9 +74,9 @@ const std::string CsvConfig::GetString(const std::string& key) const
     if (item == _config.end())
     {
         throw UserException(
-            fmt::format("Missing property. Could not find property '{}' in {}", key, _file.string()));
+            fmt::format("Missing property. Could not find property '{}' in '{}'", key, _file.string()));
     }
-    Utils::PrintInfo(fmt::format("Read setting {}={} from in {}", key, item->second, _file.string()));
+    Utils::PrintInfo(fmt::format("Read setting {}={} from '{}'", key, item->second, _file.string()));
     return item->second;
 }
 
