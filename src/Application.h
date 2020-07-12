@@ -13,7 +13,7 @@ class Application
 {
     Settings _config;
     fs::path _inputDirectory{};
-    fs::path _outputDirectory{};
+    fs::path _tempDirectory{};
     fs::path _ruleSetFile{};
     std::unique_ptr<CsvDatabase> _csvDatabase = nullptr;
 

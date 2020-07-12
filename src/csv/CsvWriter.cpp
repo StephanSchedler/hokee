@@ -13,7 +13,7 @@ void CsvWriter::Write(const fs::path& file, const CsvTable& data)
 {
     std::ofstream csvFile;
 
-    Utils::PrintInfo(fmt::format("  Write CSV {}", file.string()));
+    Utils::PrintInfo(fmt::format("Write CSV {}", file.string()));
     csvFile.open(file);
     
     for (const auto& line : data.GetCsvHeader())

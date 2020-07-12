@@ -50,16 +50,26 @@
             }
         },
         {
-            "label": "Open report",
+            "label": "Build (cmake)",
             "type": "shell",
-            "command": "file://${workspaceFolder}/output/index.html",
+            "command": "./cmake.bat ${input:Configuration}",
             "options": {
-                "cwd": "${workspaceFolder}",
-                "shell": {
-                    "executable": "C:/Program Files/Mozilla Firefox/firefox.exe"
-                },
+                "cwd": "${workspaceFolder}"
             },
-            "problemMatcher": [],
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": [
+                    "autoDetect",
+                    "${workspaceRoot}/build/"
+                ],
+                "pattern": {
+                    "regexp": "^(.*)\\((\\d+)\\):\\s+(error|warning|note)\\s*(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            },
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -73,7 +83,7 @@
         {
             "label": "Build (MSVC)",
             "type": "shell",
-            "command": "./msbuild.bat ${input:Configuration}",
+            "command": "./build.bat ${input:Configuration}",
             "options": {
                 "cwd": "${workspaceFolder}"
             },

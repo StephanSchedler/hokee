@@ -8,16 +8,19 @@ Settings::Settings()
     : CsvConfig()
 {
     SetInputDirectory("input");
-    SetOutputDirectory("output");
     SetRuleSetFile("rules.csv");
 #ifdef _MSC_VER
     SetEditor("notepad");
+    SetBrowser("start");
+#elif __APPLE__
+    SetEditor("open -a TextEdit");
+    SetBrowser("open -a Safari");
 #else
     SetEditor("nano");
+    SetBrowser("firefox");
 #endif
     SetAddRules("true");
     SetUpdateRules("true");
-    SetGenerateReport("true");
 }
 
 Settings::Settings(const fs::path& file)
@@ -33,16 +36,6 @@ const fs::path Settings::GetInputDirectory() const
 void Settings::SetInputDirectory(const fs::path& value)
 {
     SetString("InputDirectory", value.string());
-}
-
-const fs::path Settings::GetOutputDirectory() const
-{
-    return GetString("OutputDirectory");
-}
-
-void Settings::SetOutputDirectory(const fs::path& value)
-{
-    SetString("OutputDirectory", value.string());
 }
 
 const fs::path Settings::GetRuleSetFile() const
@@ -65,6 +58,16 @@ void Settings::SetEditor(const std::string& value)
     SetString("Editor", value);
 }
 
+const std::string Settings::GetBrowser() const
+{
+    return GetString("Browser");
+}
+
+void Settings::SetBrowser(const std::string& value)
+{
+    SetString("Browser", value);
+}
+
 bool Settings::GetAddRules() const
 {
     return GetBool("AddRules");
@@ -83,16 +86,6 @@ bool Settings::GetUpdateRules() const
 void Settings::SetUpdateRules(bool value)
 {
     SetBool("UpdateRules", value);
-}
-
-bool Settings::GetGenerateReport() const
-{
-    return GetBool("GenerateReport");
-}
-
-void Settings::SetGenerateReport(bool value)
-{
-    SetBool("GenerateReport", value);
 }
 
 } // namespace hokee

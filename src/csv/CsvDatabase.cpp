@@ -1,6 +1,5 @@
 #include "csv/CsvDatabase.h"
 #include "InternalException.h"
-#include "ReportGenerator.h"
 #include "Utils.h"
 #include "csv/CsvDate.h"
 #include "csv/CsvItem.h"
@@ -88,9 +87,6 @@ void CsvDatabase::CheckRules()
 
 void CsvDatabase::UpdateRules(const fs::path& ruleSetFile, const std::string& editor)
 {
-    ReportGenerator reportGenerator(this);
-    reportGenerator.PrintIssues();
-
     std::string cmd = fmt::format("{} \"{}\"", editor, fs::absolute(ruleSetFile).string());
     Utils::PrintInfo(fmt::format("Run: {}", cmd));
     if (std::system(cmd.c_str()) < 0)
@@ -103,7 +99,7 @@ void CsvDatabase::AddRules(const fs::path& ruleSetFile, const fs::path& workingD
                            const std::string& editor)
 {
     std::vector<std::string> categories = Rules.GetCategories();
-    Utils::PrintInfo("  Supported categories:");
+    Utils::PrintInfo("Supported categories:");
     std::string categoryString;
     int categoryCounter = 0;
     for (const auto& cat : categories)
@@ -131,7 +127,7 @@ void CsvDatabase::AddRules(const fs::path& ruleSetFile, const fs::path& workingD
     Unassigned.SetCsvHeader(std::move(header));
 
     fs::path unassignedCsv = workingDirectory / "unassigned.csv";
-    Utils::PrintInfo(fmt::format("  Open {}", unassignedCsv.string()));
+    Utils::PrintInfo(fmt::format("Open {}", unassignedCsv.string()));
     CsvWriter::Write(unassignedCsv, Unassigned);
 
     Utils::PrintInfo(fmt::format("Open {}", unassignedCsv.string()));
@@ -255,11 +251,11 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& ruleSet
         {
             if (dir.path().filename().string().rfind(".", 0) == 0)
             {
-                Utils::PrintInfo(fmt::format("  Skip directory '{}':", dir.path().string()));
+                Utils::PrintInfo(fmt::format("Skip directory '{}':", dir.path().string()));
                 continue;
             }
 
-            Utils::PrintInfo(fmt::format("  Found directory '{}':", dir.path().string()));
+            Utils::PrintInfo(fmt::format("Found directory '{}':", dir.path().string()));
             fs::path formatFile = dir.path() / "format.ini";
             if (!fs::exists(formatFile))
             {
@@ -274,7 +270,7 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& ruleSet
                     continue;
                 }
                 Utils::PrintInfo(
-                    fmt::format("    Parse '{}' {}/{}...", file.path().string(), ++fileCounter, numberOfFiles));
+                    fmt::format("Parse '{}' {}/{}...", file.path().string(), ++fileCounter, numberOfFiles));
 
                 std::unique_ptr<CsvParser> csvReader;
                 csvReader = std::make_unique<CsvParser>(file.path(), format);
