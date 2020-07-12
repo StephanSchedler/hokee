@@ -1,6 +1,7 @@
 #include "Application.h"
+#include "HtmlGenerator.h"
+#include "HttpServer.h"
 #include "InternalException.h"
-#include "ReportGenerator.h"
 #include "Utils.h"
 #include "csv/CsvDatabase.h"
 #include "csv/CsvItem.h"
@@ -20,14 +21,15 @@ namespace hokee
 {
 Application::Application(int argc, const char* argv[])
 {
+    // parse commandline arguments
     fs::path configPath = "";
     if (argc == 1)
     {
         configPath = fs::absolute(Utils::GetHomePath() / "hokee" / "hokee.ini");
         if (!fs::exists(configPath))
         {
-            Utils::PrintWarning(fmt::format("Could not find config file '{}'. Create new config file.",
-                                            configPath.string()));
+            Utils::PrintWarning(
+                fmt::format("Could not find config file '{}'. Create new config file.", configPath.string()));
             if (!fs::exists(configPath.parent_path()))
             {
                 fs::create_directories(configPath.parent_path());
@@ -55,22 +57,44 @@ Application::Application(int argc, const char* argv[])
         Utils::PrintInfo("         (default: ~/hokee/hokee.ini)");
         std::exit(EXIT_SUCCESS);
     }
-    _config = Settings(configPath);
 
-    _inputDirectory = configPath.parent_path() / _config.GetInputDirectory();
-    _outputDirectory = configPath.parent_path() / _config.GetOutputDirectory();
-    _ruleSetFile = configPath.parent_path() / _config.GetRuleSetFile();
+    // Read settings
+    _config = Settings(configPath);
+    if (_config.GetInputDirectory().is_absolute())
+    {
+        _inputDirectory = _config.GetInputDirectory();
+    }
+    else
+    {
+        _inputDirectory = configPath.parent_path() / _config.GetInputDirectory();
+    }
+    if (_config.GetRuleSetFile().is_absolute())
+    {
+        _ruleSetFile = _config.GetRuleSetFile();
+    }
+    else
+    {
+        _ruleSetFile = configPath.parent_path() / _config.GetRuleSetFile();
+    }
+
+    // Detect Temporary Directory
+#ifdef _MSC_VER
+    _tempDirectory = Utils::GetEnv("TEMP");
+#elif __APPLE__
+    _tempDirectory = "/var/tmp";
+#else
+    _tempDirectory = "/tmp";
+#endif
+    _tempDirectory = _tempDirectory / "hokee";
+    if (!fs::exists(_tempDirectory))
+    {
+        fs::create_directories(_tempDirectory);
+    }
 
     if (!fs::exists(_inputDirectory))
     {
         throw UserException(
             fmt::format("Input directory {} does not exits.", fs::absolute(_inputDirectory).string()));
-    }
-    if (!fs::exists(_outputDirectory))
-    {
-        Utils::PrintWarning(fmt::format("Output directory {} does not exits. Create new one.",
-                                        fs::absolute(_outputDirectory).string()));
-        fs::create_directories(_outputDirectory);
     }
     if (!fs::exists(_ruleSetFile))
     {
@@ -80,7 +104,6 @@ Application::Application(int argc, const char* argv[])
 
 std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
 {
-    const fs::path indexHtml = _outputDirectory / "index.html";
     Utils::PrintInfo("Parse CSV files...");
 
     int maxIterations = 10;
@@ -106,7 +129,7 @@ std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
             if (Utils::AskYesNoQuestion("Add rules?", defaultAddRules, batchMode))
             {
                 std::string editor = _config.GetEditor();
-                _csvDatabase->AddRules(_ruleSetFile, _outputDirectory, editor);
+                _csvDatabase->AddRules(_ruleSetFile, _tempDirectory, editor);
 
                 restart = true;
                 continue;
@@ -126,21 +149,21 @@ std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
         }
     } while (restart);
 
-    bool defaultGenerateReport = _config.GetGenerateReport();
-    if (Utils::AskYesNoQuestion("Generate full report?", defaultGenerateReport, batchMode))
-    {
-        ReportGenerator reportGenerator(_csvDatabase.get());
-        reportGenerator.Write(_outputDirectory);
-    }
-
     if (!batchMode)
     {
         Utils::PrintInfo("");
-        Utils::PrintInfo("Open report...");
-        if (std::system(fs::absolute(indexHtml).string().c_str()) < 0)
+        Utils::PrintInfo("Start HttpServer...");
+        std::thread serverThread([&] {
+            HttpServer httpServer(_csvDatabase.get());
+            httpServer.Run();
+        });
+
+        Utils::PrintInfo("Open result...");
+        if (std::system(fmt::format("{} http://localhost", _config.GetBrowser()).c_str()) < 0)
         {
-            throw UserException("Could not open report.");
+            throw UserException("Could not open result.");
         }
+        serverThread.join();
     }
 
     return std::move(_csvDatabase);

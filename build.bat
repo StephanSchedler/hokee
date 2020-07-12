@@ -1,8 +1,12 @@
+@echo off
 REM
 REM Shell script to build hokee project and run tests
 REM usage: build.bat Release|Debug
 REM
-@echo off
+
+pushd
+call "C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/VC/Auxiliary/Build/vcvarsall.bat" x64 
+popd
 
 echo ==== Update submodules ====
 git submodule update --init --recursive

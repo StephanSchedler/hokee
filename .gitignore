@@ -35,7 +35,6 @@ compile_commands.json
 /.clangd/
 /bin/
 /build/
+/images/
 /third_party/build/
-/input/
-/output/
 /test_data/

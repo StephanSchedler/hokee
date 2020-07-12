@@ -1,0 +1,48 @@
+#pragma once
+
+#include "Utils.h"
+#include "csv/CsvDatabase.h"
+
+#include <array>
+
+namespace hokee
+{
+class HtmlGenerator
+{
+    static std::string GetHeader(CsvDatabase* pDatabase);
+    static std::string GetItemStart(CsvDatabase* pDatabase, const std::string& title);
+    static std::string GetItemEnd();
+    static std::string GetTableStart();
+    static std::string GetTableRow(CsvItem* row);
+    static std::string GetTableEnd();
+
+  public:
+    HtmlGenerator() = delete;
+    ~HtmlGenerator() = delete;
+
+    HtmlGenerator(const HtmlGenerator&) = delete;
+    HtmlGenerator& operator=(const HtmlGenerator&) = delete;
+    HtmlGenerator(HtmlGenerator&&) = delete;
+    HtmlGenerator& operator=(HtmlGenerator&&) = delete;
+
+    static constexpr const char* INDEX_HTML = "index.html";
+    static constexpr const char* ALL_HTML = "all.html";
+    static constexpr const char* ASSIGNED_HTML = "assigned.html";
+    static constexpr const char* UNASSIGNED_HTML = "unassigned.html";
+    static constexpr const char* RULES_HTML = "rules.html";
+    static constexpr const char* ISSUES_HTML = "issues.html";
+    static constexpr const char* ITEM_HTML = "item.html";
+    static constexpr const char* ITEMS_HTML = "items.html";
+    static constexpr const char* UPDATE_HTML = "update.html";
+    static constexpr const char* SETTINGS_HTML = "settings.html";
+    static constexpr const char* EXIT_HTML = "exit.html";
+
+    static std::string GetProgressPage(int value, int max, const std::string& m1, const std::string& m2,
+                                       const std::string& m3, const std::string& m4);
+    static std::string GetErrorPage(int errorCode, const std::string& errorMessage);
+    static std::string GetSummaryPage(CsvDatabase* pDatabase);
+    static std::string GetItemPage(CsvDatabase* pDatabase, int id);
+    static std::string GetTablePage(CsvDatabase* pDatabase, const std::string& title, const CsvTable& data);
+};
+
+} // namespace hokee

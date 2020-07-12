@@ -79,10 +79,11 @@ set(PROJECT_SOURCE_FILES
     src/csv/CsvRules.cpp 
     src/Application.cpp
     src/Settings.cpp
-    src/ReportGenerator.cpp
+    src/HtmlGenerator.cpp
     src/InternalException.cpp
     src/UserException.cpp
     src/Utils.cpp
+    src/HttpServer
 )
 
 # Execuables
@@ -110,6 +111,24 @@ install(TARGETS rules_add_test RUNTIME DESTINATION ./bin)
 if(CMAKE_EXPORT_COMPILE_COMMANDS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     install(FILES ${PROJECT_BINARY_DIR}/compile_commands.json DESTINATION .)
 endif()
+
+install(FILES favicon/apple-touch-icon.png DESTINATION ./images/favicon)
+install(FILES favicon/favicon-32x32.png DESTINATION ./images/favicon)
+install(FILES favicon/safari-pinned-tab.svg DESTINATION ./images/favicon)
+install(FILES favicon/favicon-16x16.png DESTINATION ./images/favicon)
+install(FILES favicon/favicon.ico DESTINATION ./images/favicon)
+install(FILES third_party/small-n-flat/png/48/money.png DESTINATION ./images)
+install(FILES third_party/small-n-flat/png/48/database.png DESTINATION ./images) 
+install(FILES third_party/small-n-flat/png/48/sign-check.png DESTINATION ./images)
+install(FILES third_party/small-n-flat/png/48/sign-delete.png DESTINATION ./images)
+install(FILES third_party/small-n-flat/png/48/sign-warning.png DESTINATION ./images)
+install(FILES third_party/small-n-flat/png/48/sign-error.png DESTINATION ./images)  
+install(FILES third_party/small-n-flat/png/48/sign-sync.png DESTINATION ./images)  
+install(FILES third_party/small-n-flat/png/48/notepad.png DESTINATION ./images)   
+install(FILES third_party/small-n-flat/png/48/cogs.png DESTINATION ./images) 
+install(FILES third_party/small-n-flat/png/96/sign-ban.png DESTINATION ./images)
+install(FILES src/images/sign-delete2.png DESTINATION ./images)
+install(FILES src/images/sign-warning2.png DESTINATION ./images)
 
 enable_testing()
 add_test(NAME rules_match_test COMMAND rules_match_test)

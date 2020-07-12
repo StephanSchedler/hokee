@@ -64,7 +64,6 @@ int main(int /*unused*/, const char* argv[])
         std::string configPath = "../test_data/rules_match_test/rules_match_test.ini";
         config.SetAddRules(false);
         config.SetUpdateRules(false);
-        config.SetGenerateReport(false);
         config.SetRuleSetFile("rules_match_test.csv");
         config.Save(configPath);
         const char* testArgv[] = {argv[0], configPath.c_str(), nullptr};
