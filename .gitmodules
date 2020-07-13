@@ -4,3 +4,6 @@
 [submodule "third_party/cpp-httplib"]
 	path = third_party/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib.git
+[submodule "third_party/small-n-flat"]
+	path = third_party/small-n-flat
+	url = https://github.com/paomedia/small-n-flat.git
