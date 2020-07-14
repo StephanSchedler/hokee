@@ -35,7 +35,7 @@ class HtmlGenerator
     static constexpr const char* ITEMS_HTML = "items.html";
     static constexpr const char* UPDATE_HTML = "update.html";
     static constexpr const char* SETTINGS_HTML = "settings.html";
-    static constexpr const char* EXIT_HTML = "exit.html";
+    static constexpr const char* EXIT_CMD = "exit";
 
     static std::string GetProgressPage(int value, int max, const std::string& m1, const std::string& m2,
                                        const std::string& m3, const std::string& m4);

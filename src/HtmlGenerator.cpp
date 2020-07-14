@@ -63,7 +63,7 @@ std::string HtmlGenerator::GetHeader(CsvDatabase* pDatabase)
 
     result << fmt::format(fmtButton, UPDATE_HTML, "sign-sync.png", "Update");
     result << fmt::format(fmtButton, SETTINGS_HTML, "cogs.png", "Settings");
-    result << fmt::format(fmtButton, EXIT_HTML, "sign-error.png", "Exit");
+    result << fmt::format(fmtButton, EXIT_CMD, "sign-error.png", "Exit");
 
     result << "</tr></table>";
 
