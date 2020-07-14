@@ -162,15 +162,7 @@ void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::Respons
         {
             name = fmt::format("{}: {}", year, cat);
         }
-        res.set_content(HtmlGenerator::GetTablePage(_pDatabase, name, data),
-                        "text/html");
-        return;
-    }
-
-    if (req.path == std::string("/") + HtmlGenerator::EXIT_HTML)
-    {
-        Utils::PrintInfo("Received exit request. Shutdown application...");
-        std::exit(EXIT_SUCCESS);
+        res.set_content(HtmlGenerator::GetTablePage(_pDatabase, name, data), "text/html");
         return;
     }
 
@@ -205,6 +197,15 @@ HttpServer::HttpServer(CsvDatabase* pDatabase)
         std::string name = req.matches[1];
         res.set_content(GetImageContent(name), "image/x-icon");
     });
+
+    // Exit
+    _server->Get((std::string("/") + HtmlGenerator::EXIT_CMD).c_str(),
+                 [&](const httplib::Request& /*req*/, httplib::Response& /*res*/) {
+                     Utils::PrintInfo("Received exit request. Shutdown application...");
+                     _server->stop();
+                 });
+
+    std::exit(EXIT_SUCCESS);
 
     // Set Error Handler
     _server->set_error_handler([&](const httplib::Request& /*req*/, httplib::Response& res) {
