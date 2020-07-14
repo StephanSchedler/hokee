@@ -15,12 +15,11 @@
 
 namespace hokee
 {
-
 std::string HtmlGenerator::GetHeader(CsvDatabase* pDatabase)
 {
     std::stringstream result;
 
-    result << "<header style=\"border-bottom: 1px solid black;\">";
+    result << "    <header style=\"border-bottom: 1px solid black;\">";
     result << "<table cellspacing=\"0\" cellpadding=\"0\" style=\"border: hidden\"><tr>";
 
     const std::string fmtButton
@@ -28,8 +27,7 @@ std::string HtmlGenerator::GetHeader(CsvDatabase* pDatabase)
           "src=\"{}\"></main><footer style=\"text-align:center;\">{}</footer></a></td>";
     result << fmt::format(fmtButton, INDEX_HTML, "money.png", "Summary");
 
-    result << fmt::format(fmtButton, ALL_HTML, "database.png",
-                          fmt::format("All({})", pDatabase->Data.size()));
+    result << fmt::format(fmtButton, ALL_HTML, "database.png", fmt::format("All({})", pDatabase->Data.size()));
 
     result << fmt::format(fmtButton, ASSIGNED_HTML, "sign-check.png",
                           fmt::format("Assigned ({})", pDatabase->Assigned.size()));
@@ -62,6 +60,7 @@ std::string HtmlGenerator::GetHeader(CsvDatabase* pDatabase)
     result << "<td style=\"border: hidden\" width=\"99%\"></td>";
 
     result << fmt::format(fmtButton, UPDATE_HTML, "sign-sync.png", "Update");
+    result << fmt::format(fmtButton, UPDATE_HTML, "search.png", "Search");
     result << fmt::format(fmtButton, SETTINGS_HTML, "cogs.png", "Settings");
     result << fmt::format(fmtButton, EXIT_CMD, "sign-error.png", "Exit");
 
@@ -73,6 +72,9 @@ std::string HtmlGenerator::GetHeader(CsvDatabase* pDatabase)
 
 std::string HtmlGenerator::GetSummaryPage(CsvDatabase* pDatabase)
 {
+    std::stringstream htmlPage;
+    htmlPage << GetItemStart(pDatabase, "Summary");
+
     std::vector<std::string> categories{""};
     for (auto& rule : pDatabase->Rules)
     {
@@ -82,12 +84,8 @@ std::string HtmlGenerator::GetSummaryPage(CsvDatabase* pDatabase)
         }
     }
 
-    std::stringstream htmlPage;
-
-    htmlPage << GetItemStart(pDatabase, "Summary");
     int minYear = 3000;
     int maxYear = 1900;
-
     std::map<int, std::map<int, std::map<std::string, CsvTable>>> database;
     for (auto& item : pDatabase->Data)
     {
@@ -134,7 +132,8 @@ std::string HtmlGenerator::GetSummaryPage(CsvDatabase* pDatabase)
             htmlPage << fmt::format("<tr {}><td>{}</td>", rowStyle, name);
             for (auto& cat : categories)
             {
-                const fs::path fileName = fmt::format("{}?year={}&month={}&category={}", ITEMS_HTML, year, month, cat);
+                const fs::path fileName
+                    = fmt::format("{}?year={}&month={}&category={}", ITEMS_HTML, year, month, cat);
 
                 double sum = 0;
                 for (auto& item : database[year][month][cat])
@@ -206,53 +205,67 @@ std::string HtmlGenerator::GetTablePage(CsvDatabase* pDatabase, const std::strin
     return htmlPage.str();
 }
 
-std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorMessage)
+std::string HtmlGenerator::GetErrorPage(CsvDatabase* pDatabase, int errorCode, const std::string& errorMessage)
 {
     Utils::PrintError(fmt::format("HttpServer operation failed: {}", errorMessage));
-    return fmt::format("<!DOCTYPE html>\n"
-                       "<html>\n"
-                       "  <body style=\"padding: 50px 0;\">\n"
-                       "    <div style=\"text-align:center;\n"
-                       "                 color: red;\n"
-                       "                 margin: auto;\n"
-                       "                 width: 50%;\n"
-                       "                 padding: 20px;\n"
-                       "                 background: #F0F0F0;\n"
-                       "                 border: 1px solid #DDD;\n"
-                       "                 box-shadow: 3px 3px 0px rgba(0,0,0, .2);\">\n"
-                       "    <p><img src=\"sign-ban.png\"/></p>\n"
-                       "    <p><b>ERROR {} - {} </b></p>\n"
-                       "  </div>\n"
-                       "</body>\n"
-                       "</html>",
-                       errorCode, errorMessage);
+    std::stringstream htmlPage{};
+    htmlPage << "<!DOCTYPE html>\n"
+                "<html>\n"
+                "  <head>\n";
+    htmlPage << GetHead();
+    htmlPage << "  </head>\n"
+                "  <body>\n";
+    htmlPage << GetHeader(pDatabase);
+    htmlPage << fmt::format("    <main style=\"padding: 50px 0;\">\n"
+                            "      <div style=\"text-align:center;\n"
+                            "                   color: red;\n"
+                            "                   margin: auto;\n"
+                            "                   width: 50%;\n"
+                            "                   padding: 20px;\n"
+                            "                   background: #F0F0F0;\n"
+                            "                   border: 1px solid #DDD;\n"
+                            "                   box-shadow: 3px 3px 0px rgba(0,0,0, .2);\">\n"
+                            "        <p><img src=\"sign-ban.png\"/></p>\n"
+                            "        <p><b>ERROR {} - {} </b></p>\n"
+                            "      </div>\n"
+                            "    </main>\n",
+                            errorCode, errorMessage);
+    htmlPage << "  </body>\n"
+                "</html>";
+    return htmlPage.str();
 }
 
-std::string HtmlGenerator::GetProgressPage(int value, int max, const std::string& m1, const std::string& m2,
-                                           const std::string& m3, const std::string& m4)
+std::string HtmlGenerator::GetProgressPage(CsvDatabase* pDatabase, int value, int max, const std::string& m1,
+                                           const std::string& m2, const std::string& m3, const std::string& m4)
 {
-    return fmt::format("<!DOCTYPE html>\n"
-                       "<html>\n"
-                       "  <head>\n"
-                       "    <meta http-equiv=\"refresh\" content=\"0.33\">\n"
-                       "  </head>\n"
-                       "  <body style=\"padding: 50px 0;\">\n"
-                       "    <div style=\"text-align:center;\n"
-                       "                 margin: auto;\n"
-                       "                 width: 50%;\n"
-                       "                 padding: 20px;\n"
-                       "                 background: #F0F0F0;\n"
-                       "                 border: 1px solid #DDD;\n"
-                       "                 box-shadow: 3px 3px 0px rgba(0,0,0, .2);\">\n"
-                       "    <div style=\"color: #D0D0D0\">{}</div>\n"
-                       "    <div style=\"color: #B0B0B0\">{}</div>\n"
-                       "    <div style=\"color: #707070\">{}</div>\n"
-                       "    <div style=\"color: #000000\">{}</div>\n"
-                       "    <div><progress value=\"{}\" max=\"{}\"/></div>\n"
-                       "  </div>\n"
-                       "</body>\n"
-                       "</html>",
-                       m1, m2, m3, m4, value, max);
+    std::stringstream htmlPage{};
+    htmlPage << "<!DOCTYPE html>\n"
+                "<html>\n"
+                "  <head>\n";
+    htmlPage << GetHead();
+    htmlPage << "    <meta http-equiv=\"refresh\" content=\"0.33\">\n"
+                "  </head>\n"
+                "  <body>\n";
+    htmlPage << GetHeader(pDatabase);
+    htmlPage << fmt::format("    <main style=\"padding: 50px 0;\">\n"
+                            "      <div style=\"text-align:center;\n"
+                            "                   margin: auto;\n"
+                            "                   width: 50%;\n"
+                            "                   padding: 20px;\n"
+                            "                   background: #F0F0F0;\n"
+                            "                   border: 1px solid #DDD;\n"
+                            "                   box-shadow: 3px 3px 0px rgba(0,0,0, .2);\">\n"
+                            "        <div style=\"color: #D0D0D0\">{}</div>\n"
+                            "        <div style=\"color: #B0B0B0\">{}</div>\n"
+                            "        <div style=\"color: #707070\">{}</div>\n"
+                            "        <div style=\"color: #000000\">{}</div>\n"
+                            "        <div><progress value=\"{}\" max=\"{}\"/></div>\n"
+                            "      </div>\n"
+                            "    </main>\n",
+                            m1, m2, m3, m4, value, max);
+    htmlPage << "  </body>\n"
+                "</html>";
+    return htmlPage.str();
 }
 
 std::string HtmlGenerator::GetItemPage(CsvDatabase* pDatabase, int id)
@@ -303,7 +316,7 @@ std::string HtmlGenerator::GetItemPage(CsvDatabase* pDatabase, int id)
         htmlPage << "<p style=\"color:red;\">" << issue << "</p>";
     }
 
-    if(isItem)
+    if (isItem)
     {
         htmlPage << "<h3>Rules: </h3>\n";
     }
@@ -321,56 +334,63 @@ std::string HtmlGenerator::GetItemPage(CsvDatabase* pDatabase, int id)
     return htmlPage.str();
 }
 
+std::string HtmlGenerator::GetHead()
+{
+    return "    <title>hokee</title>\n"
+           "    <meta name=\"application-name\" content=\"hokee\">\n"
+           "    <meta charset=\"UTF-8\">\n"
+           "    <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/apple-touch-icon.png\">\n"
+           "    <link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/favicon-32x32.png\">\n"
+           "    <link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/favicon-16x16.png\">\n"
+           "    <link rel=\"mask-icon\" href=\"/safari-pinned-tab.svg\" color=\"#5bbad5\">\n"
+           "    <style>\n"
+           "      #left {width: 10%; display: inline-block; text-align:left;}\n"
+           "      #middle {width: 80%; display: inline-block; text-align:center;}\n"
+           "      #right {width: 10%; display: inline-block; text-align:right;}\n"
+           "      table {\n"
+           "        width:100%;\n"
+           "      }\n"
+           "      table, th, td {\n"
+           "        border: 1px solid #008;\n"
+           "        border-collapse: collapse;\n"
+           "      }\n"
+           "      th, td {\n"
+           "        padding: 5px;\n"
+           "        text-align: left;\n"
+           "      }\n"
+           "      table#t01 tr:nth-child(even) {\n"
+           "        background-color: #eef;\n"
+           "      }\n"
+           "      table#t01 tr:nth-child(odd) {\n"
+           "        background-color: #fff;\n"
+           "      }\n"
+           "      table#t01 th {\n"
+           "        background-color: #008;\n"
+           "        color: white;\n"
+           "      }\n"
+           "    </style>\n";
+}
+
 std::string HtmlGenerator::GetItemStart(CsvDatabase* pDatabase, const std::string& title)
 {
-    const std::string htmlHead
-        = "<!DOCTYPE html>\n"
-          "<html>\n"
-          "  <head>\n"
-          "  <title>hokee</title>\n"
-          "  <meta name=\"application-name\" content=\"hokee\">\n"
-          "  <meta charset=\"UTF-8\">\n"
-          "  <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/apple-touch-icon.png\">\n"
-          "  <link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/favicon-32x32.png\">\n"
-          "  <link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/favicon-16x16.png\">\n"
-          "  <link rel=\"mask-icon\" href=\"/safari-pinned-tab.svg\" color=\"#5bbad5\">\n"
-          "  <style>\n"
-          "    #left {width: 10%; display: inline-block; text-align:left;}\n"
-          "    #middle {width: 80%; display: inline-block; text-align:center;}\n"
-          "    #right {width: 10%; display: inline-block; text-align:right;}\n"
-          "    table {\n"
-          "      width:100%;\n"
-          "    }\n"
-          "    table, th, td {\n"
-          "      border: 1px solid #008;\n"
-          "      border-collapse: collapse;\n"
-          "    }\n"
-          "    th, td {\n"
-          "      padding: 5px;\n"
-          "      text-align: left;\n"
-          "    }\n"
-          "    table#t01 tr:nth-child(even) {\n"
-          "      background-color: #eef;\n"
-          "    }\n"
-          "    table#t01 tr:nth-child(odd) {\n"
-          "      background-color: #fff;\n"
-          "    }\n"
-          "    table#t01 th {\n"
-          "      background-color: #008;\n"
-          "      color: white;\n"
-          "    }\n"
-          "  </style>\n"
-          "</head>\n";
+    std::stringstream htmlPage{};
+    htmlPage << "<!DOCTYPE html>\n"
+                "<html>\n"
+                "  <head>\n";
+    htmlPage << GetHead();
+    htmlPage << "  </head>\n"
+                "  <body>\n";
+    htmlPage << GetHeader(pDatabase);
+    htmlPage << "    <main>\n";
+    htmlPage << fmt::format("      <h2>{}</h2>\n", title);
 
-    const std::string htmlBodyStart = fmt::format("<body>\n{}\n", GetHeader(pDatabase));
-    const std::string htmlTitle = fmt::format("<h2>{}</h2>\n", title);
-
-    return htmlHead + htmlBodyStart + htmlTitle;
+    return htmlPage.str();
 }
 
 std::string HtmlGenerator::GetItemEnd()
 {
-    return "</body>\n"
+    return "    </main>\n"
+           "  </body>\n"
            "</html>";
 }
 
@@ -383,22 +403,42 @@ std::string HtmlGenerator::GetTableStart()
 
 std::string HtmlGenerator::GetTableRow(CsvItem* row)
 {
-    std::string style = "";
+    std::string backgroundColor = "";
     if (row->References.size() == 0)
     {
-        style = " style=\"background-color:#ffc;\"";
+        backgroundColor = " style=\"background-color:#ffc;\"";
     }
     if (row->Issues.size() > 0)
     {
-        style = " style=\"background-color:#fcc;\"";
+        backgroundColor = " style=\"background-color:#fcc;\"";
+    }
+
+    double value;
+    std::string color{};
+    try
+    {
+        value = std::stod(row->Value);
+        if (value < 0)
+        {
+            color = " style=\"color: #FF0000;\"";
+        }
+        else
+        {
+            color = " style=\"color: #007F00;\"";
+        }
+    }
+    catch (const std::exception&)
+    {
+        color = "";
     }
 
     const std::string rowFormat = "<tr{8}><td><a "
                                   "href=\"{9}?id={0:#04}\">{0:#04}</a></td><td>{1}</"
                                   "td><td>{2}</td><td>{3}</td><td>{4}</"
-                                  "td><td>{5}</td><td>{6}</td><td>{7}</td></tr>\n";
-    std::string htmlTableRow = fmt::format(rowFormat, row->Id, row->Category, row->PayerPayee, row->Description,
-                                           row->Type, row->Date.ToString(), row->Account, row->Value, style, ITEM_HTML);
+                                  "td><td>{5}</td><td>{6}</td><td{10}>{7}</td></tr>\n";
+    std::string htmlTableRow
+        = fmt::format(rowFormat, row->Id, row->Category, row->PayerPayee, row->Description, row->Type,
+                      row->Date.ToString(), row->Account, row->Value, backgroundColor, ITEM_HTML, color);
     return htmlTableRow;
 }
 

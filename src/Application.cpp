@@ -118,7 +118,6 @@ std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
 
         _csvDatabase = std::make_unique<CsvDatabase>(_inputDirectory, _ruleSetFile);
 
-        Utils::PrintInfo("");
         Utils::PrintInfo(fmt::format("Found {} items (assigned: {}, unassigned: {}, issues: {})",
                                      _csvDatabase->Data.size(), _csvDatabase->Assigned.size(),
                                      _csvDatabase->Unassigned.size(), _csvDatabase->Issues.size()));
@@ -151,7 +150,6 @@ std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
 
     if (!batchMode)
     {
-        Utils::PrintInfo("");
         Utils::PrintInfo("Start HttpServer...");
         std::thread serverThread([&] {
             HttpServer httpServer(_csvDatabase.get());

@@ -9,6 +9,7 @@ namespace hokee
 {
 class HtmlGenerator
 {
+    static std::string GetHead();
     static std::string GetHeader(CsvDatabase* pDatabase);
     static std::string GetItemStart(CsvDatabase* pDatabase, const std::string& title);
     static std::string GetItemEnd();
@@ -37,9 +38,9 @@ class HtmlGenerator
     static constexpr const char* SETTINGS_HTML = "settings.html";
     static constexpr const char* EXIT_CMD = "exit";
 
-    static std::string GetProgressPage(int value, int max, const std::string& m1, const std::string& m2,
+    static std::string GetProgressPage(CsvDatabase* pDatabase, int value, int max, const std::string& m1, const std::string& m2,
                                        const std::string& m3, const std::string& m4);
-    static std::string GetErrorPage(int errorCode, const std::string& errorMessage);
+    static std::string GetErrorPage(CsvDatabase* pDatabase, int errorCode, const std::string& errorMessage);
     static std::string GetSummaryPage(CsvDatabase* pDatabase);
     static std::string GetItemPage(CsvDatabase* pDatabase, int id);
     static std::string GetTablePage(CsvDatabase* pDatabase, const std::string& title, const CsvTable& data);
