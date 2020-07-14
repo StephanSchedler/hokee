@@ -12,18 +12,16 @@
 
 namespace hokee
 {
-CsvDatabase* HttpServer::_pDatabase = nullptr;
-
 namespace
 {
-std::string GetParam(const httplib::Params& params, const std::string& key, const std::string& name)
+std::string GetParam(const httplib::Params& params, const std::string& param, const std::string& request)
 {
-    auto idIter = params.find(key);
+    auto idIter = params.find(param);
     if (idIter == params.end())
     {
         return "";
     }
-    Utils::PrintError(fmt::format("Read '{}' parameter from '{}' requests", key, name));
+    Utils::PrintError(fmt::format("Read '{}' parameter from '{}' requests", param, request));
     return idIter->second;
 }
 
@@ -69,48 +67,92 @@ void PrintRequest(const httplib::Request& req, const httplib::Response& res)
     //}
     Utils::PrintInfo("================================");
 }
+
+std::string GetRequestId(const httplib::Request& req)
+{
+    std::stringstream idStream;
+    idStream << req.path;
+    for (auto& p : req.params)
+    {
+        idStream << "?" << p.first << "=" << p.second;
+    }
+    return idStream.str();
+}
 } // namespace
 
-void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::Response& res)
+bool HttpServer::SetCacheContent(const httplib::Request& req, httplib::Response& res)
 {
+    const std::string reqId = GetRequestId(req);
+    auto i = _cache.find(reqId);
+    if (i != _cache.end())
+    {
+        res.set_content(i->second, "text/html");
+        return true;
+    }
+    return false;
+}
+
+void HttpServer::SetContent(const httplib::Request& req, httplib::Response& res, const std::string& content,
+                            const char* content_type)
+{
+    const std::string reqId = GetRequestId(req);
+    _cache[reqId] = content;
+    res.set_content(content, content_type);
+}
+
+inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::Response& res)
+{
+    // Check cache
+    if (SetCacheContent(req, res))
+    {
+        return;
+    }
+
+    // index.html
     if (req.path == std::string("/") + HtmlGenerator::INDEX_HTML)
     {
-        res.set_content(HtmlGenerator::GetSummaryPage(_pDatabase), "text/html");
+        SetContent(req, res, HtmlGenerator::GetSummaryPage(_pDatabase), "text/html");
         return;
     }
 
+    // all.html
     if (req.path == std::string("/") + HtmlGenerator::ALL_HTML)
     {
-        res.set_content(HtmlGenerator::GetTablePage(_pDatabase, "All items", _pDatabase->Data), "text/html");
+        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "All items", _pDatabase->Data), "text/html");
         return;
     }
 
+    // assigned.html
     if (req.path == std::string("/") + HtmlGenerator::ASSIGNED_HTML)
     {
-        res.set_content(HtmlGenerator::GetTablePage(_pDatabase, "Assigned items", _pDatabase->Assigned),
-                        "text/html");
+        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "Assigned items", _pDatabase->Assigned),
+                   "text/html");
         return;
     }
 
+    // unassigned.html
     if (req.path == std::string("/") + HtmlGenerator::UNASSIGNED_HTML)
     {
-        res.set_content(HtmlGenerator::GetTablePage(_pDatabase, "Unassigned items", _pDatabase->Unassigned),
-                        "text/html");
+        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "Unassigned items", _pDatabase->Unassigned),
+                   "text/html");
         return;
     }
 
+    // rules.html
     if (req.path == std::string("/") + HtmlGenerator::RULES_HTML)
     {
-        res.set_content(HtmlGenerator::GetTablePage(_pDatabase, "Rules", _pDatabase->Rules), "text/html");
+        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "Rules", _pDatabase->Rules), "text/html");
         return;
     }
 
+    // issues.html
     if (req.path == std::string("/") + HtmlGenerator::ISSUES_HTML)
     {
-        res.set_content(HtmlGenerator::GetTablePage(_pDatabase, "Issues", _pDatabase->Issues), "text/html");
+        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "Issues", _pDatabase->Issues), "text/html");
         return;
     }
 
+    // item.html
     if (req.path == std::string("/") + HtmlGenerator::ITEM_HTML)
     {
         const std::string idStr = GetParam(req.params, "id", HtmlGenerator::ITEM_HTML);
@@ -119,14 +161,15 @@ void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::Respons
             res.status = 404;
             std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
                                                    HtmlGenerator::ITEM_HTML, "id");
-            res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), "text/html");
+            res.set_content(HtmlGenerator::GetErrorPage(_pDatabase, res.status, errorMessage), "text/html");
             return;
         }
         const int id = std::stoi(idStr);
-        res.set_content(HtmlGenerator::GetItemPage(_pDatabase, id), "text/html");
+        SetContent(req, res, HtmlGenerator::GetItemPage(_pDatabase, id), "text/html");
         return;
     }
 
+    // items.html
     if (req.path == std::string("/") + HtmlGenerator::ITEMS_HTML)
     {
         const std::string yearStr = GetParam(req.params, "year", HtmlGenerator::ITEMS_HTML);
@@ -135,7 +178,7 @@ void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::Respons
             res.status = 404;
             std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
                                                    HtmlGenerator::ITEM_HTML, "year");
-            res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), "text/html");
+            res.set_content(HtmlGenerator::GetErrorPage(_pDatabase, res.status, errorMessage), "text/html");
             return;
         }
         const int year = std::stoi(yearStr);
@@ -162,13 +205,15 @@ void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::Respons
         {
             name = fmt::format("{}: {}", year, cat);
         }
-        res.set_content(HtmlGenerator::GetTablePage(_pDatabase, name, data), "text/html");
+        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, name, data), "text/html");
         return;
     }
 
+    // default
     res.status = 404;
-    res.set_content(HtmlGenerator::GetErrorPage(res.status, httplib::detail::status_message(res.status)),
-                    "text/html");
+    res.set_content(
+        HtmlGenerator::GetErrorPage(_pDatabase, res.status, httplib::detail::status_message(res.status)),
+        "text/html");
 }
 
 HttpServer::HttpServer(CsvDatabase* pDatabase)
@@ -186,16 +231,23 @@ HttpServer::HttpServer(CsvDatabase* pDatabase)
     });
 
     // Get Html page
-    _server->Get("/.*\\.html", HandleHtmlRequest);
+    _server->Get("/.*\\.html",
+                 [&](const httplib::Request& req, httplib::Response& res) { HandleHtmlRequest(req, res); });
 
     // Get Images
-    _server->Get("/(.*\\.png)", [](const httplib::Request& req, httplib::Response& res) {
-        std::string name = req.matches[1];
-        res.set_content(GetImageContent(name), "image/png");
+    _server->Get("/(.*\\.png)", [&](const httplib::Request& req, httplib::Response& res) {
+        if (!SetCacheContent(req, res))
+        {
+            std::string name = req.matches[1];
+            SetContent(req, res, GetImageContent(name), "image/png");
+        }
     });
-    _server->Get("/(.*\\.ico)", [](const httplib::Request& req, httplib::Response& res) {
-        std::string name = req.matches[1];
-        res.set_content(GetImageContent(name), "image/x-icon");
+    _server->Get("/(.*\\.ico)", [&](const httplib::Request& req, httplib::Response& res) {
+        if (!SetCacheContent(req, res))
+        {
+            std::string name = req.matches[1];
+            SetContent(req, res, GetImageContent(name), "image/x-icon");
+        }
     });
 
     // Exit
@@ -205,12 +257,11 @@ HttpServer::HttpServer(CsvDatabase* pDatabase)
                      _server->stop();
                  });
 
-    std::exit(EXIT_SUCCESS);
-
     // Set Error Handler
     _server->set_error_handler([&](const httplib::Request& /*req*/, httplib::Response& res) {
-        res.set_content(HtmlGenerator::GetErrorPage(res.status, httplib::detail::status_message(res.status)),
-                        "text/html");
+        res.set_content(
+            HtmlGenerator::GetErrorPage(_pDatabase, res.status, httplib::detail::status_message(res.status)),
+            "text/html");
     });
 
     // Set Logger
