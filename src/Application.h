@@ -15,7 +15,6 @@ class Application
     fs::path _inputDirectory{};
     fs::path _tempDirectory{};
     fs::path _ruleSetFile{};
-    std::unique_ptr<CsvDatabase> _csvDatabase = nullptr;
 
   public:
     Application(int argc, const char* argv[]);

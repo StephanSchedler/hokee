@@ -3,6 +3,7 @@
 #include "csv/CsvFormat.h"
 
 #include <string>
+#include <vector>
 #include <string_view>
 
 namespace hokee::Utils
@@ -11,6 +12,8 @@ std::vector<std::string> SplitLine(const std::string& s, char delimiter, bool ha
 std::string ToLower(const std::string& str);
 std::string ToUpper(const std::string& str);
 
+const std::vector<std::string> GetLastMessages();
+void PrintTrace(std::string_view msg);
 void PrintInfo(std::string_view msg);
 void PrintWarning(std::string_view msg);
 void PrintError(std::string_view msg);

@@ -38,9 +38,8 @@ class HtmlGenerator
     static constexpr const char* SETTINGS_HTML = "settings.html";
     static constexpr const char* EXIT_CMD = "exit";
 
-    static std::string GetProgressPage(CsvDatabase* pDatabase, int value, int max, const std::string& m1, const std::string& m2,
-                                       const std::string& m3, const std::string& m4);
-    static std::string GetErrorPage(CsvDatabase* pDatabase, int errorCode, const std::string& errorMessage);
+    static std::string GetProgressPage(size_t value, size_t max);
+    static std::string GetErrorPage(int errorCode, const std::string& errorMessage);
     static std::string GetSummaryPage(CsvDatabase* pDatabase);
     static std::string GetItemPage(CsvDatabase* pDatabase, int id);
     static std::string GetTablePage(CsvDatabase* pDatabase, const std::string& title, const CsvTable& data);
