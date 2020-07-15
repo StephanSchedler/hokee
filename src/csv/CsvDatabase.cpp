@@ -194,15 +194,12 @@ void CsvDatabase::AddRules(const fs::path& ruleSetFile, const fs::path& workingD
 void CsvDatabase::LoadRules(const fs::path& ruleSetFile)
 {
     std::unique_ptr<CsvParser> csvReader;
-    Utils::PrintInfo(fmt::format("Parse {}...", ruleSetFile.string()));
-
     csvReader = std::make_unique<CsvParser>(ruleSetFile, CsvRules::GetFormat());
     csvReader->Load(Rules);
 }
 
 void CsvDatabase::MatchRules()
 {
-    Utils::PrintInfo("Match rules...");
     // Reset Results
     for (auto& row : Data)
     {
@@ -237,13 +234,19 @@ void CsvDatabase::MatchRules()
     }
 }
 
-CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& ruleSetFile)
+void CsvDatabase::Load(const fs::path& inputDirectory, const fs::path& ruleSetFile)
 {
+    // Clear
+    Data.clear();
+    Unassigned.clear();
+    Assigned.clear();
+    Rules.clear();
+    Issues.clear();
+
     // detect number of file
-    int fileCounter = 0;
-    auto numberOfFiles
-        = std::distance(fs::recursive_directory_iterator(inputDirectory), fs::recursive_directory_iterator{});
-    numberOfFiles -= std::distance(fs::directory_iterator(inputDirectory), fs::directory_iterator{});
+    ProgressValue = 0;
+    ProgressMax = std::distance(fs::recursive_directory_iterator(inputDirectory), fs::recursive_directory_iterator{});
+    ProgressMax -= std::distance(fs::directory_iterator(inputDirectory), fs::directory_iterator{});
 
     for (const auto& dir : fs::directory_iterator(inputDirectory))
     {
@@ -255,7 +258,6 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& ruleSet
                 continue;
             }
 
-            Utils::PrintInfo(fmt::format("Found directory '{}':", dir.path().string()));
             fs::path formatFile = dir.path() / "format.ini";
             if (!fs::exists(formatFile))
             {
@@ -270,7 +272,7 @@ CsvDatabase::CsvDatabase(const fs::path& inputDirectory, const fs::path& ruleSet
                     continue;
                 }
                 Utils::PrintInfo(
-                    fmt::format("Parse '{}' {}/{}...", file.path().string(), ++fileCounter, numberOfFiles));
+                    fmt::format("Parse '{}' {}/{}...", file.path().string(), ++ProgressValue, ProgressMax));
 
                 std::unique_ptr<CsvParser> csvReader;
                 csvReader = std::make_unique<CsvParser>(file.path(), format);

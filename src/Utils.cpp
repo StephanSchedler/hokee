@@ -13,9 +13,22 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <mutex>
 
 namespace hokee::Utils
 {
+namespace {
+    std::mutex _lastMessageMutex{};
+    std::vector<std::string> _lastMessages{};
+}
+
+const std::vector<std::string> GetLastMessages()
+{
+    std::scoped_lock lock(_lastMessageMutex);
+    const std::vector<std::string> result = _lastMessages;
+    return result;
+}
+
 std::string ToLower(const std::string& str)
 {
     std::string result = str;
@@ -93,20 +106,48 @@ int GetUniqueId()
     return ++uniqueId;
 }
 
+void PrintTrace(std::string_view msg)
+{
+    std::cout << "TRACE: " << msg << std::endl;
+}
+
 void PrintInfo(std::string_view msg)
 {
-    std::cout << msg << std::endl;
+    const std::string msgString(msg);
+    std::cerr << msgString << std::endl;
+    
+    std::scoped_lock lock(_lastMessageMutex);
+    _lastMessages.emplace(_lastMessages.begin(), std::move(msgString));
+    while(_lastMessages.size() > 8)
+    {
+        _lastMessages.pop_back();
+    }
 }
 
 void PrintWarning(std::string_view msg)
 {
-    std::cout << "WARN:  " << msg << std::endl;
+    const std::string msgString = fmt::format("WARN:  {}", msg);
+    std::cerr << msgString << std::endl;
+    
+    std::scoped_lock lock(_lastMessageMutex);
+    _lastMessages.emplace(_lastMessages.begin(), std::move(msgString));
+    while(_lastMessages.size() > 8)
+    {
+        _lastMessages.pop_back();
+    }
 }
 
 void PrintError(std::string_view msg)
 {
-    std::cerr << std::endl;
-    std::cerr << "ERROR: " << msg << std::endl;
+    const std::string msgString = fmt::format("ERROR: {}", msg);
+    std::cerr << msgString << std::endl;
+    
+    std::scoped_lock lock(_lastMessageMutex);
+    _lastMessages.emplace(_lastMessages.begin(), std::move(msgString));
+    while(_lastMessages.size() > 8)
+    {
+        _lastMessages.pop_back();
+    }
 }
 
 bool AskYesNoQuestion(const std::string& question, bool defaultYes, bool batchMode)
@@ -116,7 +157,6 @@ bool AskYesNoQuestion(const std::string& question, bool defaultYes, bool batchMo
         return defaultYes;
     }
 
-    Utils::PrintInfo("");
     char answer;
     if (defaultYes)
     {

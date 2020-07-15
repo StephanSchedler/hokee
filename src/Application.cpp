@@ -104,6 +104,30 @@ Application::Application(int argc, const char* argv[])
 
 std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
 {
+    auto csvDatabase = std::make_unique<CsvDatabase>();
+    std::unique_ptr<std::thread> serverThread = nullptr;
+
+    std::unique_lock lock(csvDatabase->ReadLock, std::try_to_lock);
+    if (!lock.owns_lock())
+    {
+        throw UserException("Could not get lock on database!");
+    }
+
+    if (!batchMode)
+    {
+        Utils::PrintInfo("Start HttpServer...");
+        serverThread = std::make_unique<std::thread>([&] {
+            HttpServer httpServer(csvDatabase.get());
+            httpServer.Run();
+        });
+
+        Utils::PrintInfo("Open result...");
+        if (std::system(fmt::format("{} http://localhost", _config.GetBrowser()).c_str()) < 0)
+        {
+            throw UserException("Could not open result.");
+        }
+    }
+
     Utils::PrintInfo("Parse CSV files...");
 
     int maxIterations = 10;
@@ -116,54 +140,44 @@ std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
             throw InternalException(__FILE__, __LINE__, "Infinte loop in batchMode.");
         }
 
-        _csvDatabase = std::make_unique<CsvDatabase>(_inputDirectory, _ruleSetFile);
+        csvDatabase->Load(_inputDirectory, _ruleSetFile);
 
         Utils::PrintInfo(fmt::format("Found {} items (assigned: {}, unassigned: {}, issues: {})",
-                                     _csvDatabase->Data.size(), _csvDatabase->Assigned.size(),
-                                     _csvDatabase->Unassigned.size(), _csvDatabase->Issues.size()));
+                                     csvDatabase->Data.size(), csvDatabase->Assigned.size(),
+                                     csvDatabase->Unassigned.size(), csvDatabase->Issues.size()));
 
-        if (_csvDatabase->Unassigned.size() > 0)
+        if (csvDatabase->Unassigned.size() > 0)
         {
             bool defaultAddRules = _config.GetAddRules();
             if (Utils::AskYesNoQuestion("Add rules?", defaultAddRules, batchMode))
             {
                 std::string editor = _config.GetEditor();
-                _csvDatabase->AddRules(_ruleSetFile, _tempDirectory, editor);
+                csvDatabase->AddRules(_ruleSetFile, _tempDirectory, editor);
 
                 restart = true;
                 continue;
             }
         }
 
-        if (_csvDatabase->Issues.size() > 0 || _csvDatabase->Unassigned.size() > 0)
+        if (csvDatabase->Issues.size() > 0 || csvDatabase->Unassigned.size() > 0)
         {
             bool defaultUpdateRules = _config.GetUpdateRules();
             if (Utils::AskYesNoQuestion("Update rules & categories?", defaultUpdateRules, batchMode))
             {
                 std::string editor = _config.GetEditor();
-                _csvDatabase->UpdateRules(_ruleSetFile, editor);
+                csvDatabase->UpdateRules(_ruleSetFile, editor);
                 restart = true;
                 continue;
             }
         }
     } while (restart);
+    lock.unlock();
 
-    if (!batchMode)
+    if (serverThread)
     {
-        Utils::PrintInfo("Start HttpServer...");
-        std::thread serverThread([&] {
-            HttpServer httpServer(_csvDatabase.get());
-            httpServer.Run();
-        });
-
-        Utils::PrintInfo("Open result...");
-        if (std::system(fmt::format("{} http://localhost", _config.GetBrowser()).c_str()) < 0)
-        {
-            throw UserException("Could not open result.");
-        }
-        serverThread.join();
+        Utils::PrintTrace("Wait for server thread to exit");
+        serverThread->join();
     }
-
-    return std::move(_csvDatabase);
+    return csvDatabase;
 }
 } // namespace hokee

@@ -29,7 +29,7 @@ std::string GetImageContent(const std::string& name)
 {
     for (const auto& entry : fs::recursive_directory_iterator(fs::current_path() / ".." / "images"))
     {
-        if (entry.is_regular_file() && entry.path().filename().string() == name)
+        if (fs::is_regular_file(entry.path()) && entry.path().filename().string() == name)
         {
             std::ifstream ifstream(entry.path(), std::ios::binary);
             std::stringstream sstream{};
@@ -43,29 +43,29 @@ std::string GetImageContent(const std::string& name)
 
 void PrintRequest(const httplib::Request& req, const httplib::Response& res)
 {
-    Utils::PrintInfo("================================");
-    Utils::PrintInfo(fmt::format("{} {} {}", req.method, req.version, req.path));
+    Utils::PrintTrace("================================");
+    Utils::PrintTrace(fmt::format("{} {} {}", req.method, req.version, req.path));
     std::string query;
     for (auto& x : req.params)
     {
-        Utils::PrintInfo(fmt::format("{}={}", x.first, x.second));
+        Utils::PrintTrace(fmt::format("{}={}", x.first, x.second));
     }
     for (auto& x : req.headers)
     {
-        Utils::PrintInfo(fmt::format("{}: {}", x.first, x.second));
+        Utils::PrintTrace(fmt::format("{}: {}", x.first, x.second));
     }
-    Utils::PrintInfo("--------------------------------");
+    Utils::PrintTrace("--------------------------------");
 
-    Utils::PrintInfo(fmt::format("{} {}", res.status, res.version));
+    Utils::PrintTrace(fmt::format("{} {}", res.status, res.version));
     for (auto& x : res.headers)
     {
-        Utils::PrintInfo(fmt::format("{}: {}", x.first, x.second));
+        Utils::PrintTrace(fmt::format("{}: {}", x.first, x.second));
     }
     // if (!res.body.empty())
     //{
-    //    Utils::PrintInfo(res.body);
+    //    Utils::PrintTrace(res.body);
     //}
-    Utils::PrintInfo("================================");
+    Utils::PrintTrace("================================");
 }
 
 std::string GetRequestId(const httplib::Request& req)
@@ -105,6 +105,14 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     // Check cache
     if (SetCacheContent(req, res))
     {
+        return;
+    }
+
+    std::unique_lock<std::mutex> lock(_pDatabase->ReadLock, std::try_to_lock);
+    if (!lock.owns_lock())
+    {
+        res.set_content(HtmlGenerator::GetProgressPage(_pDatabase->ProgressValue, _pDatabase->ProgressMax),
+                        "text/html");
         return;
     }
 
@@ -161,7 +169,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
             res.status = 404;
             std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
                                                    HtmlGenerator::ITEM_HTML, "id");
-            res.set_content(HtmlGenerator::GetErrorPage(_pDatabase, res.status, errorMessage), "text/html");
+            res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), "text/html");
             return;
         }
         const int id = std::stoi(idStr);
@@ -178,7 +186,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
             res.status = 404;
             std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
                                                    HtmlGenerator::ITEM_HTML, "year");
-            res.set_content(HtmlGenerator::GetErrorPage(_pDatabase, res.status, errorMessage), "text/html");
+            res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), "text/html");
             return;
         }
         const int year = std::stoi(yearStr);
@@ -211,9 +219,8 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
 
     // default
     res.status = 404;
-    res.set_content(
-        HtmlGenerator::GetErrorPage(_pDatabase, res.status, httplib::detail::status_message(res.status)),
-        "text/html");
+    res.set_content(HtmlGenerator::GetErrorPage(res.status, httplib::detail::status_message(res.status)),
+                    "text/html");
 }
 
 HttpServer::HttpServer(CsvDatabase* pDatabase)
@@ -253,15 +260,14 @@ HttpServer::HttpServer(CsvDatabase* pDatabase)
     // Exit
     _server->Get((std::string("/") + HtmlGenerator::EXIT_CMD).c_str(),
                  [&](const httplib::Request& /*req*/, httplib::Response& /*res*/) {
-                     Utils::PrintInfo("Received exit request. Shutdown application...");
+                     Utils::PrintTrace("Received exit request. Shutdown application...");
                      _server->stop();
                  });
 
     // Set Error Handler
     _server->set_error_handler([&](const httplib::Request& /*req*/, httplib::Response& res) {
-        res.set_content(
-            HtmlGenerator::GetErrorPage(_pDatabase, res.status, httplib::detail::status_message(res.status)),
-            "text/html");
+        res.set_content(HtmlGenerator::GetErrorPage(res.status, httplib::detail::status_message(res.status)),
+                        "text/html");
     });
 
     // Set Logger

@@ -15,7 +15,7 @@ namespace hokee
 {
 class HttpServer
 {
-    std::unique_ptr<httplib::Server> _server = nullptr;
+    std::unique_ptr<httplib::Server> _server;
     CsvDatabase* _pDatabase = nullptr;
     std::unordered_map<std::string, std::string> _cache{};
     
@@ -24,6 +24,7 @@ class HttpServer
     void HandleHtmlRequest(const httplib::Request& req, httplib::Response& res);
 
   public:
+    HttpServer() = delete;
     HttpServer(CsvDatabase* pDatabase);
     ~HttpServer();
 

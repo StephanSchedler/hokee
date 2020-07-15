@@ -5,6 +5,8 @@
 #include "Utils.h"
 
 #include <array>
+#include <mutex>
+#include <atomic>
 
 namespace hokee
 {
@@ -17,14 +19,18 @@ class CsvDatabase
     void Sort(CsvTable& csvData);
 
   public:
-    CsvTable Data;
-    CsvTable Unassigned;
-    CsvTable Assigned;
+    CsvTable Data{};
+    CsvTable Unassigned{};
+    CsvTable Assigned{};
 
-    CsvRules Rules;
-    CsvTable Issues;
+    CsvRules Rules{};
+    CsvTable Issues{};
 
-    CsvDatabase(const fs::path& inputDirectory, const fs::path& ruleSetFile);
+    std::atomic<size_t> ProgressMax{100};
+    std::atomic<size_t> ProgressValue{0};
+    std::mutex ReadLock;
+
+    CsvDatabase() = default;
     ~CsvDatabase() = default;
 
     CsvDatabase(const CsvDatabase&) = delete;
@@ -32,6 +38,7 @@ class CsvDatabase
     CsvDatabase(CsvDatabase&&) = delete;
     CsvDatabase& operator=(CsvDatabase&&) = delete;
 
+    void Load(const fs::path& inputDirectory, const fs::path& ruleSetFile);
     void UpdateRules(const fs::path& ruleSetFile, const std::string& editor);
     void AddRules(const fs::path& ruleSetFile, const fs::path& workingDirectory, const std::string& editor);
 };

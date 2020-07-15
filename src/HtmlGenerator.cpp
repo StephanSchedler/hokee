@@ -205,7 +205,7 @@ std::string HtmlGenerator::GetTablePage(CsvDatabase* pDatabase, const std::strin
     return htmlPage.str();
 }
 
-std::string HtmlGenerator::GetErrorPage(CsvDatabase* pDatabase, int errorCode, const std::string& errorMessage)
+std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorMessage)
 {
     Utils::PrintError(fmt::format("HttpServer operation failed: {}", errorMessage));
     std::stringstream htmlPage{};
@@ -215,7 +215,6 @@ std::string HtmlGenerator::GetErrorPage(CsvDatabase* pDatabase, int errorCode, c
     htmlPage << GetHead();
     htmlPage << "  </head>\n"
                 "  <body>\n";
-    htmlPage << GetHeader(pDatabase);
     htmlPage << fmt::format("    <main style=\"padding: 50px 0;\">\n"
                             "      <div style=\"text-align:center;\n"
                             "                   color: red;\n"
@@ -235,18 +234,26 @@ std::string HtmlGenerator::GetErrorPage(CsvDatabase* pDatabase, int errorCode, c
     return htmlPage.str();
 }
 
-std::string HtmlGenerator::GetProgressPage(CsvDatabase* pDatabase, int value, int max, const std::string& m1,
-                                           const std::string& m2, const std::string& m3, const std::string& m4)
+std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
 {
+    const std::vector<std::string> lastMessages = Utils::GetLastMessages();
+    const std::string m0 = lastMessages.size() > 0 ? lastMessages[0] : "";
+    const std::string m1 = lastMessages.size() > 1 ? lastMessages[1] : "";
+    const std::string m2 = lastMessages.size() > 2 ? lastMessages[2] : "";
+    const std::string m3 = lastMessages.size() > 3 ? lastMessages[3] : "";
+    const std::string m4 = lastMessages.size() > 4 ? lastMessages[4] : "";
+    const std::string m5 = lastMessages.size() > 5 ? lastMessages[5] : "";
+    const std::string m6 = lastMessages.size() > 6 ? lastMessages[6] : "";
+    const std::string m7 = lastMessages.size() > 7 ? lastMessages[7] : "";
+
     std::stringstream htmlPage{};
     htmlPage << "<!DOCTYPE html>\n"
                 "<html>\n"
                 "  <head>\n";
     htmlPage << GetHead();
-    htmlPage << "    <meta http-equiv=\"refresh\" content=\"0.33\">\n"
+    htmlPage << "    <meta http-equiv=\"refresh\" content=\"1\">\n"
                 "  </head>\n"
                 "  <body>\n";
-    htmlPage << GetHeader(pDatabase);
     htmlPage << fmt::format("    <main style=\"padding: 50px 0;\">\n"
                             "      <div style=\"text-align:center;\n"
                             "                   margin: auto;\n"
@@ -255,14 +262,18 @@ std::string HtmlGenerator::GetProgressPage(CsvDatabase* pDatabase, int value, in
                             "                   background: #F0F0F0;\n"
                             "                   border: 1px solid #DDD;\n"
                             "                   box-shadow: 3px 3px 0px rgba(0,0,0, .2);\">\n"
-                            "        <div style=\"color: #D0D0D0\">{}</div>\n"
-                            "        <div style=\"color: #B0B0B0\">{}</div>\n"
-                            "        <div style=\"color: #707070\">{}</div>\n"
+                            "        <div style=\"color: #E0E0E0\">{}</div>\n"
+                            "        <div style=\"color: #C0C0C0\">{}</div>\n"
+                            "        <div style=\"color: #A0A0A0\">{}</div>\n"
+                            "        <div style=\"color: #808080\">{}</div>\n"
+                            "        <div style=\"color: #606060\">{}</div>\n"
+                            "        <div style=\"color: #$04040\">{}</div>\n"
+                            "        <div style=\"color: #202020\">{}</div>\n"
                             "        <div style=\"color: #000000\">{}</div>\n"
                             "        <div><progress value=\"{}\" max=\"{}\"/></div>\n"
                             "      </div>\n"
                             "    </main>\n",
-                            m1, m2, m3, m4, value, max);
+                            m7, m6, m5, m4, m3, m2, m1, m0, value, max);
     htmlPage << "  </body>\n"
                 "</html>";
     return htmlPage.str();
