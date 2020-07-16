@@ -59,8 +59,8 @@ std::string HtmlGenerator::GetHeader(CsvDatabase* pDatabase)
 
     result << "<td style=\"border: hidden\" width=\"99%\"></td>";
 
-    result << fmt::format(fmtButton, UPDATE_HTML, "sign-sync.png", "Update");
-    result << fmt::format(fmtButton, UPDATE_HTML, "search.png", "Search");
+    result << fmt::format(fmtButton, RELOAD_CMD, "sign-sync.png", "Update");
+    result << fmt::format(fmtButton, SEARCH_HTML, "search.png", "Search");
     result << fmt::format(fmtButton, SETTINGS_HTML, "cogs.png", "Settings");
     result << fmt::format(fmtButton, EXIT_CMD, "sign-error.png", "Exit");
 

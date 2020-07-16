@@ -15,9 +15,14 @@ namespace hokee
 {
 class HttpServer
 {
+    static constexpr const char* CONTENT_TYPE_HTML = "text/html";
+    static constexpr const char* CONTENT_TYPE_PNG = "image/png";
+    static constexpr const char* CONTENT_TYPE_ICO = "image/x-icon";
+
     std::unique_ptr<httplib::Server> _server;
     CsvDatabase* _pDatabase = nullptr;
-    std::unordered_map<std::string, std::string> _cache{};
+    std::unordered_map<std::string, std::pair<std::string, std::string>> _cache{};
+    std::string _lastUrl{"/"};
     
     bool SetCacheContent(const httplib::Request& req, httplib::Response& res);
     void SetContent(const httplib::Request& req, httplib::Response& res, const std::string& content, const char* content_type);

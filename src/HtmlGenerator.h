@@ -34,9 +34,10 @@ class HtmlGenerator
     static constexpr const char* ISSUES_HTML = "issues.html";
     static constexpr const char* ITEM_HTML = "item.html";
     static constexpr const char* ITEMS_HTML = "items.html";
-    static constexpr const char* UPDATE_HTML = "update.html";
     static constexpr const char* SETTINGS_HTML = "settings.html";
+    static constexpr const char* SEARCH_HTML = "search.html";
     static constexpr const char* EXIT_CMD = "exit";
+    static constexpr const char* RELOAD_CMD = "reload";
 
     static std::string GetProgressPage(size_t value, size_t max);
     static std::string GetErrorPage(int errorCode, const std::string& errorMessage);

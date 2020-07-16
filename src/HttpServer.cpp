@@ -68,13 +68,21 @@ void PrintRequest(const httplib::Request& req, const httplib::Response& res)
     Utils::PrintTrace("================================");
 }
 
-std::string GetRequestId(const httplib::Request& req)
+std::string GetUrl(const httplib::Request& req)
 {
     std::stringstream idStream;
     idStream << req.path;
+    size_t paramCount = 0;
     for (auto& p : req.params)
     {
-        idStream << "?" << p.first << "=" << p.second;
+        if (0 == paramCount++)
+        {
+            idStream << "?" << p.first << "=" << p.second;
+        }
+        else
+        {
+            idStream << "&" << p.first << "=" << p.second;
+        }
     }
     return idStream.str();
 }
@@ -82,11 +90,15 @@ std::string GetRequestId(const httplib::Request& req)
 
 bool HttpServer::SetCacheContent(const httplib::Request& req, httplib::Response& res)
 {
-    const std::string reqId = GetRequestId(req);
-    auto i = _cache.find(reqId);
+    const std::string url = GetUrl(req);
+    auto i = _cache.find(url);
     if (i != _cache.end())
     {
-        res.set_content(i->second, "text/html");
+        res.set_content(i->second.first, i->second.second.c_str());
+        if (std::string(i->second.second) == CONTENT_TYPE_HTML)
+        {
+            _lastUrl = i->first;
+        }
         return true;
     }
     return false;
@@ -95,8 +107,12 @@ bool HttpServer::SetCacheContent(const httplib::Request& req, httplib::Response&
 void HttpServer::SetContent(const httplib::Request& req, httplib::Response& res, const std::string& content,
                             const char* content_type)
 {
-    const std::string reqId = GetRequestId(req);
-    _cache[reqId] = content;
+    const std::string url = GetUrl(req);
+    _cache[url] = std::pair<std::string, std::string>(content, content_type);
+    if (std::string(content_type) == CONTENT_TYPE_HTML)
+    {
+        _lastUrl = url;
+    }
     res.set_content(content, content_type);
 }
 
@@ -112,21 +128,22 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     if (!lock.owns_lock())
     {
         res.set_content(HtmlGenerator::GetProgressPage(_pDatabase->ProgressValue, _pDatabase->ProgressMax),
-                        "text/html");
+                        CONTENT_TYPE_HTML);
         return;
     }
 
     // index.html
     if (req.path == std::string("/") + HtmlGenerator::INDEX_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetSummaryPage(_pDatabase), "text/html");
+        SetContent(req, res, HtmlGenerator::GetSummaryPage(_pDatabase), CONTENT_TYPE_HTML);
         return;
     }
 
     // all.html
     if (req.path == std::string("/") + HtmlGenerator::ALL_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "All items", _pDatabase->Data), "text/html");
+        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "All items", _pDatabase->Data),
+                   CONTENT_TYPE_HTML);
         return;
     }
 
@@ -134,7 +151,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     if (req.path == std::string("/") + HtmlGenerator::ASSIGNED_HTML)
     {
         SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "Assigned items", _pDatabase->Assigned),
-                   "text/html");
+                   CONTENT_TYPE_HTML);
         return;
     }
 
@@ -142,21 +159,23 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     if (req.path == std::string("/") + HtmlGenerator::UNASSIGNED_HTML)
     {
         SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "Unassigned items", _pDatabase->Unassigned),
-                   "text/html");
+                   CONTENT_TYPE_HTML);
         return;
     }
 
     // rules.html
     if (req.path == std::string("/") + HtmlGenerator::RULES_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "Rules", _pDatabase->Rules), "text/html");
+        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "Rules", _pDatabase->Rules),
+                   CONTENT_TYPE_HTML);
         return;
     }
 
     // issues.html
     if (req.path == std::string("/") + HtmlGenerator::ISSUES_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "Issues", _pDatabase->Issues), "text/html");
+        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "Issues", _pDatabase->Issues),
+                   CONTENT_TYPE_HTML);
         return;
     }
 
@@ -169,11 +188,11 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
             res.status = 404;
             std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
                                                    HtmlGenerator::ITEM_HTML, "id");
-            res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), "text/html");
+            res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
             return;
         }
         const int id = std::stoi(idStr);
-        SetContent(req, res, HtmlGenerator::GetItemPage(_pDatabase, id), "text/html");
+        SetContent(req, res, HtmlGenerator::GetItemPage(_pDatabase, id), CONTENT_TYPE_HTML);
         return;
     }
 
@@ -186,7 +205,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
             res.status = 404;
             std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
                                                    HtmlGenerator::ITEM_HTML, "year");
-            res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), "text/html");
+            res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
             return;
         }
         const int year = std::stoi(yearStr);
@@ -213,14 +232,14 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
         {
             name = fmt::format("{}: {}", year, cat);
         }
-        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, name, data), "text/html");
+        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, name, data), CONTENT_TYPE_HTML);
         return;
     }
 
     // default
     res.status = 404;
     res.set_content(HtmlGenerator::GetErrorPage(res.status, httplib::detail::status_message(res.status)),
-                    "text/html");
+                    CONTENT_TYPE_HTML);
 }
 
 HttpServer::HttpServer(CsvDatabase* pDatabase)
@@ -246,14 +265,14 @@ HttpServer::HttpServer(CsvDatabase* pDatabase)
         if (!SetCacheContent(req, res))
         {
             std::string name = req.matches[1];
-            SetContent(req, res, GetImageContent(name), "image/png");
+            SetContent(req, res, GetImageContent(name), CONTENT_TYPE_PNG);
         }
     });
     _server->Get("/(.*\\.ico)", [&](const httplib::Request& req, httplib::Response& res) {
         if (!SetCacheContent(req, res))
         {
             std::string name = req.matches[1];
-            SetContent(req, res, GetImageContent(name), "image/x-icon");
+            SetContent(req, res, GetImageContent(name), CONTENT_TYPE_ICO);
         }
     });
 
@@ -264,10 +283,18 @@ HttpServer::HttpServer(CsvDatabase* pDatabase)
                      _server->stop();
                  });
 
+    // Clear cache, reload
+    _server->Get((std::string("/") + HtmlGenerator::RELOAD_CMD).c_str(),
+                 [&](const httplib::Request& /*req*/, httplib::Response& res) {
+                     Utils::PrintTrace("Received reload request. Clear cache and reload...");
+                     _cache.clear();
+                     res.set_redirect(_lastUrl.c_str());
+                 });
+
     // Set Error Handler
     _server->set_error_handler([&](const httplib::Request& /*req*/, httplib::Response& res) {
         res.set_content(HtmlGenerator::GetErrorPage(res.status, httplib::detail::status_message(res.status)),
-                        "text/html");
+                        CONTENT_TYPE_HTML);
     });
 
     // Set Logger
