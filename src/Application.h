@@ -1,16 +1,17 @@
 #pragma once
 
-#include "csv/CsvDatabase.h"
 #include "Settings.h"
+#include "csv/CsvDatabase.h"
 
 #include <cstdint>
 #include <memory>
-
 
 namespace hokee
 {
 class Application
 {
+    bool _batchMode{false};
+    bool _interactiveMode{false};
     Settings _config;
     fs::path _inputDirectory{};
     fs::path _tempDirectory{};
@@ -25,7 +26,7 @@ class Application
     Application(Application&&) = delete;
     Application& operator=(Application&&) = delete;
 
-    std::unique_ptr<CsvDatabase> Run(bool batchMode);
+    std::unique_ptr<CsvDatabase> Run();
 };
 
 } // namespace hokee
