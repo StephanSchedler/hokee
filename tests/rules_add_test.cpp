@@ -11,64 +11,23 @@
 
 using namespace hokee;
 
-void TerminationHandler()
-{
-    Utils::PrintError("!!! Unhandled exception !!!");
-
-    // Try to decode exception message
-    try
-    {
-        if (std::current_exception())
-        {
-            std::rethrow_exception(std::current_exception());
-        }
-    }
-    catch (std::exception& e)
-    {
-        std::cerr << "=> " << e.what() << std::endl;
-    }
-    catch (...)
-    {
-        std::cerr << "=> ???" << std::endl;
-    }
-
-    std::cerr << std::endl;
-
-    std::exit(-3);
-}
-
-void TerminationHandler(const std::exception& e)
-{
-    Utils::PrintError("!!! Caught exception !!!");
-    std::cerr << "=> " << e.what() << std::endl;
-    std::cerr << std::endl;
-
-    std::exit(-2);
-}
-
-void TerminationHandler(const UserException& e)
-{
-    Utils::PrintError(e.what());
-    std::abort();
-}
-
 int main(int /*unused*/, const char* argv[])
 {
-    std::set_terminate(&TerminationHandler);
+    std::set_terminate([]{Utils::TerminationHandler(false);});
 
     bool success = true;
     try
     {
-        int testArgc = 2;
         Settings config;
         std::string configPath = "../test_data/rules_add_test/rules_add_test.ini";
         config.SetAddRules(false);
         config.SetUpdateRules(false);
         config.SetRuleSetFile("rules_add_test.csv");
         config.Save(configPath);
-        const char* testArgv[] = {argv[0], configPath.c_str(), nullptr};
+        const char* testArgv[] = {argv[0], "-i", "-b", configPath.c_str(), nullptr};
+        int testArgc = sizeof(testArgv)/sizeof(testArgv[0]) - 1;
         auto app = std::make_unique<Application>(testArgc, testArgv);
-        std::unique_ptr<CsvDatabase> database = app->Run(true);
+        std::unique_ptr<CsvDatabase> database = app->Run();
 
         // Check results
         uint64_t expectedAssignedSize = 0;
@@ -103,7 +62,7 @@ int main(int /*unused*/, const char* argv[])
 #endif
         config.Save(configPath);
         Application app2(testArgc, testArgv);
-        database = app2.Run(true);
+        database = app2.Run();
 
         // Check result
         expectedAssignedSize = database->Data.size();
@@ -139,15 +98,15 @@ int main(int /*unused*/, const char* argv[])
     }
     catch (const UserException& e)
     {
-        TerminationHandler(e);
+        Utils::TerminationHandler(e, false);
     }
     catch (const std::exception& e)
     {
-        TerminationHandler(e);
+        Utils::TerminationHandler(e, false);
     }
     catch (...)
     {
-        TerminationHandler();
+        Utils::TerminationHandler(false);
     }
 
     return success ? 0 : -1;

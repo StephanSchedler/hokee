@@ -1,5 +1,6 @@
 #include "HttpServer.h"
 #include "Filesystem.h"
+#include "InternalException.h"
 #include "Utils.h"
 
 #include <chrono>
@@ -124,10 +125,10 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
         return;
     }
 
-    std::unique_lock<std::mutex> lock(_pDatabase->ReadLock, std::try_to_lock);
+    std::unique_lock<std::timed_mutex> lock(_databaseMutex, std::try_to_lock);
     if (!lock.owns_lock())
     {
-        res.set_content(HtmlGenerator::GetProgressPage(_pDatabase->ProgressValue, _pDatabase->ProgressMax),
+        res.set_content(HtmlGenerator::GetProgressPage(_database.ProgressValue, _database.ProgressMax),
                         CONTENT_TYPE_HTML);
         return;
     }
@@ -135,14 +136,14 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     // index.html
     if (req.path == std::string("/") + HtmlGenerator::INDEX_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetSummaryPage(_pDatabase), CONTENT_TYPE_HTML);
+        SetContent(req, res, HtmlGenerator::GetSummaryPage(_database), CONTENT_TYPE_HTML);
         return;
     }
 
     // all.html
     if (req.path == std::string("/") + HtmlGenerator::ALL_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "All items", _pDatabase->Data),
+        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "All items", _database.Data),
                    CONTENT_TYPE_HTML);
         return;
     }
@@ -150,7 +151,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     // assigned.html
     if (req.path == std::string("/") + HtmlGenerator::ASSIGNED_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "Assigned items", _pDatabase->Assigned),
+        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "Assigned items", _database.Assigned),
                    CONTENT_TYPE_HTML);
         return;
     }
@@ -158,7 +159,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     // unassigned.html
     if (req.path == std::string("/") + HtmlGenerator::UNASSIGNED_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "Unassigned items", _pDatabase->Unassigned),
+        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "Unassigned items", _database.Unassigned),
                    CONTENT_TYPE_HTML);
         return;
     }
@@ -166,15 +167,14 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     // rules.html
     if (req.path == std::string("/") + HtmlGenerator::RULES_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "Rules", _pDatabase->Rules),
-                   CONTENT_TYPE_HTML);
+        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "Rules", _database.Rules), CONTENT_TYPE_HTML);
         return;
     }
 
     // issues.html
     if (req.path == std::string("/") + HtmlGenerator::ISSUES_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, "Issues", _pDatabase->Issues),
+        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "Issues", _database.Issues),
                    CONTENT_TYPE_HTML);
         return;
     }
@@ -192,7 +192,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
             return;
         }
         const int id = std::stoi(idStr);
-        SetContent(req, res, HtmlGenerator::GetItemPage(_pDatabase, id), CONTENT_TYPE_HTML);
+        SetContent(req, res, HtmlGenerator::GetItemPage(_database, id), CONTENT_TYPE_HTML);
         return;
     }
 
@@ -218,7 +218,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
         const std::string cat = GetParam(req.params, "category", HtmlGenerator::ITEMS_HTML);
 
         CsvTable data{};
-        for (auto& item : _pDatabase->Data)
+        for (auto& item : _database.Data)
         {
             if (year == item->Date.GetYear() && (month == 0 || month == item->Date.GetMonth())
                 && (cat == "" || cat == item->Category))
@@ -232,7 +232,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
         {
             name = fmt::format("{}: {}", year, cat);
         }
-        SetContent(req, res, HtmlGenerator::GetTablePage(_pDatabase, name, data), CONTENT_TYPE_HTML);
+        SetContent(req, res, HtmlGenerator::GetTablePage(_database, name, data), CONTENT_TYPE_HTML);
         return;
     }
 
@@ -242,14 +242,15 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
                     CONTENT_TYPE_HTML);
 }
 
-HttpServer::HttpServer(CsvDatabase* pDatabase)
+HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile)
     : _server{std::make_unique<httplib::Server>()}
+    , _inputDirectory{inputDirectory}
+    , _ruleSetFile{ruleSetFile}
 {
     if (!_server->is_valid())
     {
         throw UserException("Could not initialize HttpServer");
     }
-    HttpServer::_pDatabase = pDatabase;
 
     // Get root
     _server->Get("/", [](const httplib::Request& /*req*/, httplib::Response& res) {
@@ -281,6 +282,10 @@ HttpServer::HttpServer(CsvDatabase* pDatabase)
                  [&](const httplib::Request& /*req*/, httplib::Response& /*res*/) {
                      Utils::PrintTrace("Received exit request. Shutdown application...");
                      _server->stop();
+                     if (_loadThread)
+                     {
+                         _loadThread->join();
+                     }
                  });
 
     // Clear cache, reload
@@ -288,6 +293,7 @@ HttpServer::HttpServer(CsvDatabase* pDatabase)
                  [&](const httplib::Request& /*req*/, httplib::Response& res) {
                      Utils::PrintTrace("Received reload request. Clear cache and reload...");
                      _cache.clear();
+                     Load();
                      res.set_redirect(_lastUrl.c_str());
                  });
 
@@ -299,12 +305,46 @@ HttpServer::HttpServer(CsvDatabase* pDatabase)
 
     // Set Logger
     _server->set_logger([](const httplib::Request& req, const httplib::Response& res) { PrintRequest(req, res); });
+
+    // Start LoadThread
+    Load();
 }
 
 HttpServer::~HttpServer()
 {
     _server->stop();
     _server.reset();
+}
+
+void HttpServer::Load()
+{
+    if (_loadThread)
+    {
+        _loadThread->join();
+    }
+    _loadThread = std::make_unique<std::thread>([&] {
+        try
+        {
+            std::unique_lock<std::timed_mutex> lock(_databaseMutex, std::chrono::seconds(2));
+            if (!lock.owns_lock())
+            {
+                throw InternalException(__FILE__, __LINE__, "TIMEOUT: Could not aquire database lock.");
+            }
+            _database.Load(_inputDirectory, _ruleSetFile);
+        }
+        catch (const UserException& e)
+        {
+            Utils::TerminationHandler(e, false);
+        }
+        catch (const std::exception& e)
+        {
+            Utils::TerminationHandler(e, false);
+        }
+        catch (...)
+        {
+            Utils::TerminationHandler(false);
+        }
+    });
 }
 
 void HttpServer::Run()

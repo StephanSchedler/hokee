@@ -15,7 +15,7 @@
 
 namespace hokee
 {
-std::string HtmlGenerator::GetHeader(CsvDatabase* pDatabase)
+std::string HtmlGenerator::GetHeader(const CsvDatabase& database)
 {
     std::stringstream result;
 
@@ -27,35 +27,35 @@ std::string HtmlGenerator::GetHeader(CsvDatabase* pDatabase)
           "src=\"{}\"></main><footer style=\"text-align:center;\">{}</footer></a></td>";
     result << fmt::format(fmtButton, INDEX_HTML, "money.png", "Summary");
 
-    result << fmt::format(fmtButton, ALL_HTML, "database.png", fmt::format("All({})", pDatabase->Data.size()));
+    result << fmt::format(fmtButton, ALL_HTML, "database.png", fmt::format("All({})", database.Data.size()));
 
     result << fmt::format(fmtButton, ASSIGNED_HTML, "sign-check.png",
-                          fmt::format("Assigned ({})", pDatabase->Assigned.size()));
+                          fmt::format("Assigned ({})", database.Assigned.size()));
 
-    if (pDatabase->Unassigned.size() == 0)
+    if (database.Unassigned.size() == 0)
     {
         result << fmt::format(fmtButton, UNASSIGNED_HTML, "sign-delete2.png",
-                              fmt::format("Unassigned ({})", pDatabase->Unassigned.size()));
+                              fmt::format("Unassigned ({})", database.Unassigned.size()));
     }
     else
     {
         result << fmt::format(fmtButton, UNASSIGNED_HTML, "sign-delete.png",
-                              fmt::format("Unassigned ({})", pDatabase->Unassigned.size()));
+                              fmt::format("Unassigned ({})", database.Unassigned.size()));
     }
 
-    if (pDatabase->Issues.size() == 0)
+    if (database.Issues.size() == 0)
     {
         result << fmt::format(fmtButton, ISSUES_HTML, "sign-warning2.png",
-                              fmt::format("Issues ({})", pDatabase->Issues.size()));
+                              fmt::format("Issues ({})", database.Issues.size()));
     }
     else
     {
         result << fmt::format(fmtButton, ISSUES_HTML, "sign-warning.png",
-                              fmt::format("Issues ({})", pDatabase->Issues.size()));
+                              fmt::format("Issues ({})", database.Issues.size()));
     }
 
     result << fmt::format(fmtButton, RULES_HTML, "notepad.png",
-                          fmt::format("Rules ({})", pDatabase->Rules.size()));
+                          fmt::format("Rules ({})", database.Rules.size()));
 
     result << "<td style=\"border: hidden\" width=\"99%\"></td>";
 
@@ -70,13 +70,13 @@ std::string HtmlGenerator::GetHeader(CsvDatabase* pDatabase)
     return result.str();
 }
 
-std::string HtmlGenerator::GetSummaryPage(CsvDatabase* pDatabase)
+std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
 {
     std::stringstream htmlPage;
-    htmlPage << GetItemStart(pDatabase, "Summary");
+    htmlPage << GetItemStart(database, "Summary");
 
     std::vector<std::string> categories{""};
-    for (auto& rule : pDatabase->Rules)
+    for (auto& rule : database.Rules)
     {
         if (std::find(categories.begin(), categories.end(), rule->Category) == categories.end())
         {
@@ -86,15 +86,15 @@ std::string HtmlGenerator::GetSummaryPage(CsvDatabase* pDatabase)
 
     int minYear = 3000;
     int maxYear = 1900;
-    std::map<int, std::map<int, std::map<std::string, CsvTable>>> database;
-    for (auto& item : pDatabase->Data)
+    std::map<int, std::map<int, std::map<std::string, CsvTable>>> sortedTables;
+    for (auto& item : database.Data)
     {
         const int year = item->Date.GetYear();
         const int month = item->Date.GetMonth();
-        database[year][0][categories[0]].push_back(item);
-        database[year][0][item->Category].push_back(item);
-        database[year][month][categories[0]].push_back(item);
-        database[year][month][item->Category].push_back(item);
+        sortedTables[year][0][categories[0]].push_back(item);
+        sortedTables[year][0][item->Category].push_back(item);
+        sortedTables[year][month][categories[0]].push_back(item);
+        sortedTables[year][month][item->Category].push_back(item);
 
         if (minYear > year)
         {
@@ -136,7 +136,7 @@ std::string HtmlGenerator::GetSummaryPage(CsvDatabase* pDatabase)
                     = fmt::format("{}?year={}&month={}&category={}", ITEMS_HTML, year, month, cat);
 
                 double sum = 0;
-                for (auto& item : database[year][month][cat])
+                for (auto& item : sortedTables[year][month][cat])
                 {
                     if (item->Category == "Ignorieren" && cat != "Ignorieren")
                     {
@@ -191,10 +191,10 @@ std::string HtmlGenerator::GetSummaryPage(CsvDatabase* pDatabase)
     return htmlPage.str();
 }
 
-std::string HtmlGenerator::GetTablePage(CsvDatabase* pDatabase, const std::string& title, const CsvTable& data)
+std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::string& title, const CsvTable& data)
 {
     std::stringstream htmlPage;
-    htmlPage << GetItemStart(pDatabase, title);
+    htmlPage << GetItemStart(database, title);
     htmlPage << GetTableStart();
     for (const auto& row : data)
     {
@@ -279,12 +279,12 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
     return htmlPage.str();
 }
 
-std::string HtmlGenerator::GetItemPage(CsvDatabase* pDatabase, int id)
+std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
 {
     std::string title = "";
     bool isItem = false;
     std::shared_ptr<CsvItem> item = nullptr;
-    for (auto& i : pDatabase->Data)
+    for (auto& i : database.Data)
     {
         if (i->Id == id)
         {
@@ -296,7 +296,7 @@ std::string HtmlGenerator::GetItemPage(CsvDatabase* pDatabase, int id)
     }
     if (!item)
     {
-        for (auto& r : pDatabase->Rules)
+        for (auto& r : database.Rules)
         {
             if (r->Id == id)
             {
@@ -313,7 +313,7 @@ std::string HtmlGenerator::GetItemPage(CsvDatabase* pDatabase, int id)
     }
 
     std::stringstream htmlPage;
-    htmlPage << GetItemStart(pDatabase, title);
+    htmlPage << GetItemStart(database, title);
     htmlPage << GetTableStart();
     htmlPage << GetTableRow(item.get());
     htmlPage << GetTableEnd();
@@ -382,7 +382,7 @@ std::string HtmlGenerator::GetHead()
            "    </style>\n";
 }
 
-std::string HtmlGenerator::GetItemStart(CsvDatabase* pDatabase, const std::string& title)
+std::string HtmlGenerator::GetItemStart(const CsvDatabase& database, const std::string& title)
 {
     std::stringstream htmlPage{};
     htmlPage << "<!DOCTYPE html>\n"
@@ -391,7 +391,7 @@ std::string HtmlGenerator::GetItemStart(CsvDatabase* pDatabase, const std::strin
     htmlPage << GetHead();
     htmlPage << "  </head>\n"
                 "  <body>\n";
-    htmlPage << GetHeader(pDatabase);
+    htmlPage << GetHeader(database);
     htmlPage << "    <main>\n";
     htmlPage << fmt::format("      <h2>{}</h2>\n", title);
 

@@ -23,7 +23,53 @@ Application::Application(int argc, const char* argv[])
 {
     // parse commandline arguments
     fs::path configPath = "";
-    if (argc == 1)
+    for (int i = 1; i < argc; ++i)
+    {
+        std::string arg(argv[i]);
+
+        if (arg == "--help" || arg == "-h" || arg == "-help" || arg == "-?")
+        {
+            Utils::PrintInfo(fmt::format("{} version {}", fs::path(argv[0]).filename().string(), PROJECT_VERSION));
+            Utils::PrintInfo(fmt::format("{} ({})", PROJECT_DESCRIPTION, PROJECT_HOMEPAGE_URL));
+            Utils::PrintInfo("");
+            Utils::PrintInfo("usage: hokee [-i|--interactive [-b|--batch]] [path] | [-h|--help] | [-v|--version]");
+            Utils::PrintInfo(
+                "  -b,--batch      - Batch mode that does not ask questions for interactive mode, but");
+            Utils::PrintInfo("                    uses default values from settings file.");
+            Utils::PrintInfo("  -h,--help       - Show this help.");
+            Utils::PrintInfo(
+                "  -i,--iteractive - Interactive commandline mode that does not start the webserver.");
+            Utils::PrintInfo("                    If there are issues or unassigned items, user can fix them.");
+            Utils::PrintInfo("  -v,--version    - Show this help.");
+            Utils::PrintInfo("  path            - Path to config file.");
+            Utils::PrintInfo("                    (default: ~/hokee/hokee.ini)");
+            std::exit(EXIT_SUCCESS);
+        }
+        else if (arg == "-v" || arg == "-version" || arg == "--version")
+        {
+            Utils::PrintInfo(fmt::format("{} version {}", fs::path(argv[0]).filename().string(), PROJECT_VERSION));
+            Utils::PrintInfo(fmt::format("{} ({})", PROJECT_DESCRIPTION, PROJECT_HOMEPAGE_URL));
+            std::exit(EXIT_SUCCESS);
+        }
+        else if (arg == "-b" || arg == "-batch" || arg == "--batch")
+        {
+            _batchMode = true;
+        }
+        else if (arg == "-i" || arg == "-interactive" || arg == "--interactive")
+        {
+            _interactiveMode = true;
+        }
+        else
+        {
+            configPath = fs::absolute(arg);
+            if (!fs::exists(configPath))
+            {
+                throw UserException(fmt::format("Could not find config file '{}'.", configPath.string()));
+            }
+        }
+    }
+
+    if (configPath.empty())
     {
         configPath = fs::absolute(Utils::GetHomePath() / "hokee" / "hokee.ini");
         if (!fs::exists(configPath))
@@ -38,24 +84,6 @@ Application::Application(int argc, const char* argv[])
             Settings config;
             config.Save(configPath);
         }
-    }
-    else if (argc == 2)
-    {
-        configPath = fs::absolute(argv[1]);
-        if (!fs::exists(configPath))
-        {
-            throw UserException(fmt::format("Could not find config file '{}'.", configPath.string()));
-        }
-    }
-    else
-    {
-        Utils::PrintInfo(fmt::format("{} version {}", fs::path(argv[0]).filename().string(), PROJECT_VERSION));
-        Utils::PrintInfo(fmt::format("{} ({})", PROJECT_DESCRIPTION, PROJECT_HOMEPAGE_URL));
-        Utils::PrintInfo("");
-        Utils::PrintInfo("usage: hokee [path]");
-        Utils::PrintInfo("  path - path to config file");
-        Utils::PrintInfo("         (default: ~/hokee/hokee.ini)");
-        std::exit(EXIT_SUCCESS);
     }
 
     // Read settings
@@ -102,82 +130,109 @@ Application::Application(int argc, const char* argv[])
     }
 }
 
-std::unique_ptr<CsvDatabase> Application::Run(bool batchMode)
+std::unique_ptr<CsvDatabase> Application::Run()
 {
-    auto csvDatabase = std::make_unique<CsvDatabase>();
-    std::unique_ptr<std::thread> serverThread = nullptr;
-
-    std::unique_lock lock(csvDatabase->ReadLock, std::try_to_lock);
-    if (!lock.owns_lock())
-    {
-        throw UserException("Could not get lock on database!");
-    }
-
-    if (!batchMode)
+    if (!_interactiveMode)
     {
         Utils::PrintInfo("Start HttpServer...");
-        serverThread = std::make_unique<std::thread>([&] {
-            HttpServer httpServer(csvDatabase.get());
-            httpServer.Run();
+        std::thread serverThread([&] {
+            try
+            {
+                HttpServer httpServer(_inputDirectory, _ruleSetFile);
+                httpServer.Run();
+            }
+            catch (const UserException& e)
+            {
+                Utils::TerminationHandler(e, false);
+            }
+            catch (const std::exception& e)
+            {
+                Utils::TerminationHandler(e, false);
+            }
+            catch (...)
+            {
+                Utils::TerminationHandler(false);
+            }
         });
 
-        Utils::PrintInfo("Open result...");
-        if (std::system(fmt::format("{} http://localhost", _config.GetBrowser()).c_str()) < 0)
-        {
-            throw UserException("Could not open result.");
-        }
-    }
-
-    Utils::PrintInfo("Parse CSV files...");
-
-    int maxIterations = 10;
-    bool restart = false;
-    do
-    {
-        restart = false;
-        if (batchMode && --maxIterations <= 0)
-        {
-            throw InternalException(__FILE__, __LINE__, "Infinte loop in batchMode.");
-        }
-
-        csvDatabase->Load(_inputDirectory, _ruleSetFile);
-
-        Utils::PrintInfo(fmt::format("Found {} items (assigned: {}, unassigned: {}, issues: {})",
-                                     csvDatabase->Data.size(), csvDatabase->Assigned.size(),
-                                     csvDatabase->Unassigned.size(), csvDatabase->Issues.size()));
-
-        if (csvDatabase->Unassigned.size() > 0)
-        {
-            bool defaultAddRules = _config.GetAddRules();
-            if (Utils::AskYesNoQuestion("Add rules?", defaultAddRules, batchMode))
+        Utils::PrintInfo("Open browser...");
+        std::thread browserThread([config = _config] {
+            try
             {
-                std::string editor = _config.GetEditor();
-                csvDatabase->AddRules(_ruleSetFile, _tempDirectory, editor);
-
-                restart = true;
-                continue;
+                if (std::system(fmt::format("{} http://localhost", config.GetBrowser()).c_str()) < 0)
+                {
+                    throw UserException("Could not open result.");
+                }
             }
-        }
-
-        if (csvDatabase->Issues.size() > 0 || csvDatabase->Unassigned.size() > 0)
-        {
-            bool defaultUpdateRules = _config.GetUpdateRules();
-            if (Utils::AskYesNoQuestion("Update rules & categories?", defaultUpdateRules, batchMode))
+            catch (const UserException& e)
             {
-                std::string editor = _config.GetEditor();
-                csvDatabase->UpdateRules(_ruleSetFile, editor);
-                restart = true;
-                continue;
+                Utils::TerminationHandler(e, false);
             }
-        }
-    } while (restart);
-    lock.unlock();
+            catch (const std::exception& e)
+            {
+                Utils::TerminationHandler(e, false);
+            }
+            catch (...)
+            {
+                Utils::TerminationHandler(false);
+            }
+        });
 
-    if (serverThread)
-    {
-        Utils::PrintTrace("Wait for server thread to exit");
-        serverThread->join();
+        Utils::PrintTrace("Wait for server to exit");
+        serverThread.join();
+
+        Utils::PrintTrace("Wait for browser to exit");
+        browserThread.join();
     }
-    return csvDatabase;
+    else
+    {
+        Utils::PrintInfo("Parse CSV files...");
+
+        auto csvDatabase = std::make_unique<CsvDatabase>();
+        int maxIterations = 10;
+        bool restart = false;
+        do
+        {
+            restart = false;
+            if (--maxIterations <= 0)
+            {
+                throw InternalException(__FILE__, __LINE__, "Infinte loop in batchMode.");
+            }
+
+            csvDatabase->Load(_inputDirectory, _ruleSetFile);
+
+            Utils::PrintInfo(fmt::format("Found {} items (assigned: {}, unassigned: {}, issues: {})",
+                                         csvDatabase->Data.size(), csvDatabase->Assigned.size(),
+                                         csvDatabase->Unassigned.size(), csvDatabase->Issues.size()));
+
+            if (csvDatabase->Unassigned.size() > 0)
+            {
+                bool defaultAddRules = _config.GetAddRules();
+                if (Utils::AskYesNoQuestion("Add rules?", defaultAddRules, _batchMode))
+                {
+                    std::string editor = _config.GetEditor();
+                    csvDatabase->AddRules(_ruleSetFile, _tempDirectory, editor);
+
+                    restart = true;
+                    continue;
+                }
+            }
+
+            if (csvDatabase->Issues.size() > 0 || csvDatabase->Unassigned.size() > 0)
+            {
+                bool defaultUpdateRules = _config.GetUpdateRules();
+                if (Utils::AskYesNoQuestion("Update rules & categories?", defaultUpdateRules, _batchMode))
+                {
+                    std::string editor = _config.GetEditor();
+                    csvDatabase->UpdateRules(_ruleSetFile, editor);
+                    restart = true;
+                    continue;
+                }
+            }
+        } while (restart);
+
+        return csvDatabase;
+    }
+    return nullptr;
 }
 } // namespace hokee

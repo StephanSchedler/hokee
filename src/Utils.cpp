@@ -218,4 +218,58 @@ fs::path GetHomePath()
 #endif
 }
 
+void TerminationHandler(bool pause)
+{
+    Utils::PrintError("!!! Unhandled exception !!!");
+
+    // Try to decode exception message
+    try
+    {
+        if (std::current_exception())
+        {
+            std::rethrow_exception(std::current_exception());
+        }
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "=> " << e.what() << std::endl;
+    }
+    catch (...)
+    {
+        std::cerr << "=> ???" << std::endl;
+    }
+
+    std::cerr << std::endl;
+
+    if (pause && std::system("pause"))
+    {
+        Utils::PrintError("Could not pause.");
+    }
+    std::abort();
+}
+
+void TerminationHandler(const std::exception& e, bool pause)
+{
+    Utils::PrintError("!!! Caught exception !!!");
+    std::cerr << "=> " << e.what() << std::endl;
+    std::cerr << std::endl;
+
+    if (pause && std::system("pause"))
+    {
+        Utils::PrintError("Could not pause.");
+    }
+    std::abort();
+}
+
+void TerminationHandler(const UserException& e, bool pause)
+{
+    Utils::PrintError(e.what());
+
+    if (pause && std::system("pause"))
+    {
+        Utils::PrintError("Could not pause.");
+    }
+    std::abort();
+}
+
 } // namespace hokee::Utils

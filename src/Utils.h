@@ -1,6 +1,7 @@
 #pragma once
 
 #include "csv/CsvFormat.h"
+#include "UserException.h"
 
 #include <string>
 #include <vector>
@@ -26,5 +27,10 @@ bool ExtractMissingString(std::string& extracted, const std::string& original, c
 
 std::string GetEnv(const std::string& name);
 fs::path GetHomePath();
+
+
+void TerminationHandler(bool pause);
+void TerminationHandler(const std::exception& e, bool pause);
+void TerminationHandler(const UserException& e, bool pause);
 
 } // namespace hokee::Utils
