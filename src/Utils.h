@@ -22,7 +22,8 @@ void PrintError(std::string_view msg);
 std::string Run(const char* cmd);
 
 bool AskYesNoQuestion(const std::string& question, bool defaultYes = true, bool batchMode = false);
-int GetUniqueId();
+int GenerateId();
+void ResetIdGenerator();
 bool ExtractMissingString(std::string& extracted, const std::string& original, const std::string& missing);
 
 std::string GetEnv(const std::string& name);
