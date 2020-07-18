@@ -60,7 +60,7 @@ std::string HtmlGenerator::GetHeader(const CsvDatabase& database)
 
     result << fmt::format(fmtButton, RELOAD_CMD, "sign-sync.png", "Update");
     result << fmt::format(fmtButton, SEARCH_HTML, "search.png", "Search");
-    result << fmt::format(fmtButton, SETTINGS_HTML, "cogs.png", "Settings");
+    result << fmt::format(fmtButton, SETTINGS_CMD, "cogs.png", "Settings");
     result << fmt::format(fmtButton, EXIT_CMD, "sign-error.png", "Exit");
 
     result << "</tr></table>";
@@ -121,7 +121,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
         for (int month = 0; month <= 12; ++month)
         {
             std::string rowStyle = "";
-            std::string name = fmt::format("{}-{}", month, year);
+            std::string name = fmt::format("{}.{}", month, year);
             if (month == 0)
             {
                 name = fmt::format("{}", year);
@@ -326,6 +326,13 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     }
     htmlPage << "</a></p>\n";
 
+    if (isItem)
+    {
+        fs::path formatFile = item->File.parent_path() / "format.ini";
+        htmlPage << fmt::format("<p>Format: <a href=\"{}?file={}\">{}", HtmlGenerator::EDIT_CMD,
+                                formatFile.string(), formatFile.filename().string());
+        htmlPage << "</a></p>\n";
+    }
     htmlPage << "<h3>Issues: </h3>\n";
     for (auto& issue : item->Issues)
     {

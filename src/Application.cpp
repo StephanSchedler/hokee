@@ -22,7 +22,6 @@ namespace hokee
 Application::Application(int argc, const char* argv[])
 {
     // parse commandline arguments
-    fs::path configPath = "";
     for (int i = 1; i < argc; ++i)
     {
         std::string arg(argv[i]);
@@ -61,40 +60,40 @@ Application::Application(int argc, const char* argv[])
         }
         else
         {
-            configPath = fs::absolute(arg);
-            if (!fs::exists(configPath))
+            _configFile = fs::absolute(arg);
+            if (!fs::exists(_configFile))
             {
-                throw UserException(fmt::format("Could not find config file '{}'.", configPath.string()));
+                throw UserException(fmt::format("Could not find config file '{}'.", _configFile.string()));
             }
         }
     }
 
-    if (configPath.empty())
+    if (_configFile.empty())
     {
-        configPath = fs::absolute(Utils::GetHomePath() / "hokee" / "hokee.ini");
-        if (!fs::exists(configPath))
+        _configFile = fs::absolute(Utils::GetHomePath() / "hokee" / "hokee.ini");
+        if (!fs::exists(_configFile))
         {
             Utils::PrintWarning(
-                fmt::format("Could not find config file '{}'. Create new config file.", configPath.string()));
-            if (!fs::exists(configPath.parent_path()))
+                fmt::format("Could not find config file '{}'. Create new config file.", _configFile.string()));
+            if (!fs::exists(_configFile.parent_path()))
             {
-                fs::create_directories(configPath.parent_path());
+                fs::create_directories(_configFile.parent_path());
             }
 
             Settings config;
-            config.Save(configPath);
+            config.Save(_configFile);
         }
     }
 
     // Read settings
-    _config = Settings(configPath);
+    _config = Settings(_configFile);
     if (_config.GetInputDirectory().is_absolute())
     {
         _inputDirectory = _config.GetInputDirectory();
     }
     else
     {
-        _inputDirectory = configPath.parent_path() / _config.GetInputDirectory();
+        _inputDirectory = _configFile.parent_path() / _config.GetInputDirectory();
     }
     if (_config.GetRuleSetFile().is_absolute())
     {
@@ -102,7 +101,7 @@ Application::Application(int argc, const char* argv[])
     }
     else
     {
-        _ruleSetFile = configPath.parent_path() / _config.GetRuleSetFile();
+        _ruleSetFile = _configFile.parent_path() / _config.GetRuleSetFile();
     }
 
     // Detect Temporary Directory
@@ -138,7 +137,7 @@ std::unique_ptr<CsvDatabase> Application::Run()
         std::thread serverThread([&] {
             try
             {
-                HttpServer httpServer(_inputDirectory, _ruleSetFile, _config.GetEditor());
+                HttpServer httpServer(_inputDirectory, _ruleSetFile, _configFile, _config.GetEditor());
                 httpServer.Run();
             }
             catch (const UserException& e)
