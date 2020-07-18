@@ -65,12 +65,12 @@ void PrintRequest(const httplib::Request& req, const httplib::Response& res)
 {
     std::stringstream reqStream{};
     reqStream << fmt::format("HTTP-REQUEST:  {} {} {}", req.method, req.version, GetUrl(req));
-    //for (auto& x : req.headers)
+    // for (auto& x : req.headers)
     //{
     //    reqStream << fmt::format(" {}:{}", x.first, x.second);
     //}
     Utils::PrintTrace(reqStream.str());
-    
+
     std::stringstream resStream{};
     resStream << fmt::format("HTTP-RESPONSE: {} {}", res.status, res.version);
     for (auto& x : res.headers)
@@ -235,10 +235,11 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
                     CONTENT_TYPE_HTML);
 }
 
-HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile)
+HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile, const std::string& editor)
     : _server{std::make_unique<httplib::Server>()}
     , _inputDirectory{inputDirectory}
     , _ruleSetFile{ruleSetFile}
+    , _editor{editor}
 {
     if (!_server->is_valid())
     {
@@ -291,6 +292,23 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      Load();
                      res.set_redirect(HtmlGenerator::INDEX_HTML);
                  });
+
+    // edit file
+    _server->Get((std::string("/") + HtmlGenerator::EDIT_CMD).c_str(), [&](const httplib::Request& req,
+                                                                           httplib::Response& res) {
+        Utils::PrintTrace("Received edit file request. Open file...");
+        const std::string file = GetParam(req.params, "file", HtmlGenerator::EDIT_CMD);
+        if (file.empty())
+        {
+            res.status = 404;
+            std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
+                                                   HtmlGenerator::EDIT_CMD, "file");
+            res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
+            return;
+        }
+        Utils::EditFile(file, _editor);
+        res.set_redirect(_lastUrl.c_str());
+    });
 
     // Set Error Handler
     _server->set_error_handler([&](const httplib::Request& /*req*/, httplib::Response& res) {

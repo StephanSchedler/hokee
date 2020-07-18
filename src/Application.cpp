@@ -138,7 +138,7 @@ std::unique_ptr<CsvDatabase> Application::Run()
         std::thread serverThread([&] {
             try
             {
-                HttpServer httpServer(_inputDirectory, _ruleSetFile);
+                HttpServer httpServer(_inputDirectory, _ruleSetFile, _config.GetEditor());
                 httpServer.Run();
             }
             catch (const UserException& e)
@@ -224,7 +224,7 @@ std::unique_ptr<CsvDatabase> Application::Run()
                 if (Utils::AskYesNoQuestion("Update rules & categories?", defaultUpdateRules, _batchMode))
                 {
                     std::string editor = _config.GetEditor();
-                    csvDatabase->UpdateRules(_ruleSetFile, editor);
+                    Utils::EditFile(_ruleSetFile, editor);
                     restart = true;
                     continue;
                 }

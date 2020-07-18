@@ -54,8 +54,7 @@ std::string HtmlGenerator::GetHeader(const CsvDatabase& database)
                               fmt::format("Issues ({})", database.Issues.size()));
     }
 
-    result << fmt::format(fmtButton, RULES_HTML, "notepad.png",
-                          fmt::format("Rules ({})", database.Rules.size()));
+    result << fmt::format(fmtButton, RULES_HTML, "notepad.png", fmt::format("Rules ({})", database.Rules.size()));
 
     result << "<td style=\"border: hidden\" width=\"99%\"></td>";
 
@@ -191,7 +190,8 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
     return htmlPage.str();
 }
 
-std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::string& title, const CsvTable& data)
+std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::string& title,
+                                        const CsvTable& data)
 {
     std::stringstream htmlPage;
     htmlPage << GetItemStart(database, title);
@@ -318,8 +318,13 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     htmlPage << GetTableRow(item.get());
     htmlPage << GetTableEnd();
 
-    htmlPage << fmt::format("<p>Source: <a href=\"../../{}\">{} : {}</a></p>\n", item->File.string(),
-                            item->File.filename().string(), item->Line);
+    htmlPage << fmt::format("<p>Source: <a href=\"{}?file={}\">{}", HtmlGenerator::EDIT_CMD, item->File.string(),
+                            item->File.filename().string());
+    if (item->Line >= 0)
+    {
+        htmlPage << fmt::format(":{}", item->Line);
+    }
+    htmlPage << "</a></p>\n";
 
     htmlPage << "<h3>Issues: </h3>\n";
     for (auto& issue : item->Issues)
