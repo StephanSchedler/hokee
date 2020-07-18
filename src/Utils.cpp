@@ -20,6 +20,7 @@ namespace hokee::Utils
 namespace {
     std::mutex _lastMessageMutex{};
     std::vector<std::string> _lastMessages{};
+    int _uniqueId{0};
 }
 
 const std::vector<std::string> GetLastMessages()
@@ -100,10 +101,14 @@ bool ExtractMissingString(std::string& extracted, const std::string& original, c
     return !extracted.empty();
 }
 
-int GetUniqueId()
+void ResetIdGenerator()
 {
-    static int uniqueId = 0;
-    return ++uniqueId;
+    _uniqueId = 0;
+}
+
+int GenerateId()
+{
+    return ++_uniqueId;
 }
 
 void PrintTrace(std::string_view msg)

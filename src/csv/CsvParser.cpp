@@ -275,7 +275,7 @@ bool CsvParser::ParseItem(CsvRowShared& item)
     }
 
     // Set further parameter
-    item->Id = Utils::GetUniqueId();
+    item->Id = Utils::GenerateId();
     item->File = _file;
 
     return result;

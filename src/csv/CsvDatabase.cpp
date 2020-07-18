@@ -181,7 +181,7 @@ void CsvDatabase::AddRules(const fs::path& ruleSetFile, const fs::path& workingD
                 if (cat.rfind(newRule->Category, 0) == 0)
                 {
                     newRule->Category = cat;
-                    newRule->Id = Utils::GetUniqueId();
+                    newRule->Id = Utils::GenerateId();
                     Rules.push_back(newRule);
                     break;
                 }

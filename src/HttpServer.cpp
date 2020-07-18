@@ -22,7 +22,7 @@ std::string GetParam(const httplib::Params& params, const std::string& param, co
     {
         return "";
     }
-    Utils::PrintError(fmt::format("Read '{}' parameter from '{}' requests", param, request));
+    Utils::PrintTrace(fmt::format("Read '{}'=='{}' parameter from '{}' requests", param, idIter->second, request));
     return idIter->second;
 }
 
@@ -40,33 +40,6 @@ std::string GetImageContent(const std::string& name)
     }
     throw UserException(fmt::format("Could not find '{}' in '{}'", fs::path(name).filename().string(),
                                     fs::absolute(fs::current_path() / ".." / "images").string()));
-}
-
-void PrintRequest(const httplib::Request& req, const httplib::Response& res)
-{
-    Utils::PrintTrace("================================");
-    Utils::PrintTrace(fmt::format("{} {} {}", req.method, req.version, req.path));
-    std::string query;
-    for (auto& x : req.params)
-    {
-        Utils::PrintTrace(fmt::format("{}={}", x.first, x.second));
-    }
-    for (auto& x : req.headers)
-    {
-        Utils::PrintTrace(fmt::format("{}: {}", x.first, x.second));
-    }
-    Utils::PrintTrace("--------------------------------");
-
-    Utils::PrintTrace(fmt::format("{} {}", res.status, res.version));
-    for (auto& x : res.headers)
-    {
-        Utils::PrintTrace(fmt::format("{}: {}", x.first, x.second));
-    }
-    // if (!res.body.empty())
-    //{
-    //    Utils::PrintTrace(res.body);
-    //}
-    Utils::PrintTrace("================================");
 }
 
 std::string GetUrl(const httplib::Request& req)
@@ -87,6 +60,26 @@ std::string GetUrl(const httplib::Request& req)
     }
     return idStream.str();
 }
+
+void PrintRequest(const httplib::Request& req, const httplib::Response& res)
+{
+    std::stringstream reqStream{};
+    reqStream << fmt::format("HTTP-REQUEST:  {} {} {}", req.method, req.version, GetUrl(req));
+    //for (auto& x : req.headers)
+    //{
+    //    reqStream << fmt::format(" {}:{}", x.first, x.second);
+    //}
+    Utils::PrintTrace(reqStream.str());
+    
+    std::stringstream resStream{};
+    resStream << fmt::format("HTTP-RESPONSE: {} {}", res.status, res.version);
+    for (auto& x : res.headers)
+    {
+        resStream << fmt::format(" {}:{}", x.first, x.second);
+    }
+    Utils::PrintTrace(resStream.str());
+}
+
 } // namespace
 
 bool HttpServer::SetCacheContent(const httplib::Request& req, httplib::Response& res)
@@ -293,8 +286,10 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                  [&](const httplib::Request& /*req*/, httplib::Response& res) {
                      Utils::PrintTrace("Received reload request. Clear cache and reload...");
                      _cache.clear();
+                     Utils::ResetIdGenerator();
+                     _database.ProgressValue = 0;
                      Load();
-                     res.set_redirect(_lastUrl.c_str());
+                     res.set_redirect(HtmlGenerator::INDEX_HTML);
                  });
 
     // Set Error Handler
