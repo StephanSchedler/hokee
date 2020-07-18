@@ -235,11 +235,13 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
                     CONTENT_TYPE_HTML);
 }
 
-HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile, const std::string& editor)
+HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile, const fs::path& configFile,
+                       const std::string& editor)
     : _server{std::make_unique<httplib::Server>()}
     , _inputDirectory{inputDirectory}
     , _ruleSetFile{ruleSetFile}
     , _editor{editor}
+    , _configFile{configFile}
 {
     if (!_server->is_valid())
     {
@@ -306,9 +308,54 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
             return;
         }
-        Utils::EditFile(file, _editor);
+        std::thread task([=] {
+            try
+            {
+                Utils::EditFile(file, _editor);
+            }
+            catch (const UserException& e)
+            {
+                Utils::TerminationHandler(e, false);
+            }
+            catch (const std::exception& e)
+            {
+                Utils::TerminationHandler(e, false);
+            }
+            catch (...)
+            {
+                Utils::TerminationHandler(false);
+            }
+        });
+        task.detach();
         res.set_redirect(_lastUrl.c_str());
     });
+
+    // settings
+    _server->Get((std::string("/") + HtmlGenerator::SETTINGS_CMD).c_str(),
+                 [&](const httplib::Request& req, httplib::Response& res) {
+                     Utils::PrintTrace("Received settings request. Open file...");
+                     const std::string file = GetParam(req.params, "file", HtmlGenerator::SETTINGS_CMD);
+                     std::thread task([=] {
+                         try
+                         {
+                             Utils::EditFile(_configFile, _editor);
+                         }
+                         catch (const UserException& e)
+                         {
+                             Utils::TerminationHandler(e, false);
+                         }
+                         catch (const std::exception& e)
+                         {
+                             Utils::TerminationHandler(e, false);
+                         }
+                         catch (...)
+                         {
+                             Utils::TerminationHandler(false);
+                         }
+                     });
+                     task.detach();
+                     res.set_redirect(_lastUrl.c_str());
+                 });
 
     // Set Error Handler
     _server->set_error_handler([&](const httplib::Request& /*req*/, httplib::Response& res) {

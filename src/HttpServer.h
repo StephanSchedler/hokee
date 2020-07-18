@@ -27,6 +27,7 @@ class HttpServer
     std::string _lastUrl{"/"};
     fs::path _inputDirectory{};
     fs::path _ruleSetFile{};
+    fs::path _configFile{};
     std::string _editor{};
     std::unique_ptr<std::thread>_loadThread{nullptr};
     std::timed_mutex _databaseMutex{};
@@ -38,7 +39,7 @@ class HttpServer
 
   public:
     HttpServer() = delete;
-    HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile, const std::string& editor);
+    HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile,  const fs::path& configFile, const std::string& editor);
     ~HttpServer();
 
     HttpServer(const HttpServer&) = delete;
