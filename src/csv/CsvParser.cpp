@@ -177,6 +177,7 @@ bool CsvParser::GetItem(CsvRowShared& item)
         AssignValue(item->Payer, trimmedCells, _format.GetPayer());
         AssignValue(item->Payee, trimmedCells, _format.GetPayee());
         AssignValue(item->PayerPayee, trimmedCells, _format.GetPayerPayee());
+        item->Line = _lineCounter;
 
         std::string dateStr;
         AssignValue(dateStr, trimmedCells, _format.GetDate());
