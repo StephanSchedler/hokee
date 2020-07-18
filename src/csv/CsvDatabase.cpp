@@ -1,4 +1,5 @@
 #include "csv/CsvDatabase.h"
+#include "HtmlGenerator.h"
 #include "InternalException.h"
 #include "Utils.h"
 #include "csv/CsvDate.h"
@@ -6,12 +7,12 @@
 #include "csv/CsvParser.h"
 #include "csv/CsvWriter.h"
 
-
 #include <fmt/format.h>
 
 #include <functional>
 #include <memory>
 #include <regex>
+#include <sstream>
 
 namespace hokee
 {
@@ -76,22 +77,19 @@ void CsvDatabase::CheckRules()
                 {
                     Issues.push_back(rule1);
                 }
-                rule1->Issues.push_back(
-                    fmt::format("ERROR: Redefinition of rule <a "
-                                "href=\"../items/{0}.html\">{0}</a> (<a href=\"../../{1}\">{2}</a> : {3})!",
-                                rule2->Id, rule2->File.string(), rule2->File.filename().string(), rule2->Line));
+                std::stringstream issueStream{};
+                issueStream << fmt::format("ERROR: Redefinition of rule <a href=\"{0}?id={1}\">{1}</a> (<a "
+                                                    "href=\"{2}?file={3}\">{4}</a>",
+                                                    HtmlGenerator::ITEM_HTML, rule2->Id, HtmlGenerator::EDIT_CMD, rule2->File.string(),
+                                                    rule2->File.filename().string());
+                if (rule2->Line >= 0)
+                {
+                    issueStream << fmt::format(":{}", rule2->Line);
+                }
+                issueStream << ")!";
+                rule1->Issues.push_back(issueStream.str());
             }
         }
-    }
-}
-
-void CsvDatabase::UpdateRules(const fs::path& ruleSetFile, const std::string& editor)
-{
-    std::string cmd = fmt::format("{} \"{}\"", editor, fs::absolute(ruleSetFile).string());
-    Utils::PrintInfo(fmt::format("Run: {}", cmd));
-    if (std::system(cmd.c_str()) < 0)
-    {
-        throw UserException(fmt::format("Could not open editor: {}", cmd));
     }
 }
 
@@ -245,7 +243,8 @@ void CsvDatabase::Load(const fs::path& inputDirectory, const fs::path& ruleSetFi
 
     // detect number of file
     ProgressValue = 0;
-    ProgressMax = std::distance(fs::recursive_directory_iterator(inputDirectory), fs::recursive_directory_iterator{});
+    ProgressMax
+        = std::distance(fs::recursive_directory_iterator(inputDirectory), fs::recursive_directory_iterator{});
     ProgressMax -= std::distance(fs::directory_iterator(inputDirectory), fs::directory_iterator{});
 
     for (const auto& dir : fs::directory_iterator(inputDirectory))
