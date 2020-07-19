@@ -29,6 +29,8 @@ class HttpServer
     fs::path _ruleSetFile{};
     fs::path _configFile{};
     std::string _editor{};
+    std::string _errorMessage{};
+    std::atomic<int> _errorStatus{200};
     std::unique_ptr<std::thread>_loadThread{nullptr};
     std::timed_mutex _databaseMutex{};
 

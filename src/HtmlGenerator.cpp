@@ -215,20 +215,22 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     htmlPage << GetHead();
     htmlPage << "  </head>\n"
                 "  <body>\n";
+
     htmlPage << fmt::format("    <main style=\"padding: 50px 0;\">\n"
                             "      <div style=\"text-align:center;\n"
                             "                   color: red;\n"
                             "                   margin: auto;\n"
-                            "                   width: 50%;\n"
+                            "                   width: 80%;\n"
                             "                   padding: 20px;\n"
                             "                   background: #F0F0F0;\n"
                             "                   border: 1px solid #DDD;\n"
                             "                   box-shadow: 3px 3px 0px rgba(0,0,0, .2);\">\n"
-                            "        <p><img src=\"sign-ban.png\"/></p>\n"
-                            "        <p><b>ERROR {} - {} </b></p>\n"
+                            "        <p><a href=\"{}\"><img src=\"sign-ban.png\"/></a></p>\n"
+                            "        <h2>ERROR {}</h2>\n"
+                            "        <p><b>{}</b></p>\n"
                             "      </div>\n"
                             "    </main>\n",
-                            errorCode, errorMessage);
+                            EXIT_CMD, errorCode, errorMessage);
     htmlPage << "  </body>\n"
                 "</html>";
     return htmlPage.str();
@@ -257,7 +259,7 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
     htmlPage << fmt::format("    <main style=\"padding: 50px 0;\">\n"
                             "      <div style=\"text-align:center;\n"
                             "                   margin: auto;\n"
-                            "                   width: 50%;\n"
+                            "                   width: 80%;\n"
                             "                   padding: 20px;\n"
                             "                   background: #F0F0F0;\n"
                             "                   border: 1px solid #DDD;\n"
