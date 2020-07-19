@@ -4,7 +4,7 @@
 #include "csv/CsvDatabase.h"
 
 #include <array>
-
+#include <sstream>
 namespace hokee
 {
 class HtmlGenerator
@@ -45,6 +45,11 @@ class HtmlGenerator
     static std::string GetSummaryPage(const CsvDatabase& pDatabase);
     static std::string GetItemPage(const CsvDatabase& pDatabase, int id);
     static std::string GetTablePage(const CsvDatabase& pDatabase, const std::string& title, const CsvTable& data);
+
+    static void GetItemReference(std::stringstream& output, int id);
+    static void GetItemsReference(std::stringstream& output, int year, int month,
+                                         const std::string& category, const std::string& text);
+    static void GetEditorReference(std::stringstream& output, const fs::path& file, int line = -1);
 };
 
 } // namespace hokee

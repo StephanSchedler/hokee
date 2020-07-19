@@ -78,14 +78,10 @@ void CsvDatabase::CheckRules()
                     Issues.push_back(rule1);
                 }
                 std::stringstream issueStream{};
-                issueStream << fmt::format("ERROR: Redefinition of rule <a href=\"{0}?id={1}\">{1}</a> (<a "
-                                                    "href=\"{2}?file={3}\">{4}</a>",
-                                                    HtmlGenerator::ITEM_HTML, rule2->Id, HtmlGenerator::EDIT_CMD, rule2->File.string(),
-                                                    rule2->File.filename().string());
-                if (rule2->Line >= 0)
-                {
-                    issueStream << fmt::format(":{}", rule2->Line);
-                }
+                issueStream << "ERROR: Redefinition of rule ";
+                HtmlGenerator::GetItemReference(issueStream, rule2->Id);
+                issueStream << "(";
+                HtmlGenerator::GetEditorReference(issueStream, rule2->File, rule2->Line);
                 issueStream << ")!";
                 rule1->Issues.push_back(issueStream.str());
             }
