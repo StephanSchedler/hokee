@@ -327,7 +327,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
             return;
         }
-        Utils::EditFile(file, editor);
+        Utils::EditFile(file, _editor);
         res.set_redirect(_lastUrl.c_str());
     });
 

@@ -11,7 +11,6 @@
 #include <iterator>
 #include <map>
 #include <memory>
-#include <sstream>
 
 namespace hokee
 {
@@ -131,9 +130,6 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
             htmlPage << fmt::format("<tr {}><td>{}</td>", rowStyle, name);
             for (auto& cat : categories)
             {
-                const fs::path fileName
-                    = fmt::format("{}?year={}&month={}&category={}", ITEMS_HTML, year, month, cat);
-
                 double sum = 0;
                 for (auto& item : sortedTables[year][month][cat])
                 {
@@ -177,8 +173,9 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
                         cellStyle = " style=\"background-color:#fcc;\"";
                     }
                 }
-                const std::string rowFormat = "<td {}><a href=\"{}\">{:.2f}&euro;</a></td>\n";
-                htmlPage << fmt::format(rowFormat, cellStyle, fileName.string(), sum);
+                htmlPage << fmt::format("<td {}>", cellStyle);
+                GetItemsReference(htmlPage, year, month, cat, fmt::format("{:.2f}&euro;", sum));
+                htmlPage << "</td>\n";
             }
             htmlPage << "</tr>";
         }
@@ -281,6 +278,35 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
     return htmlPage.str();
 }
 
+void HtmlGenerator::GetItemReference(std::stringstream& output, int id)
+{
+    output << fmt::format("<a href=\"{0}?id={1}\">{1:#04}</a>", HtmlGenerator::ITEM_HTML, id);
+}
+
+void HtmlGenerator::GetItemsReference(std::stringstream& output, int year, int month, const std::string& category,
+                                      const std::string& text)
+{
+    output << fmt::format("<a href=\"{}?year={}&month={}&category={}\">{}</a>", ITEMS_HTML, year, month, category,
+                          text);
+}
+
+void HtmlGenerator::GetEditorReference(std::stringstream& output, const fs::path& file, int line)
+{
+    output << fmt::format("<a href=\"{}?file={}\">{}", HtmlGenerator::EDIT_CMD, file.string(), file.filename().string());
+    if (line >= 0)
+    {
+        output << fmt::format(":{}", line);
+    }
+    output << "</a>\n";
+
+    fs::path formatFile = file.parent_path() / "format.ini";
+    if (fs::exists(formatFile))
+    {
+        output << fmt::format("<a href=\"{}?file={}\">{}</a>", HtmlGenerator::EDIT_CMD, formatFile.string(),
+                              formatFile.filename().string());
+    }
+}
+
 std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
 {
     std::string title = "";
@@ -320,21 +346,10 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     htmlPage << GetTableRow(item.get());
     htmlPage << GetTableEnd();
 
-    htmlPage << fmt::format("<p>Source: <a href=\"{}?file={}\">{}", HtmlGenerator::EDIT_CMD, item->File.string(),
-                            item->File.filename().string());
-    if (item->Line >= 0)
-    {
-        htmlPage << fmt::format(":{}", item->Line);
-    }
-    htmlPage << "</a></p>\n";
+    htmlPage << "<p>Source: ";
+    GetEditorReference(htmlPage, item->File, item->Line);
+    htmlPage << "</p>\n";
 
-    if (isItem)
-    {
-        fs::path formatFile = item->File.parent_path() / "format.ini";
-        htmlPage << fmt::format("<p>Format: <a href=\"{}?file={}\">{}", HtmlGenerator::EDIT_CMD,
-                                formatFile.string(), formatFile.filename().string());
-        htmlPage << "</a></p>\n";
-    }
     htmlPage << "<h3>Issues: </h3>\n";
     for (auto& issue : item->Issues)
     {
@@ -457,14 +472,16 @@ std::string HtmlGenerator::GetTableRow(CsvItem* row)
         color = "";
     }
 
-    const std::string rowFormat = "<tr{8}><td><a "
-                                  "href=\"{9}?id={0:#04}\">{0:#04}</a></td><td>{1}</"
-                                  "td><td>{2}</td><td>{3}</td><td>{4}</"
-                                  "td><td>{5}</td><td>{6}</td><td{10}>{7}</td></tr>\n";
-    std::string htmlTableRow
-        = fmt::format(rowFormat, row->Id, row->Category, row->PayerPayee, row->Description, row->Type,
-                      row->Date.ToString(), row->Account, row->Value, backgroundColor, ITEM_HTML, color);
-    return htmlTableRow;
+    std::stringstream htmlTableRow{};
+    htmlTableRow << "<tr" << backgroundColor << "><td>";
+    GetItemReference(htmlTableRow, row->Id);
+    htmlTableRow << backgroundColor;
+    const std::string rowFormat = "</td><td>{}</"
+                                  "td><td>{}</td><td>{}</td><td>{}</"
+                                  "td><td>{}</td><td>{}</td><td{}>{}</td></tr>\n";
+    htmlTableRow << fmt::format(rowFormat, row->Category, row->PayerPayee, row->Description, row->Type,
+                                row->Date.ToString(), row->Account, color, row->Value);
+    return htmlTableRow.str();
 }
 
 std::string HtmlGenerator::GetTableEnd()
