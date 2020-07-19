@@ -2,16 +2,17 @@
 
 #include "HtmlGenerator.h"
 #include <memory>
-#include <unordered_map>
-#include <thread>
 #include <mutex>
+#include <thread>
+#include <unordered_map>
+
 
 namespace httplib
 {
 class Server;
 struct Request;
 struct Response;
-}
+} // namespace httplib
 
 namespace hokee
 {
@@ -29,19 +30,22 @@ class HttpServer
     fs::path _ruleSetFile{};
     fs::path _configFile{};
     std::string _editor{};
+    std::string _explorer{};
     std::string _errorMessage{};
     std::atomic<int> _errorStatus{200};
-    std::unique_ptr<std::thread>_loadThread{nullptr};
+    std::unique_ptr<std::thread> _loadThread{nullptr};
     std::timed_mutex _databaseMutex{};
 
     void Load();
     bool SetCacheContent(const httplib::Request& req, httplib::Response& res);
-    void SetContent(const httplib::Request& req, httplib::Response& res, const std::string& content, const char* content_type);
+    void SetContent(const httplib::Request& req, httplib::Response& res, const std::string& content,
+                    const char* content_type);
     void HandleHtmlRequest(const httplib::Request& req, httplib::Response& res);
 
   public:
     HttpServer() = delete;
-    HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile,  const fs::path& configFile, const std::string& editor);
+    HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile, const fs::path& configFile,
+               const std::string& editor, const std::string& explorer);
     ~HttpServer();
 
     HttpServer(const HttpServer&) = delete;

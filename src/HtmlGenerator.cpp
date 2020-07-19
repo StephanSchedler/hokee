@@ -26,7 +26,9 @@ std::string HtmlGenerator::GetHeader(const CsvDatabase& database)
           "src=\"{}\"/></main><footer style=\"text-align:center;\">{}</footer></a></td>";
     result << fmt::format(fmtButton, INDEX_HTML, "Show Summary", "48-money.png", "Summary");
 
-    result << fmt::format(fmtButton, ALL_HTML, "Show All Items", "48-file-text.png", fmt::format("All ({})", database.Data.size()));
+    result << fmt::format(fmtButton, RULES_HTML, "Show Rules", "48-file-excel.png", fmt::format("Rules ({})", database.Rules.size()));
+
+    result << fmt::format(fmtButton, ALL_HTML, "Show All Items", "48-file-text.png", fmt::format("All&nbsp;Items ({})", database.Data.size()));
 
     result << fmt::format(fmtButton, ASSIGNED_HTML, "Show Assigned Items", "48-sign-check.png",
                           fmt::format("Assigned ({})", database.Assigned.size()));
@@ -52,8 +54,6 @@ std::string HtmlGenerator::GetHeader(const CsvDatabase& database)
         result << fmt::format(fmtButton, ISSUES_HTML, "Show Issues", "48-sign-warning.png",
                               fmt::format("Issues ({})", database.Issues.size()));
     }
-
-    result << fmt::format(fmtButton, RULES_HTML, "Show Rules", "48-file-excel.png", fmt::format("Rules ({})", database.Rules.size()));
 
     result << "<td style=\"border: hidden\" width=\"99%\"></td>";
 
@@ -300,7 +300,7 @@ void HtmlGenerator::GetEditorReference(std::stringstream& output, const fs::path
         output << fmt::format(":{}", line);
     }
     output << fmt::format("<a href=\"{}?file={}\"><img src=\"24-notepad.png\"/></a>\n", HtmlGenerator::EDIT_CMD, file.string());
-    output << fmt::format("<a href=\"{}?folder={}\"><img src=\"24-folder.png\"/></a>", HtmlGenerator::FOLDER_CMD, file.parent_path().string());
+    output << fmt::format("<a href=\"{}?folder={}\"><img src=\"24-folder.png\"/></a>", HtmlGenerator::OPEN_CMD, file.parent_path().string());
 
     fs::path formatFile = file.parent_path() / "format.ini";
     if (fs::exists(formatFile))

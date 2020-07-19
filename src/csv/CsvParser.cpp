@@ -154,7 +154,7 @@ bool CsvParser::GetItem(CsvRowShared& item)
         }
 
         // Check header
-        if (_format.GetHasHeader() && _lineCounter == static_cast<size_t>(_format.GetIgnoreLines()) + 1)
+        if (_format.GetHasHeader() && _lineCounter == _format.GetIgnoreLines() + 1)
         {
             auto columnNames = _format.GetColumnNames();
             for (size_t i = 0; i < trimmedCells.size(); ++i)

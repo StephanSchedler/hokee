@@ -15,7 +15,7 @@ class CsvParser
 {
     void ValidateValue(const std::string value);
 
-    size_t _lineCounter = 0;
+    int _lineCounter = 0;
     fs::path _file = {};
     std::ifstream _ifstream = {};
     CsvFormat _format;

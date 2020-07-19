@@ -241,12 +241,13 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
 }
 
 HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile, const fs::path& configFile,
-                       const std::string& editor)
+                       const std::string& editor, const std::string& explorer)
     : _server{std::make_unique<httplib::Server>()}
     , _inputDirectory{inputDirectory}
     , _ruleSetFile{ruleSetFile}
     , _configFile{configFile}
     , _editor{editor}
+    , _explorer{explorer}
 {
     if (!_server->is_valid())
     {
@@ -312,6 +313,31 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      _database.ProgressValue = 0;
                      Load();
                      res.set_redirect(HtmlGenerator::INDEX_HTML);
+                 });
+
+    // open folder
+    _server->Get((std::string("/") + HtmlGenerator::OPEN_CMD).c_str(), [&](const httplib::Request& req,
+                                                                           httplib::Response& res) {
+        Utils::PrintTrace("Received open folder request. Open folder...");
+        const std::string folder = GetParam(req.params, "folder", HtmlGenerator::OPEN_CMD);
+        if (folder.empty())
+        {
+            res.status = 404;
+            std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
+                                                   HtmlGenerator::OPEN_CMD, "folder");
+            res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
+            return;
+        }
+        Utils::OpenFolder(folder, _explorer);
+        res.set_redirect(_lastUrl.c_str());
+    });
+
+    // input folder
+    _server->Get((std::string("/") + HtmlGenerator::INPUT_CMD).c_str(),
+                 [&](const httplib::Request& /*req*/, httplib::Response& res) {
+                     Utils::PrintTrace("Received open input folder request. Open input folder...");
+                     Utils::OpenFolder(_inputDirectory, _explorer);
+                     res.set_redirect(_lastUrl.c_str());
                  });
 
     // edit file

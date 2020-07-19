@@ -111,6 +111,16 @@ void EditFile(const fs::path& file, const std::string& editor)
     }
 }
 
+void OpenFolder(const fs::path& folder, const std::string& explorer)
+{
+    std::string cmd = fmt::format("{} \"{}\"", explorer, fs::absolute(folder).string());
+    Utils::PrintInfo(fmt::format("Run: {}", cmd));
+    if (std::system(cmd.c_str()) < 0)
+    {
+        throw UserException(fmt::format("Could not open folder: {}", cmd));
+    }
+}
+
 void ResetIdGenerator()
 {
     _uniqueId = 0;
