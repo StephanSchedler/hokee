@@ -23,10 +23,10 @@ std::string HtmlGenerator::GetHeader(const CsvDatabase& database)
 
     const std::string fmtButton
         = "<td style=\"border: hidden\"><a href=\"{}\"><main style=\"text-align:center;\"><img "
-          "src=\"{}\"></main><footer style=\"text-align:center;\">{}</footer></a></td>";
+          "src=\"{}\"/></main><footer style=\"text-align:center;\">{}</footer></a></td>";
     result << fmt::format(fmtButton, INDEX_HTML, "money.png", "Summary");
 
-    result << fmt::format(fmtButton, ALL_HTML, "database.png", fmt::format("All({})", database.Data.size()));
+    result << fmt::format(fmtButton, ALL_HTML, "file-text.png", fmt::format("All ({})", database.Data.size()));
 
     result << fmt::format(fmtButton, ASSIGNED_HTML, "sign-check.png",
                           fmt::format("Assigned ({})", database.Assigned.size()));
@@ -53,7 +53,7 @@ std::string HtmlGenerator::GetHeader(const CsvDatabase& database)
                               fmt::format("Issues ({})", database.Issues.size()));
     }
 
-    result << fmt::format(fmtButton, RULES_HTML, "notepad.png", fmt::format("Rules ({})", database.Rules.size()));
+    result << fmt::format(fmtButton, RULES_HTML, "file-excel.png", fmt::format("Rules ({})", database.Rules.size()));
 
     result << "<td style=\"border: hidden\" width=\"99%\"></td>";
 
@@ -292,18 +292,17 @@ void HtmlGenerator::GetItemsReference(std::stringstream& output, int year, int m
 
 void HtmlGenerator::GetEditorReference(std::stringstream& output, const fs::path& file, int line)
 {
-    output << fmt::format("<a href=\"{}?file={}\">{}", HtmlGenerator::EDIT_CMD, file.string(), file.filename().string());
+    output << file.filename().string();
     if (line >= 0)
     {
         output << fmt::format(":{}", line);
     }
-    output << "</a>\n";
+    output << fmt::format("<a href=\"{}?file={}\"><img src=\"notepad.png\"/></a>\n", HtmlGenerator::EDIT_CMD, file.string());
 
     fs::path formatFile = file.parent_path() / "format.ini";
     if (fs::exists(formatFile))
     {
-        output << fmt::format("<a href=\"{}?file={}\">{}</a>", HtmlGenerator::EDIT_CMD, formatFile.string(),
-                              formatFile.filename().string());
+        output << fmt::format("<a href=\"{}?file={}\"><img src=\"wrench-screwdriver.png\"/></a>", HtmlGenerator::EDIT_CMD, formatFile.string());
     }
 }
 
@@ -346,7 +345,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     htmlPage << GetTableRow(item.get());
     htmlPage << GetTableEnd();
 
-    htmlPage << "<p>Source: ";
+    htmlPage << "<p>";
     GetEditorReference(htmlPage, item->File, item->Line);
     htmlPage << "</p>\n";
 
