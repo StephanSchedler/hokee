@@ -91,7 +91,7 @@ int CsvConfig::GetInt(const std::string& key) const
     catch (const std::exception& e)
     {
         throw UserException(
-            fmt::format("Could not convert '{}' in {} to 'int'. ({})", value, _file.string(), e.what()));
+            fmt::format("Could not convert '{}' in '{}' to 'int'. ({})", value, _file.string(), e.what()));
     }
     return intValue;
 }
@@ -108,7 +108,7 @@ char CsvConfig::GetChar(const std::string& key) const
     if (value.size() != 1)
     {
         throw UserException(
-            fmt::format("Delimiter property '{}' in {} must have length 1.", value, _file.string()));
+            fmt::format("Delimiter property '{}' in '{}' must have length 1.", value, _file.string()));
     }
 
     return value[0];
