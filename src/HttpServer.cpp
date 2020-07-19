@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <cstdio>
+#include <filesystem>
 #include <iostream>
 #include <sstream>
 
@@ -116,6 +117,15 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     if (_errorStatus != 200)
     {
         res.status = _errorStatus;
+        return;
+    }
+
+    // Check for empty input folder
+    using std::filesystem::directory_iterator;
+    auto inputFolderCount = std::distance(directory_iterator(_inputDirectory), directory_iterator{});
+    if (inputFolderCount == 0)
+    {
+        res.set_content(HtmlGenerator::GetEmptyInputPage(), CONTENT_TYPE_HTML);
         return;
     }
 
@@ -315,6 +325,35 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      res.set_redirect(HtmlGenerator::INDEX_HTML);
                  });
 
+    // Copy Samples
+    _server->Get((std::string("/") + HtmlGenerator::COPY_SAMPLES_CMD).c_str(),
+                 [&](const httplib::Request& /*req*/, httplib::Response& res) {
+                     Utils::PrintTrace("Received copy samples request. Copy and reload...");
+                     std::error_code ec;
+                     fs::path src = fs::absolute("../test_data/rules_match_test/input/ABC");
+                     fs::path dest = _inputDirectory / "ABC";
+                     fs::copy(src, dest, fs::copy_options::recursive, ec);
+                     if (ec.value() != 0)
+                     {
+                         res.status = 500;
+                         _errorMessage = fmt::format("Could not copy folder '{}' to '{}' ({})", src.string(), dest.string(), ec.message());
+                         return;
+                     }
+
+                     ec.clear();
+                     src = fs::absolute("../test_data/rules_match_test/rules_match_test.csv");
+                     dest = _ruleSetFile;
+                     fs::copy_file(src, dest, fs::copy_options::overwrite_existing, ec);
+                     if (ec.value() != 0)
+                     {
+                         res.status = 500;
+                         _errorMessage = fmt::format("Could not copy file '{}' to '{}' ({})", src.string(), dest.string(), ec.message());
+                         return;
+                     }
+
+                     res.set_redirect(HtmlGenerator::RELOAD_CMD);
+                 });
+
     // open folder
     _server->Get((std::string("/") + HtmlGenerator::OPEN_CMD).c_str(), [&](const httplib::Request& req,
                                                                            httplib::Response& res) {
@@ -363,7 +402,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      Utils::PrintTrace("Received settings request. Open file...");
                      const std::string file = GetParam(req.params, "file", HtmlGenerator::SETTINGS_CMD);
                      Utils::EditFile(_configFile, _editor);
-                     res.set_redirect(_lastUrl.c_str());
+                     res.set_redirect(HtmlGenerator::RELOAD_CMD);
                  });
 
     // Set Error Handler

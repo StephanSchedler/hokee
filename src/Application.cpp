@@ -120,8 +120,9 @@ Application::Application(int argc, const char* argv[])
 
     if (!fs::exists(_inputDirectory))
     {
-        throw UserException(
-            fmt::format("Input directory {} does not exits.", fs::absolute(_inputDirectory).string()));
+        fs::create_directories(_inputDirectory);        
+        Utils::PrintWarning(
+            fmt::format("Could not find input directory '{}'. Create new one.", _inputDirectory.string()));
     }
     if (!fs::exists(_ruleSetFile))
     {
