@@ -39,6 +39,7 @@ class HtmlGenerator
     static constexpr const char* EXIT_CMD = "exit";
     static constexpr const char* EDIT_CMD = "edit";
     static constexpr const char* RELOAD_CMD = "reload";
+    static constexpr const char* COPY_SAMPLES_CMD = "copy-samples";
     static constexpr const char* OPEN_CMD = "open";
     static constexpr const char* INPUT_CMD = "input";
 
@@ -48,6 +49,7 @@ class HtmlGenerator
     static std::string GetItemPage(const CsvDatabase& pDatabase, int id);
     static std::string GetTablePage(const CsvDatabase& pDatabase, const std::string& title, const CsvTable& data);
 
+    static std::string GetEmptyInputPage();
     static void GetItemReference(std::stringstream& output, int id);
     static void GetItemsReference(std::stringstream& output, int year, int month,
                                          const std::string& category, const std::string& text);

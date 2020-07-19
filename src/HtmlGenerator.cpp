@@ -26,9 +26,11 @@ std::string HtmlGenerator::GetHeader(const CsvDatabase& database)
           "src=\"{}\"/></main><footer style=\"text-align:center;\">{}</footer></a></td>";
     result << fmt::format(fmtButton, INDEX_HTML, "Show Summary", "48-money.png", "Summary");
 
-    result << fmt::format(fmtButton, RULES_HTML, "Show Rules", "48-file-excel.png", fmt::format("Rules ({})", database.Rules.size()));
+    result << fmt::format(fmtButton, RULES_HTML, "Show Rules", "48-file-excel.png",
+                          fmt::format("Rules ({})", database.Rules.size()));
 
-    result << fmt::format(fmtButton, ALL_HTML, "Show All Items", "48-file-text.png", fmt::format("All&nbsp;Items ({})", database.Data.size()));
+    result << fmt::format(fmtButton, ALL_HTML, "Show All Items", "48-file-text.png",
+                          fmt::format("All&nbsp;Items ({})", database.Data.size()));
 
     result << fmt::format(fmtButton, ASSIGNED_HTML, "Show Assigned Items", "48-sign-check.png",
                           fmt::format("Assigned ({})", database.Assigned.size()));
@@ -214,23 +216,70 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     htmlPage << "  </head>\n"
                 "  <body>\n";
 
-    htmlPage << fmt::format("    <main style=\"padding: 50px 0;\">\n"
-                            "      <div style=\"text-align:center;\n"
-                            "                   color: red;\n"
-                            "                   margin: auto;\n"
-                            "                   width: 80%;\n"
-                            "                   padding: 20px;\n"
-                            "                   background: #F0F0F0;\n"
-                            "                   border: 1px solid #DDD;\n"
-                            "                   box-shadow: 3px 3px 0px rgba(0,0,0, .2);\">\n"
-                            "        <p><a href=\"{}\"><img src=\"96-sign-ban.png\"/></a></p>\n"
-                            "        <h2>ERROR {}</h2>\n"
-                            "        <p><b>{}</b></p>\n"
-                            "      </div>\n"
-                            "    </main>\n",
-                            EXIT_CMD, errorCode, errorMessage);
+    htmlPage << fmt::format(
+        "    <main style=\"padding: 50px 0;\">\n"
+        "      <div style=\"text-align:center;\n"
+        "                   color: red;\n"
+        "                   margin: auto;\n"
+        "                   width: 80%;\n"
+        "                   padding: 20px;\n"
+        "                   background: #F0F0F0;\n"
+        "                   border: 1px solid #DDD;\n"
+        "                   box-shadow: 3px 3px 0px rgba(0,0,0, .2);\">\n"
+        "        <p><a href=\"{}\" title=\"Stop hokee\"><img src=\"96-sign-ban.png\"/></a></p>\n"
+        "        <h2>ERROR {}</h2>\n"
+        "        <p><b>{}</b></p>\n"
+        "      </div>\n"
+        "    </main>\n",
+        EXIT_CMD, errorCode, errorMessage);
     htmlPage << "  </body>\n"
                 "</html>";
+    return htmlPage.str();
+}
+
+std::string HtmlGenerator::GetEmptyInputPage()
+{
+    std::stringstream htmlPage{};
+    htmlPage << "<!DOCTYPE html>\n"
+                "<html>\n"
+                "  <head>\n";
+    htmlPage << GetHead();
+    htmlPage << "  </head>\n"
+                "  <body>\n";
+
+    htmlPage << "    <main style=\"padding: 50px 0;\">\n"
+                "      <div style=\"text-align:center;\n"
+                "                   margin: auto;\n"
+                "                   width: 80%;\n"
+                "                   padding: 20px;\n"
+                "                   background: #F0F0F0;\n"
+                "                   border: 1px solid #DDD;\n"
+                "                   box-shadow: 3px 3px 0px rgba(0,0,0, .2);\">\n";
+    htmlPage << fmt::format(
+        "        <p><a href=\"{}\" title=\"Open Input Folder\"><img src=\"96-box.png\"/></a></p>\n", INPUT_CMD);
+    htmlPage
+        << "        <h2>Could not find any input data!</h2>\n"
+           "        <p>\n"
+           "          <table cellspacing=\"0\" cellpadding=\"0\" style=\"border: hidden\"><tr>";
+
+    const std::string fmtButton
+        = "<td style=\"border: hidden\"><a href=\"{}\" title=\"{}\"><main style=\"text-align:center;\"><img "
+          "src=\"{}\"/></main><footer style=\"text-align:center;\">{}</footer></a></td>";
+    
+    htmlPage << "<td style=\"border: hidden\" width=\"50%\"></td>";
+    htmlPage << fmt::format(fmtButton, COPY_SAMPLES_CMD, "Copy Samples", "48-box-in.png", "Copy&nbsp;Samples");
+    htmlPage << fmt::format(fmtButton, RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
+    htmlPage << fmt::format(fmtButton, SETTINGS_CMD, "Open Settings", "48-cogs.png", "Open&nbsp;Settings");
+    htmlPage << fmt::format(fmtButton, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
+    htmlPage << "<td style=\"border: hidden\" width=\"50%\"></td>";
+
+htmlPage <<  "        </tr></table>\n"
+           "        </p>\n"
+           "      </div>\n"
+           "    </main>\n"
+           "  </body>\n"
+           "</html>";
+
     return htmlPage.str();
 }
 
@@ -299,13 +348,16 @@ void HtmlGenerator::GetEditorReference(std::stringstream& output, const fs::path
     {
         output << fmt::format(":{}", line);
     }
-    output << fmt::format("<a href=\"{}?file={}\"><img src=\"24-notepad.png\"/></a>\n", HtmlGenerator::EDIT_CMD, file.string());
-    output << fmt::format("<a href=\"{}?folder={}\"><img src=\"24-folder.png\"/></a>", HtmlGenerator::OPEN_CMD, file.parent_path().string());
+    output << fmt::format("<a href=\"{}?file={}\"><img src=\"24-notepad.png\"/></a>\n", HtmlGenerator::EDIT_CMD,
+                          file.string());
+    output << fmt::format("<a href=\"{}?folder={}\"><img src=\"24-folder.png\"/></a>", HtmlGenerator::OPEN_CMD,
+                          file.parent_path().string());
 
     fs::path formatFile = file.parent_path() / "format.ini";
     if (fs::exists(formatFile))
     {
-        output << fmt::format("<a href=\"{}?file={}\"><img src=\"24-wrench-screwdriver.png\"/></a>", HtmlGenerator::EDIT_CMD, formatFile.string());
+        output << fmt::format("<a href=\"{}?file={}\"><img src=\"24-wrench-screwdriver.png\"/></a>",
+                              HtmlGenerator::EDIT_CMD, formatFile.string());
     }
 }
 
