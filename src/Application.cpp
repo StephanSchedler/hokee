@@ -137,7 +137,7 @@ std::unique_ptr<CsvDatabase> Application::Run()
         std::thread serverThread([&] {
             try
             {
-                HttpServer httpServer(_inputDirectory, _ruleSetFile, _configFile, _config.GetEditor());
+                HttpServer httpServer(_inputDirectory, _ruleSetFile, _configFile, _config.GetEditor(), _config.GetExplorer());
                 httpServer.Run();
             }
             catch (const UserException& e)

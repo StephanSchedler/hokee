@@ -24,6 +24,7 @@ std::string Run(const char* cmd);
 bool AskYesNoQuestion(const std::string& question, bool defaultYes = true, bool batchMode = false);
 int GenerateId();
 void EditFile(const fs::path& file, const std::string& editor);
+void OpenFolder(const fs::path& folder, const std::string& explorer);
 void ResetIdGenerator();
 bool ExtractMissingString(std::string& extracted, const std::string& original, const std::string& missing);
 
