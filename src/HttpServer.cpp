@@ -112,12 +112,20 @@ void HttpServer::SetContent(const httplib::Request& req, httplib::Response& res,
 
 inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::Response& res)
 {
-    // Check cache
+    // Check Error
+    if (_errorStatus != 200)
+    {
+        res.status = _errorStatus;
+        return;
+    }
+
+    // Check Cache
     if (SetCacheContent(req, res))
     {
         return;
     }
 
+    // Progress Page
     std::unique_lock<std::timed_mutex> lock(_databaseMutex, std::try_to_lock);
     if (!lock.owns_lock())
     {
@@ -178,10 +186,10 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
         const std::string idStr = GetParam(req.params, "id", HtmlGenerator::ITEM_HTML);
         if (idStr.empty())
         {
-            res.status = 404;
-            std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
-                                                   HtmlGenerator::ITEM_HTML, "id");
-            res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
+            _errorStatus = 500;
+            _errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
+                                        HtmlGenerator::ITEM_HTML, "id");
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
             return;
         }
         const int id = std::stoi(idStr);
@@ -196,9 +204,8 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
         if (yearStr.empty())
         {
             res.status = 404;
-            std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
-                                                   HtmlGenerator::ITEM_HTML, "year");
-            res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
+            _errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
+                                        HtmlGenerator::ITEM_HTML, "year");
             return;
         }
         const int year = std::stoi(yearStr);
@@ -231,8 +238,6 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
 
     // default
     res.status = 404;
-    res.set_content(HtmlGenerator::GetErrorPage(res.status, httplib::detail::status_message(res.status)),
-                    CONTENT_TYPE_HTML);
 }
 
 HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile, const fs::path& configFile,
@@ -240,8 +245,8 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
     : _server{std::make_unique<httplib::Server>()}
     , _inputDirectory{inputDirectory}
     , _ruleSetFile{ruleSetFile}
-    , _editor{editor}
     , _configFile{configFile}
+    , _editor{editor}
 {
     if (!_server->is_valid())
     {
@@ -254,8 +259,22 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
     });
 
     // Get Html page
-    _server->Get("/.*\\.html",
-                 [&](const httplib::Request& req, httplib::Response& res) { HandleHtmlRequest(req, res); });
+    _server->Get("/.*\\.html", [&](const httplib::Request& req, httplib::Response& res) {
+        try
+        {
+            HandleHtmlRequest(req, res);
+        }
+        catch (const std::exception& e)
+        {
+            _errorStatus = 500;
+            _errorMessage = e.what();
+        }
+        catch (...)
+        {
+            _errorStatus = 500;
+            _errorMessage = fmt::format("Could not generate html page {}", GetUrl(req));
+        }
+    });
 
     // Get Images
     _server->Get("/(.*\\.png)", [&](const httplib::Request& req, httplib::Response& res) {
@@ -308,25 +327,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
             return;
         }
-        std::thread task([=] {
-            try
-            {
-                Utils::EditFile(file, _editor);
-            }
-            catch (const UserException& e)
-            {
-                Utils::TerminationHandler(e, false);
-            }
-            catch (const std::exception& e)
-            {
-                Utils::TerminationHandler(e, false);
-            }
-            catch (...)
-            {
-                Utils::TerminationHandler(false);
-            }
-        });
-        task.detach();
+        Utils::EditFile(file, editor);
         res.set_redirect(_lastUrl.c_str());
     });
 
@@ -335,32 +336,15 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                  [&](const httplib::Request& req, httplib::Response& res) {
                      Utils::PrintTrace("Received settings request. Open file...");
                      const std::string file = GetParam(req.params, "file", HtmlGenerator::SETTINGS_CMD);
-                     std::thread task([=] {
-                         try
-                         {
-                             Utils::EditFile(_configFile, _editor);
-                         }
-                         catch (const UserException& e)
-                         {
-                             Utils::TerminationHandler(e, false);
-                         }
-                         catch (const std::exception& e)
-                         {
-                             Utils::TerminationHandler(e, false);
-                         }
-                         catch (...)
-                         {
-                             Utils::TerminationHandler(false);
-                         }
-                     });
-                     task.detach();
+                     Utils::EditFile(_configFile, _editor);
                      res.set_redirect(_lastUrl.c_str());
                  });
 
     // Set Error Handler
     _server->set_error_handler([&](const httplib::Request& /*req*/, httplib::Response& res) {
-        res.set_content(HtmlGenerator::GetErrorPage(res.status, httplib::detail::status_message(res.status)),
-                        CONTENT_TYPE_HTML);
+        std::string errorMessage
+            = _errorMessage.empty() ? httplib::detail::status_message(res.status) : _errorMessage;
+        res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
     });
 
     // Set Logger
@@ -392,17 +376,15 @@ void HttpServer::Load()
             }
             _database.Load(_inputDirectory, _ruleSetFile);
         }
-        catch (const UserException& e)
-        {
-            Utils::TerminationHandler(e, false);
-        }
         catch (const std::exception& e)
         {
-            Utils::TerminationHandler(e, false);
+            _errorStatus = 500;
+            _errorMessage = e.what();
         }
         catch (...)
         {
-            Utils::TerminationHandler(false);
+            _errorStatus = 500;
+            _errorMessage = "Could not (re-)load csv data.";
         }
     });
 }
