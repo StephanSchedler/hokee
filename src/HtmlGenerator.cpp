@@ -22,45 +22,46 @@ std::string HtmlGenerator::GetHeader(const CsvDatabase& database)
     result << "<table cellspacing=\"0\" cellpadding=\"0\" style=\"border: hidden\"><tr>";
 
     const std::string fmtButton
-        = "<td style=\"border: hidden\"><a href=\"{}\"><main style=\"text-align:center;\"><img "
+        = "<td style=\"border: hidden\"><a href=\"{}\" title=\"{}\"><main style=\"text-align:center;\"><img "
           "src=\"{}\"/></main><footer style=\"text-align:center;\">{}</footer></a></td>";
-    result << fmt::format(fmtButton, INDEX_HTML, "money.png", "Summary");
+    result << fmt::format(fmtButton, INDEX_HTML, "Show Summary", "48-money.png", "Summary");
 
-    result << fmt::format(fmtButton, ALL_HTML, "file-text.png", fmt::format("All ({})", database.Data.size()));
+    result << fmt::format(fmtButton, ALL_HTML, "Show All Items", "48-file-text.png", fmt::format("All ({})", database.Data.size()));
 
-    result << fmt::format(fmtButton, ASSIGNED_HTML, "sign-check.png",
+    result << fmt::format(fmtButton, ASSIGNED_HTML, "Show Assigned Items", "48-sign-check.png",
                           fmt::format("Assigned ({})", database.Assigned.size()));
 
     if (database.Unassigned.size() == 0)
     {
-        result << fmt::format(fmtButton, UNASSIGNED_HTML, "sign-delete2.png",
+        result << fmt::format(fmtButton, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-delete2.png",
                               fmt::format("Unassigned ({})", database.Unassigned.size()));
     }
     else
     {
-        result << fmt::format(fmtButton, UNASSIGNED_HTML, "sign-delete.png",
+        result << fmt::format(fmtButton, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-delete.png",
                               fmt::format("Unassigned ({})", database.Unassigned.size()));
     }
 
     if (database.Issues.size() == 0)
     {
-        result << fmt::format(fmtButton, ISSUES_HTML, "sign-warning2.png",
+        result << fmt::format(fmtButton, ISSUES_HTML, "Show Issues", "48-sign-warning2.png",
                               fmt::format("Issues ({})", database.Issues.size()));
     }
     else
     {
-        result << fmt::format(fmtButton, ISSUES_HTML, "sign-warning.png",
+        result << fmt::format(fmtButton, ISSUES_HTML, "Show Issues", "48-sign-warning.png",
                               fmt::format("Issues ({})", database.Issues.size()));
     }
 
-    result << fmt::format(fmtButton, RULES_HTML, "file-excel.png", fmt::format("Rules ({})", database.Rules.size()));
+    result << fmt::format(fmtButton, RULES_HTML, "Show Rules", "48-file-excel.png", fmt::format("Rules ({})", database.Rules.size()));
 
     result << "<td style=\"border: hidden\" width=\"99%\"></td>";
 
-    result << fmt::format(fmtButton, RELOAD_CMD, "sign-sync.png", "Update");
-    result << fmt::format(fmtButton, SEARCH_HTML, "search.png", "Search");
-    result << fmt::format(fmtButton, SETTINGS_CMD, "cogs.png", "Settings");
-    result << fmt::format(fmtButton, EXIT_CMD, "sign-error.png", "Exit");
+    result << fmt::format(fmtButton, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
+    result << fmt::format(fmtButton, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
+    result << fmt::format(fmtButton, SEARCH_HTML, "Open Search Page", "48-search.png", "Search");
+    result << fmt::format(fmtButton, SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
+    result << fmt::format(fmtButton, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
 
     result << "</tr></table>";
 
@@ -222,7 +223,7 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
                             "                   background: #F0F0F0;\n"
                             "                   border: 1px solid #DDD;\n"
                             "                   box-shadow: 3px 3px 0px rgba(0,0,0, .2);\">\n"
-                            "        <p><a href=\"{}\"><img src=\"sign-ban.png\"/></a></p>\n"
+                            "        <p><a href=\"{}\"><img src=\"96-sign-ban.png\"/></a></p>\n"
                             "        <h2>ERROR {}</h2>\n"
                             "        <p><b>{}</b></p>\n"
                             "      </div>\n"
@@ -261,6 +262,7 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
                             "                   background: #F0F0F0;\n"
                             "                   border: 1px solid #DDD;\n"
                             "                   box-shadow: 3px 3px 0px rgba(0,0,0, .2);\">\n"
+                            "        <p>&nbsp;</p>\n"
                             "        <div style=\"color: #E0E0E0\">{}</div>\n"
                             "        <div style=\"color: #C0C0C0\">{}</div>\n"
                             "        <div style=\"color: #A0A0A0\">{}</div>\n"
@@ -269,7 +271,7 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
                             "        <div style=\"color: #$04040\">{}</div>\n"
                             "        <div style=\"color: #202020\">{}</div>\n"
                             "        <div style=\"color: #000000\">{}</div>\n"
-                            "        <div><progress value=\"{}\" max=\"{}\"/></div>\n"
+                            "        <p><progress value=\"{}\" max=\"{}\"/></p>\n"
                             "      </div>\n"
                             "    </main>\n",
                             m7, m6, m5, m4, m3, m2, m1, m0, value, max);
@@ -297,12 +299,13 @@ void HtmlGenerator::GetEditorReference(std::stringstream& output, const fs::path
     {
         output << fmt::format(":{}", line);
     }
-    output << fmt::format("<a href=\"{}?file={}\"><img src=\"notepad.png\"/></a>\n", HtmlGenerator::EDIT_CMD, file.string());
+    output << fmt::format("<a href=\"{}?file={}\"><img src=\"24-notepad.png\"/></a>\n", HtmlGenerator::EDIT_CMD, file.string());
+    output << fmt::format("<a href=\"{}?folder={}\"><img src=\"24-folder.png\"/></a>", HtmlGenerator::FOLDER_CMD, file.parent_path().string());
 
     fs::path formatFile = file.parent_path() / "format.ini";
     if (fs::exists(formatFile))
     {
-        output << fmt::format("<a href=\"{}?file={}\"><img src=\"wrench-screwdriver.png\"/></a>", HtmlGenerator::EDIT_CMD, formatFile.string());
+        output << fmt::format("<a href=\"{}?file={}\"><img src=\"24-wrench-screwdriver.png\"/></a>", HtmlGenerator::EDIT_CMD, formatFile.string());
     }
 }
 
