@@ -51,9 +51,12 @@ class HtmlGenerator
 
     static std::string GetEmptyInputPage();
     static void GetItemReference(std::stringstream& output, int id);
-    static void GetItemsReference(std::stringstream& output, int year, int month,
-                                         const std::string& category, const std::string& text);
-    static void GetEditorReference(std::stringstream& output, const fs::path& file, int line = -1);
+    static void GetItemsReference(std::stringstream& output, int year, int month, const std::string& category,
+                                  const std::string& text);
+
+    static std::string GetButton(const std::string& link, const std::string& tooltip, const std::string& image,
+                                 const std::string& text);
+    static std::string GetEditorReference(const fs::path& file);
 };
 
 } // namespace hokee

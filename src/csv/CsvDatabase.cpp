@@ -81,7 +81,7 @@ void CsvDatabase::CheckRules()
                 issueStream << "ERROR: Redefinition of rule ";
                 HtmlGenerator::GetItemReference(issueStream, rule2->Id);
                 issueStream << "(";
-                HtmlGenerator::GetEditorReference(issueStream, rule2->File, rule2->Line);
+                issueStream << HtmlGenerator::GetEditorReference(rule2->File);
                 issueStream << ")!";
                 rule1->Issues.push_back(issueStream.str());
             }
