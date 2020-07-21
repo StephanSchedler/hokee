@@ -53,7 +53,7 @@ void CsvParser::Load(CsvTable& csvData)
 
     std::string line;
     std::vector<std::string> header{};
-    while (_lineCounter < static_cast<size_t>(_format.GetIgnoreLines()))
+    while (_lineCounter < _format.GetIgnoreLines())
     {
         _lineCounter++;
         std::getline(_ifstream, line);
