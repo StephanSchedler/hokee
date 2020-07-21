@@ -120,8 +120,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     }
 
     // Check for empty input folder
-    using std::filesystem::directory_iterator;
-    auto inputFolderCount = std::distance(directory_iterator(_inputDirectory), directory_iterator{});
+    auto inputFolderCount = std::distance(fs::directory_iterator(_inputDirectory), fs::directory_iterator{});
     if (inputFolderCount == 0)
     {
         res.set_content(HtmlGenerator::GetEmptyInputPage(), CONTENT_TYPE_HTML);
