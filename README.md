@@ -1,5 +1,7 @@
 # hokee - Automated Housekeeping Book
 
+![Summary Page](https://repository-images.githubusercontent.com/270410626/7366c480-cb92-11ea-98b1-908f059a0013)
+
 ## Used 3rdParty Resources
 
 Project | Type |Link | Description
