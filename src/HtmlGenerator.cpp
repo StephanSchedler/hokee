@@ -117,7 +117,13 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
     std::string tableHead = "<tr><th>Date</th><th>*</th>";
     for (size_t i = 1; i < categories.size(); ++i)
     {
-        tableHead += fmt::format("<th>{}</th>", categories[i]);
+        std::string cat = categories[i];
+        if (!cat.empty() && cat.back() == '!')
+        {
+            // remove tailing "!"
+            cat.pop_back();
+        }
+        tableHead += fmt::format("<th>{}</th>", cat);
     }
     tableHead += "</tr>\n";
 
@@ -141,7 +147,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
                 double sum = 0;
                 for (auto& item : sortedTables[year][month][cat])
                 {
-                    if (item->Category == "Ignorieren" && cat != "Ignorieren")
+                    if ((!item->Category.empty() && item->Category.back() == '!') && cat != item->Category)
                     {
                         continue;
                     }
