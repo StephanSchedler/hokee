@@ -249,7 +249,13 @@ void CsvDatabase::Load(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             if (dir.path().filename().string().rfind(".", 0) == 0)
             {
-                Utils::PrintInfo(fmt::format("Skip directory '{}':", dir.path().string()));
+                Utils::PrintInfo(fmt::format("Skip hidden directory '{}':", dir.path().string()));
+                continue;
+            }
+
+            if (fs::is_empty(dir.path()))
+            {
+                Utils::PrintInfo(fmt::format("Skip empty directory '{}':", dir.path().string()));
                 continue;
             }
 
