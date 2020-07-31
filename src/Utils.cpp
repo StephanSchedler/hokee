@@ -37,7 +37,7 @@ const std::string DropXmlTags(std::string_view msg)
             size_t closeTagPos = result.find('>', openTagPos);
             if (closeTagPos != std::string::npos)
             {
-                result = result.erase(openTagPos, closeTagPos-openTagPos+1);
+                result = result.erase(openTagPos, closeTagPos - openTagPos + 1);
             }
         }
     } while (openTagPos != std::string::npos);
@@ -224,15 +224,41 @@ bool AskYesNoQuestion(const std::string& question, bool defaultYes, bool batchMo
     return defaultYes ? (answer == 'Y' || answer == 'y') : (answer == 'N' || answer == 'n');
 }
 
-std::string Run(const char* cmd)
+void RunAsync(const std::string& cmd)
+{
+    std::thread browserThread([=] {
+        try
+        {
+            if (std::system(cmd.c_str()) < 0)
+            {
+                throw UserException("Could not open result.");
+            }
+        }
+        catch (const UserException& e)
+        {
+            Utils::TerminationHandler(e, false);
+        }
+        catch (const std::exception& e)
+        {
+            Utils::TerminationHandler(e, false);
+        }
+        catch (...)
+        {
+            Utils::TerminationHandler(false);
+        }
+    });
+    browserThread.detach();
+}
+
+std::string RunSync(const std::string& cmd)
 {
     std::array<char, 256> buffer;
     std::string result;
 
 #ifdef _WIN32
-    std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd, "r"), _pclose);
+    std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd.c_str(), "r"), _pclose);
 #else
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
 #endif
     if (!pipe)
     {

@@ -142,60 +142,6 @@ void Application::ReadSettings()
     }
 }
 
-void Application::RunHttpServer()
-{
-    Utils::PrintInfo("Start HttpServer...");
-    std::thread serverThread([&] {
-        try
-        {
-            HttpServer httpServer(_inputDirectory, _ruleSetFile, _configFile, _config.GetEditor(),
-                                  _config.GetExplorer());
-            httpServer.Run();
-        }
-        catch (const UserException& e)
-        {
-            Utils::TerminationHandler(e, false);
-        }
-        catch (const std::exception& e)
-        {
-            Utils::TerminationHandler(e, false);
-        }
-        catch (...)
-        {
-            Utils::TerminationHandler(false);
-        }
-    });
-
-    Utils::PrintInfo("Open browser...");
-    std::thread browserThread([config = _config] {
-        try
-        {
-            if (std::system(fmt::format("{} http://localhost", config.GetBrowser()).c_str()) < 0)
-            {
-                throw UserException("Could not open result.");
-            }
-        }
-        catch (const UserException& e)
-        {
-            Utils::TerminationHandler(e, false);
-        }
-        catch (const std::exception& e)
-        {
-            Utils::TerminationHandler(e, false);
-        }
-        catch (...)
-        {
-            Utils::TerminationHandler(false);
-        }
-    });
-
-    Utils::PrintTrace("Wait for server to exit");
-    serverThread.join();
-
-    Utils::PrintTrace("Wait for browser to exit");
-    browserThread.join();
-}
-
 std::unique_ptr<CsvDatabase> Application::RunInteractive()
 {
     Utils::PrintInfo("Parse CSV files...");
@@ -248,16 +194,25 @@ std::unique_ptr<CsvDatabase> Application::RunInteractive()
 
 std::unique_ptr<CsvDatabase> Application::Run()
 {
-    ReadSettings();
-
     if (_interactiveMode)
     {
+        ReadSettings();
         return RunInteractive();
     }
-    else
+
+    int exitCode = 1;
+    while (exitCode > 0)
     {
-        RunHttpServer();
-        return nullptr;
+        Utils::PrintInfo("Open browser...");
+        Utils::RunAsync(fmt::format("{} http://localhost", _config.GetBrowser()));
+
+        Utils::PrintInfo("Start HttpServer...");
+        ReadSettings();
+        HttpServer httpServer(_inputDirectory, _ruleSetFile, _configFile, _config.GetEditor(),
+                              _config.GetExplorer());
+        exitCode = httpServer.Run();
     }
+
+    return nullptr;
 }
 } // namespace hokee
