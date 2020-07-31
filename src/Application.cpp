@@ -36,9 +36,10 @@ Application::Application(int argc, const char* argv[])
                 "  -b,--batch      - Batch mode that does not ask questions for interactive mode, but");
             Utils::PrintInfo("                    uses default values from settings file.");
             Utils::PrintInfo("  -h,--help       - Show this help.");
+            Utils::PrintInfo("  -i,--iteractive - Interactive commandline mode that is useful to fix issues.");
             Utils::PrintInfo(
-                "  -i,--iteractive - Interactive commandline mode that does not start the webserver.");
-            Utils::PrintInfo("                    If there are issues or unassigned items, user can fix them.");
+                "                    (This option is ignored, if there are neither issues nor unassigned");
+            Utils::PrintInfo("                     items.)");
             Utils::PrintInfo("  -v,--version    - Show this help.");
             Utils::PrintInfo("  path            - Path to config file.");
             Utils::PrintInfo("                    (default: ~/hokee/hokee.ini)");
@@ -194,20 +195,40 @@ std::unique_ptr<CsvDatabase> Application::RunInteractive()
 
 std::unique_ptr<CsvDatabase> Application::Run()
 {
-    if (_interactiveMode)
-    {
-        ReadSettings();
-        return RunInteractive();
-    }
-
     int exitCode = 1;
     while (exitCode > 0)
     {
+        try
+        {
+            ReadSettings();
+        }
+        catch (UserException& e)
+        {
+            Utils::PrintError(e.what());
+            //Continue, HttpServer will show error page
+        }
+        if (_interactiveMode)
+        {
+            std::unique_ptr<CsvDatabase> result = nullptr;
+            try
+            {
+                result = RunInteractive();
+            }
+            catch (UserException& e)
+            {
+                Utils::PrintError(e.what());
+                //Continue, HttpServer will show error page
+            }
+            if (_batchMode)
+            {
+                return result;
+            }
+        }
+
         Utils::PrintInfo("Open browser...");
         Utils::RunAsync(fmt::format("{} http://localhost", _config.GetBrowser()));
 
         Utils::PrintInfo("Start HttpServer...");
-        ReadSettings();
         HttpServer httpServer(_inputDirectory, _ruleSetFile, _configFile, _config.GetEditor(),
                               _config.GetExplorer());
         exitCode = httpServer.Run();

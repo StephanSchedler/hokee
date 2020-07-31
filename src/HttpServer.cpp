@@ -259,7 +259,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
 {
     if (!_server->is_valid())
     {
-        throw UserException("Could not initialize HttpServer");
+        throw InternalException(__FILE__, __LINE__, "Could not initialize HttpServer");
     }
 
     // Get root
@@ -418,8 +418,11 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
     // Set Logger
     _server->set_logger([](const httplib::Request& req, const httplib::Response& res) { PrintRequest(req, res); });
 
-    // Start LoadThread
-    Load();
+    if (_errorMessage.empty())
+    {
+        // Start LoadThread
+        Load();
+    }
 }
 
 HttpServer::~HttpServer()
