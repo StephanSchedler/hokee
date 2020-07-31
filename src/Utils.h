@@ -33,8 +33,8 @@ std::string GetEnv(const std::string& name);
 fs::path GetHomePath();
 
 
-void TerminationHandler(bool pause);
-void TerminationHandler(const std::exception& e, bool pause);
-void TerminationHandler(const UserException& e, bool pause);
+void TerminationHandler();
+void TerminationHandler(const std::exception& e);
+void TerminationHandler(const UserException& e);
 
 } // namespace hokee::Utils
