@@ -17,6 +17,10 @@ class Application
     fs::path _tempDirectory{};
     fs::path _ruleSetFile{};
     fs::path _configFile{};
+    
+    void ReadSettings();
+    void RunHttpServer();
+    std::unique_ptr<CsvDatabase> RunInteractive();
 
   public:
     Application(int argc, const char* argv[]);
