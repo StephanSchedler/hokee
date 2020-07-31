@@ -42,8 +42,9 @@ void CsvParser::ValidateValue(const std::string value)
     }
     if (value != fmt::format("{:.2f}", doubleValue))
     {
-        throw UserException(fmt::format("{}:{}: Could not parse value {} != stod({})", _file.string(),
-                                        _lineCounter, value, fmt::format("{:.2f}", doubleValue)));
+        throw UserException(
+            fmt::format("Could not parse value {} != stod({})", value, fmt::format("{:.2f}", doubleValue)), _file,
+            _lineCounter);
     }
 }
 
@@ -77,8 +78,7 @@ void CsvParser::AssignValue(std::string& value, std::vector<std::string> cells, 
 
     if (id >= cells.size())
     {
-        throw UserException(
-            fmt::format("{}:{}: Could not parse file. There is no column {}", _file.string(), _lineCounter, id));
+        throw UserException(fmt::format("Could not parse file. There is no column {}", id), _file, _lineCounter);
     }
     value = cells[id];
 }
@@ -108,12 +108,14 @@ bool CsvParser::GetItem(CsvRowShared& item)
             }
         }
 
-        std::vector<std::string> cells = Utils::SplitLine(line, _format.GetDelimiter(), _format.GetHasTrailingDelimiter());
+        std::vector<std::string> cells
+            = Utils::SplitLine(line, _format.GetDelimiter(), _format.GetHasTrailingDelimiter());
         if (_format.GetColumnNames().size() != cells.size())
         {
             throw UserException(
-                fmt::format("{}:{}: Could not parse file. Line does not match expected column count ({} != {})",
-                            _file.string(), _lineCounter, _format.GetColumnNames().size(), cells.size()));
+                fmt::format("Could not parse file. Line does not match expected column count ({} != {})",
+                            _format.GetColumnNames().size(), cells.size()),
+                _file, _lineCounter);
         }
 
         std::vector<std::string> trimmedCells = {};
@@ -132,21 +134,22 @@ bool CsvParser::GetItem(CsvRowShared& item)
             {
                 if (cell.size() < 2)
                 {
-                    throw UserException(fmt::format("{}:{}: Could not parse file. Cells with double quotes "
-                                                    "formats must be empty or must have 2 char, at least.",
-                                                    _file.string(), _lineCounter));
+                    throw UserException(fmt::format("Could not parse file. Cells with double quotes "
+                                                    "formats must be empty or must have 2 char, at least."),
+                                        _file.string(), _lineCounter);
                 }
                 if (cell[0] != '"')
                 {
-                    throw UserException(fmt::format(
-                        "{}:{}: Could not parse file. Cell '{}' does not start with double quotes '\"'",
-                        _file.string(), _lineCounter, cell));
+                    throw UserException(
+                        fmt::format("Could not parse file. Cell '{}' does not start with double quotes '\"'",
+                                    cell),
+                        _file, _lineCounter);
                 }
                 if (cell[cell.size() - 1] != '"')
                 {
                     throw UserException(
-                        fmt::format("{}:{}: Could not parse file. Cell '{}' does not end with double quotes '\"'",
-                                    _file.string(), _lineCounter, cell));
+                        fmt::format("Could not parse file. Cell '{}' does not end with double quotes '\"'", cell),
+                        _file, _lineCounter);
                 }
 
                 trimmedCells.push_back(cell.substr(1, cell.size() - 2));
@@ -161,9 +164,10 @@ bool CsvParser::GetItem(CsvRowShared& item)
             {
                 if (trimmedCells[i] != columnNames[i])
                 {
-                    throw UserException(fmt::format(
-                        "{}:{}: Could not parse file. Header column {} does not match expected column {}",
-                        _file.string(), _lineCounter, trimmedCells[i], columnNames[i]));
+                    throw UserException(
+                        fmt::format("Could not parse file. Header column {} does not match expected column {}",
+                                    trimmedCells[i], columnNames[i]),
+                        _file, _lineCounter);
                 }
             }
             continue;
@@ -188,7 +192,7 @@ bool CsvParser::GetItem(CsvRowShared& item)
         }
         catch (const std::exception& e)
         {
-            throw UserException(fmt::format("{}:{}: {}", _file.string(), _lineCounter, e.what()));
+            throw UserException(e.what(), _file, _lineCounter);
         }
         return true;
     }
@@ -268,10 +272,10 @@ bool CsvParser::ParseItem(CsvRowShared& item)
     {
         if (_format.GetPayer() >= 0 || _format.GetPayee() >= 0)
         {
-            throw UserException(fmt::format("{}:{}: Could not parse file. Invalid CSV format {}. You must not "
+            throw UserException(fmt::format("Could not parse file. Invalid CSV format {}. You must not "
                                             "specify 'PayerPayee' along with 'Payer' or 'Payee'",
-                                            _file.string(), _lineCounter, _format.GetFormatName())
-                                    .c_str());
+                                            _format.GetFormatName()),
+                                _file, _lineCounter);
         }
     }
 

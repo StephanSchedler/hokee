@@ -19,7 +19,8 @@ std::string HtmlGenerator::GetButton(const std::string& link, const std::string&
 {
     return fmt::format(
         "<td style=\"border: hidden\"><a href=\"{}\" title=\"{}\"><main style=\"text-align:center;\"><img "
-        "src=\"{}\"/></main><footer style=\"text-align:center;\">{}</footer></a></td>", link, tooltip, image, text);
+        "src=\"{}\"/></main><footer style=\"text-align:center;\">{}</footer></a></td>",
+        link, tooltip, image, text);
 }
 
 std::string HtmlGenerator::GetHeader(const CsvDatabase& database)
@@ -32,34 +33,34 @@ std::string HtmlGenerator::GetHeader(const CsvDatabase& database)
     result << GetButton(INDEX_HTML, "Show Summary", "48-money.png", "Summary");
 
     result << GetButton(RULES_HTML, "Show Rules", "48-file-excel.png",
-                          fmt::format("Rules ({})", database.Rules.size()));
+                        fmt::format("Rules ({})", database.Rules.size()));
 
     result << GetButton(ALL_HTML, "Show All Items", "48-file-text.png",
-                          fmt::format("All&nbsp;Items ({})", database.Data.size()));
+                        fmt::format("All&nbsp;Items ({})", database.Data.size()));
 
     result << GetButton(ASSIGNED_HTML, "Show Assigned Items", "48-sign-check.png",
-                          fmt::format("Assigned ({})", database.Assigned.size()));
+                        fmt::format("Assigned ({})", database.Assigned.size()));
 
     if (database.Unassigned.size() == 0)
     {
         result << GetButton(UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-delete2.png",
-                              fmt::format("Unassigned ({})", database.Unassigned.size()));
+                            fmt::format("Unassigned ({})", database.Unassigned.size()));
     }
     else
     {
         result << GetButton(UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-delete.png",
-                              fmt::format("Unassigned ({})", database.Unassigned.size()));
+                            fmt::format("Unassigned ({})", database.Unassigned.size()));
     }
 
     if (database.Issues.size() == 0)
     {
         result << GetButton(ISSUES_HTML, "Show Issues", "48-sign-warning2.png",
-                              fmt::format("Issues ({})", database.Issues.size()));
+                            fmt::format("Issues ({})", database.Issues.size()));
     }
     else
     {
         result << GetButton(ISSUES_HTML, "Show Issues", "48-sign-warning.png",
-                              fmt::format("Issues ({})", database.Issues.size()));
+                            fmt::format("Issues ({})", database.Issues.size()));
     }
 
     result << "<td style=\"border: hidden\" width=\"99%\"></td>";
@@ -240,9 +241,19 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
         "        <p><a href=\"{}\" title=\"Stop hokee\"><img src=\"96-sign-ban.png\"/></a></p>\n"
         "        <h2>ERROR {}</h2>\n"
         "        <p><b>{}</b></p>\n"
-        "      </div>\n"
-        "    </main>\n",
+        "        <p>&nbsp;</p>\n"
+        "        <p style=\"color: #000000;\">What next?</p>\n"
+        "        <p><table cellspacing=\"0\" cellpadding=\"0\" style=\"border: hidden\"><tr>",
         EXIT_CMD, errorCode, errorMessage);
+
+    htmlPage << "<td style=\"border: hidden\" width=\"50%\"></td>";
+    htmlPage << GetButton(RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
+    htmlPage << GetButton(EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
+    htmlPage << "<td style=\"border: hidden\" width=\"50%\"></td>";
+
+    htmlPage << "        </tr></table><p>\n"
+                "      </div>\n"
+                "    </main>\n";
     htmlPage << "  </body>\n"
                 "</html>";
     return htmlPage.str();
@@ -350,16 +361,28 @@ void HtmlGenerator::GetItemsReference(std::stringstream& output, int year, int m
 std::string HtmlGenerator::GetEditorReference(const fs::path& file)
 {
     std::stringstream output;
-    output << fmt::format("<a href=\"{}?file={}\"><img src=\"24-notepad.png\"/></a>\n", HtmlGenerator::EDIT_CMD,
-                          file.string());
-    output << fmt::format("<a href=\"{}?folder={}\"><img src=\"24-folder.png\"/></a>", HtmlGenerator::OPEN_CMD,
-                          file.parent_path().string());
-
-    fs::path formatFile = file.parent_path() / "format.ini";
-    if (fs::exists(formatFile))
+    if (fs::is_directory(file))
     {
-        output << fmt::format("<a href=\"{}?file={}\"><img src=\"24-wrench-screwdriver.png\"/></a>",
-                              HtmlGenerator::EDIT_CMD, formatFile.string());
+        output << fmt::format(
+            "<a href=\"{}?folder={}\"><img src=\"24-folder.png\" title=\"Open folder\"/></a>",
+            HtmlGenerator::OPEN_CMD, file.string());
+    }
+    else
+    {
+        output << fmt::format(
+            "<a href=\"{}?file={}\" title=\"Open in editor\"><img src=\"24-notepad.png\"/></a>\n",
+            HtmlGenerator::EDIT_CMD, file.string());
+        output << fmt::format(
+            "<a href=\"{}?folder={}\"><img src=\"24-folder.png\" title=\"Open parent folder\"/></a>",
+            HtmlGenerator::OPEN_CMD, file.parent_path().string());
+
+        fs::path formatFile = file.parent_path() / "format.ini";
+        if (file.extension().string() == ".csv" && fs::exists(formatFile))
+        {
+            output << fmt::format("<a href=\"{}?file={}\" title=\"Open corresponding format file\"><img "
+                                  "src=\"24-wrench-screwdriver.png\"/></a>",
+                                  HtmlGenerator::EDIT_CMD, formatFile.string());
+        }
     }
     return output.str();
 }
@@ -408,7 +431,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         htmlPage << fmt::format(":{}", item->Line);
     }
     htmlPage << "</div>\n";
-    
+
     htmlPage << "<p>\n";
 
     htmlPage << GetTableStart();

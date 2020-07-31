@@ -63,7 +63,7 @@ Application::Application(int argc, const char* argv[])
             _configFile = fs::absolute(arg);
             if (!fs::exists(_configFile))
             {
-                throw UserException(fmt::format("Could not find config file '{}'.", _configFile.string()));
+                throw UserException(fmt::format("Could not find config file"), _configFile);
             }
         }
     }

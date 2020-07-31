@@ -262,7 +262,7 @@ void CsvDatabase::Load(const fs::path& inputDirectory, const fs::path& ruleSetFi
             fs::path formatFile = dir.path() / "format.ini";
             if (!fs::exists(formatFile))
             {
-                throw UserException(fmt::format("Could not find format description: {}", formatFile.string()));
+                throw UserException(fmt::format("Could not find format description file"), formatFile);
             }
             CsvFormat format(formatFile);
 
