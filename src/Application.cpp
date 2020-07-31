@@ -85,7 +85,23 @@ Application::Application(int argc, const char* argv[])
         }
     }
 
-    // Read settings
+    // Detect Temporary Directory
+#ifdef _MSC_VER
+    _tempDirectory = Utils::GetEnv("TEMP");
+#elif __APPLE__
+    _tempDirectory = "/var/tmp";
+#else
+    _tempDirectory = "/tmp";
+#endif
+    _tempDirectory = _tempDirectory / "hokee";
+    if (!fs::exists(_tempDirectory))
+    {
+        fs::create_directories(_tempDirectory);
+    }
+}
+
+void Application::ReadSettings()
+{
     _config = Settings(_configFile);
     if (_config.GetInputDirectory().is_absolute())
     {
@@ -104,29 +120,16 @@ Application::Application(int argc, const char* argv[])
         _ruleSetFile = _configFile.parent_path() / _config.GetRuleSetFile();
     }
 
-    // Detect Temporary Directory
-#ifdef _MSC_VER
-    _tempDirectory = Utils::GetEnv("TEMP");
-#elif __APPLE__
-    _tempDirectory = "/var/tmp";
-#else
-    _tempDirectory = "/tmp";
-#endif
-    _tempDirectory = _tempDirectory / "hokee";
-    if (!fs::exists(_tempDirectory))
-    {
-        fs::create_directories(_tempDirectory);
-    }
-
     if (!fs::exists(_inputDirectory))
     {
-        fs::create_directories(_inputDirectory);        
+        fs::create_directories(_inputDirectory);
         Utils::PrintWarning(
             fmt::format("Could not find input directory '{}'. Create new one.", _inputDirectory.string()));
     }
     if (!fs::exists(_ruleSetFile))
     {
-        Utils::PrintWarning(fmt::format("Could not find rules. Create empty rules file {}", _ruleSetFile.string()));
+        Utils::PrintWarning(
+            fmt::format("Could not find rules. Create empty rules file {}", _ruleSetFile.string()));
         std::vector<std::string> header{};
         header.push_back("Categories:");
         header.push_back("Categorie1;Categorie2;Ignore!");
@@ -139,109 +142,122 @@ Application::Application(int argc, const char* argv[])
     }
 }
 
+void Application::RunHttpServer()
+{
+    Utils::PrintInfo("Start HttpServer...");
+    std::thread serverThread([&] {
+        try
+        {
+            HttpServer httpServer(_inputDirectory, _ruleSetFile, _configFile, _config.GetEditor(),
+                                  _config.GetExplorer());
+            httpServer.Run();
+        }
+        catch (const UserException& e)
+        {
+            Utils::TerminationHandler(e, false);
+        }
+        catch (const std::exception& e)
+        {
+            Utils::TerminationHandler(e, false);
+        }
+        catch (...)
+        {
+            Utils::TerminationHandler(false);
+        }
+    });
+
+    Utils::PrintInfo("Open browser...");
+    std::thread browserThread([config = _config] {
+        try
+        {
+            if (std::system(fmt::format("{} http://localhost", config.GetBrowser()).c_str()) < 0)
+            {
+                throw UserException("Could not open result.");
+            }
+        }
+        catch (const UserException& e)
+        {
+            Utils::TerminationHandler(e, false);
+        }
+        catch (const std::exception& e)
+        {
+            Utils::TerminationHandler(e, false);
+        }
+        catch (...)
+        {
+            Utils::TerminationHandler(false);
+        }
+    });
+
+    Utils::PrintTrace("Wait for server to exit");
+    serverThread.join();
+
+    Utils::PrintTrace("Wait for browser to exit");
+    browserThread.join();
+}
+
+std::unique_ptr<CsvDatabase> Application::RunInteractive()
+{
+    Utils::PrintInfo("Parse CSV files...");
+
+    auto csvDatabase = std::make_unique<CsvDatabase>();
+    int maxIterations = 10;
+    bool restart = false;
+    do
+    {
+        restart = false;
+        if (--maxIterations <= 0)
+        {
+            throw InternalException(__FILE__, __LINE__, "Infinte loop in batchMode.");
+        }
+
+        csvDatabase->Load(_inputDirectory, _ruleSetFile);
+
+        Utils::PrintInfo(fmt::format("Found {} items (assigned: {}, unassigned: {}, issues: {})",
+                                     csvDatabase->Data.size(), csvDatabase->Assigned.size(),
+                                     csvDatabase->Unassigned.size(), csvDatabase->Issues.size()));
+
+        if (csvDatabase->Unassigned.size() > 0)
+        {
+            bool defaultAddRules = _config.GetAddRules();
+            if (Utils::AskYesNoQuestion("Add rules?", defaultAddRules, _batchMode))
+            {
+                std::string editor = _config.GetEditor();
+                csvDatabase->AddRules(_ruleSetFile, _tempDirectory, editor);
+
+                restart = true;
+                continue;
+            }
+        }
+
+        if (csvDatabase->Issues.size() > 0 || csvDatabase->Unassigned.size() > 0)
+        {
+            bool defaultUpdateRules = _config.GetUpdateRules();
+            if (Utils::AskYesNoQuestion("Update rules & categories?", defaultUpdateRules, _batchMode))
+            {
+                std::string editor = _config.GetEditor();
+                Utils::EditFile(_ruleSetFile, editor);
+                restart = true;
+                continue;
+            }
+        }
+    } while (restart);
+
+    return csvDatabase;
+}
+
 std::unique_ptr<CsvDatabase> Application::Run()
 {
-    if (!_interactiveMode)
+    ReadSettings();
+
+    if (_interactiveMode)
     {
-        Utils::PrintInfo("Start HttpServer...");
-        std::thread serverThread([&] {
-            try
-            {
-                HttpServer httpServer(_inputDirectory, _ruleSetFile, _configFile, _config.GetEditor(), _config.GetExplorer());
-                httpServer.Run();
-            }
-            catch (const UserException& e)
-            {
-                Utils::TerminationHandler(e, false);
-            }
-            catch (const std::exception& e)
-            {
-                Utils::TerminationHandler(e, false);
-            }
-            catch (...)
-            {
-                Utils::TerminationHandler(false);
-            }
-        });
-
-        Utils::PrintInfo("Open browser...");
-        std::thread browserThread([config = _config] {
-            try
-            {
-                if (std::system(fmt::format("{} http://localhost", config.GetBrowser()).c_str()) < 0)
-                {
-                    throw UserException("Could not open result.");
-                }
-            }
-            catch (const UserException& e)
-            {
-                Utils::TerminationHandler(e, false);
-            }
-            catch (const std::exception& e)
-            {
-                Utils::TerminationHandler(e, false);
-            }
-            catch (...)
-            {
-                Utils::TerminationHandler(false);
-            }
-        });
-
-        Utils::PrintTrace("Wait for server to exit");
-        serverThread.join();
-
-        Utils::PrintTrace("Wait for browser to exit");
-        browserThread.join();
+        return RunInteractive();
     }
     else
     {
-        Utils::PrintInfo("Parse CSV files...");
-
-        auto csvDatabase = std::make_unique<CsvDatabase>();
-        int maxIterations = 10;
-        bool restart = false;
-        do
-        {
-            restart = false;
-            if (--maxIterations <= 0)
-            {
-                throw InternalException(__FILE__, __LINE__, "Infinte loop in batchMode.");
-            }
-
-            csvDatabase->Load(_inputDirectory, _ruleSetFile);
-
-            Utils::PrintInfo(fmt::format("Found {} items (assigned: {}, unassigned: {}, issues: {})",
-                                         csvDatabase->Data.size(), csvDatabase->Assigned.size(),
-                                         csvDatabase->Unassigned.size(), csvDatabase->Issues.size()));
-
-            if (csvDatabase->Unassigned.size() > 0)
-            {
-                bool defaultAddRules = _config.GetAddRules();
-                if (Utils::AskYesNoQuestion("Add rules?", defaultAddRules, _batchMode))
-                {
-                    std::string editor = _config.GetEditor();
-                    csvDatabase->AddRules(_ruleSetFile, _tempDirectory, editor);
-
-                    restart = true;
-                    continue;
-                }
-            }
-
-            if (csvDatabase->Issues.size() > 0 || csvDatabase->Unassigned.size() > 0)
-            {
-                bool defaultUpdateRules = _config.GetUpdateRules();
-                if (Utils::AskYesNoQuestion("Update rules & categories?", defaultUpdateRules, _batchMode))
-                {
-                    std::string editor = _config.GetEditor();
-                    Utils::EditFile(_ruleSetFile, editor);
-                    restart = true;
-                    continue;
-                }
-            }
-        } while (restart);
-
-        return csvDatabase;
+        RunHttpServer();
+        return nullptr;
     }
-    return nullptr;
 }
 } // namespace hokee
