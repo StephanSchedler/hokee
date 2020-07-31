@@ -10,19 +10,41 @@
 #include <array>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <string_view>
-#include <mutex>
 
 namespace hokee::Utils
 {
-namespace {
-    std::mutex _lastMessageMutex{};
-    std::vector<std::string> _lastMessages{};
-    int _uniqueId{0};
+namespace
+{
+std::mutex _lastMessageMutex{};
+std::vector<std::string> _lastMessages{};
+int _uniqueId{0};
+
+const std::string DropXmlTags(std::string_view msg)
+{
+    std::string result(msg);
+
+    size_t openTagPos = std::string::npos;
+    do
+    {
+        openTagPos = result.find('<');
+        if (openTagPos != std::string::npos)
+        {
+            size_t closeTagPos = result.find('>', openTagPos);
+            if (closeTagPos != std::string::npos)
+            {
+                result = result.erase(openTagPos, closeTagPos-openTagPos+1);
+            }
+        }
+    } while (openTagPos != std::string::npos);
+
+    return result;
 }
+} // namespace
 
 const std::vector<std::string> GetLastMessages()
 {
@@ -34,7 +56,7 @@ const std::vector<std::string> GetLastMessages()
 std::string ToLower(const std::string& str)
 {
     std::string result = str;
-    for(char& c : result)
+    for (char& c : result)
     {
         c = static_cast<char>(std::tolower(c));
     }
@@ -44,7 +66,7 @@ std::string ToLower(const std::string& str)
 std::string ToUpper(const std::string& str)
 {
     std::string result = str;
-    for(char& c : result)
+    for (char& c : result)
     {
         c = static_cast<char>(std::toupper(c));
     }
@@ -134,17 +156,16 @@ int GenerateId()
 
 void PrintTrace(std::string_view msg)
 {
-    std::cout << "TRACE: " << msg << std::endl;
+    std::cout << "TRACE: " << DropXmlTags(msg) << std::endl;
 }
 
 void PrintInfo(std::string_view msg)
 {
-    const std::string msgString(msg);
-    std::cerr << msgString << std::endl;
-    
+    std::cerr << DropXmlTags(msg) << std::endl;
+
     std::scoped_lock lock(_lastMessageMutex);
-    _lastMessages.emplace(_lastMessages.begin(), std::move(msgString));
-    while(_lastMessages.size() > 8)
+    _lastMessages.emplace(_lastMessages.begin(), msg);
+    while (_lastMessages.size() > 8)
     {
         _lastMessages.pop_back();
     }
@@ -152,12 +173,11 @@ void PrintInfo(std::string_view msg)
 
 void PrintWarning(std::string_view msg)
 {
-    const std::string msgString = fmt::format("WARN:  {}", msg);
-    std::cerr << msgString << std::endl;
-    
+    std::cerr << fmt::format("WARN:  {}", DropXmlTags(msg)) << std::endl;
+
     std::scoped_lock lock(_lastMessageMutex);
-    _lastMessages.emplace(_lastMessages.begin(), std::move(msgString));
-    while(_lastMessages.size() > 8)
+    _lastMessages.emplace(_lastMessages.begin(), msg);
+    while (_lastMessages.size() > 8)
     {
         _lastMessages.pop_back();
     }
@@ -165,11 +185,11 @@ void PrintWarning(std::string_view msg)
 
 void PrintError(std::string_view msg)
 {
-    std::cerr << fmt::format("ERROR: {}", msg) << std::endl;
-    
+    std::cerr << fmt::format("ERROR: {}", DropXmlTags(msg)) << std::endl;
+
     std::scoped_lock lock(_lastMessageMutex);
     _lastMessages.emplace(_lastMessages.begin(), msg);
-    while(_lastMessages.size() > 8)
+    while (_lastMessages.size() > 8)
     {
         _lastMessages.pop_back();
     }
@@ -234,7 +254,7 @@ std::string GetEnv(const std::string& name)
 
 fs::path GetHomePath()
 {
-#if defined(unix) || defined (__APPLE__)
+#if defined(unix) || defined(__APPLE__)
     return Utils::GetEnv("HOME");
 #elif defined(_WIN32)
     return fs::path(Utils::GetEnv("HOMEDRIVE") + Utils::GetEnv("HOMEPATH")) / "Documents";
