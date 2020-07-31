@@ -15,7 +15,7 @@ std::string GenerateMessage(const std::string& msg, const fs::path& file, int li
     result << msg;
     if (!file.empty())
     {
-        result << fmt::format("<br>{}", file.string());
+        result << fmt::format(" <br>{}", file.string());
         if (line > 0)
         {
             result << fmt::format(":{}", line);

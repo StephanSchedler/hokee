@@ -248,6 +248,8 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
 
     htmlPage << "<td style=\"border: hidden\" width=\"50%\"></td>";
     htmlPage << GetButton(RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
+    htmlPage << GetButton(INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
+    htmlPage << GetButton(SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
     htmlPage << GetButton(EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
     htmlPage << "<td style=\"border: hidden\" width=\"50%\"></td>";
 
