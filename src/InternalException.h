@@ -6,6 +6,8 @@
 #include <string>
 #include <string_view>
 
+namespace hokee
+{
 class InternalException final : public std::exception
 {
     std::string _msg;
@@ -22,3 +24,4 @@ class InternalException final : public std::exception
 
     char const* what() const noexcept override;
 };
+} // namespace hokee

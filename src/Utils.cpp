@@ -1,4 +1,5 @@
 #include "Utils.h"
+#include "HtmlGenerator.h"
 #include "InternalException.h"
 
 #include <fmt/format.h>
@@ -164,11 +165,10 @@ void PrintWarning(std::string_view msg)
 
 void PrintError(std::string_view msg)
 {
-    const std::string msgString = fmt::format("ERROR: {}", msg);
-    std::cerr << msgString << std::endl;
+    std::cerr << fmt::format("ERROR: {}", msg) << std::endl;
     
     std::scoped_lock lock(_lastMessageMutex);
-    _lastMessages.emplace(_lastMessages.begin(), std::move(msgString));
+    _lastMessages.emplace(_lastMessages.begin(), msg);
     while(_lastMessages.size() > 8)
     {
         _lastMessages.pop_back();

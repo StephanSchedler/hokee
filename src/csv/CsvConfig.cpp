@@ -21,7 +21,7 @@ CsvConfig::CsvConfig(const fs::path& file)
 {
     if (!fs::exists(file))
     {
-        throw UserException(fmt::format("File does not exist: {}", file.string()));
+        throw UserException(fmt::format("File does not exist"), file);
     }
     CsvParser csv(file, CsvConfig::GetFormat());
 
@@ -74,7 +74,7 @@ const std::string CsvConfig::GetString(const std::string& key) const
     if (item == _config.end())
     {
         throw UserException(
-            fmt::format("Missing property. Could not find property '{}' in '{}'", key, _file.string()));
+            fmt::format("Missing property. Could not find property '{}'", key), _file);
     }
     Utils::PrintTrace(fmt::format("Read setting {}='{}' from '{}'", key, item->second, _file.string()));
     return item->second;
@@ -91,7 +91,7 @@ int CsvConfig::GetInt(const std::string& key) const
     catch (const std::exception& e)
     {
         throw UserException(
-            fmt::format("Could not convert '{}' in '{}' to 'int'. ({})", value, _file.string(), e.what()));
+            fmt::format("Could not convert '{}' to 'int'. Reason: {}", value, e.what()), _file);
     }
     return intValue;
 }
@@ -108,7 +108,7 @@ char CsvConfig::GetChar(const std::string& key) const
     if (value.size() != 1)
     {
         throw UserException(
-            fmt::format("Delimiter property '{}' in '{}' must have length 1.", value, _file.string()));
+            fmt::format("Delimiter property '{}' must have length 1.", value), _file);
     }
 
     return value[0];

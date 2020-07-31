@@ -38,8 +38,8 @@ std::string GetImageContent(const std::string& name)
             return sstream.str();
         }
     }
-    throw UserException(fmt::format("Could not find '{}' in '{}'", fs::path(name).filename().string(),
-                                    fs::absolute(fs::current_path() / ".." / "images").string()));
+    throw UserException(fmt::format("Could not find '{}'", fs::path(name).filename().string()),
+                        fs::absolute(fs::current_path() / ".." / "images"));
 }
 
 std::string GetUrl(const httplib::Request& req)
@@ -334,7 +334,8 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      if (ec.value() != 0)
                      {
                          res.status = 500;
-                         _errorMessage = fmt::format("Could not copy folder '{}' to '{}' ({})", src.string(), dest.string(), ec.message());
+                         _errorMessage = fmt::format("Could not copy folder '{}' to '{}' ({})", src.string(),
+                                                     dest.string(), ec.message());
                          return;
                      }
 
@@ -345,7 +346,8 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      if (ec.value() != 0)
                      {
                          res.status = 500;
-                         _errorMessage = fmt::format("Could not copy file '{}' to '{}' ({})", src.string(), dest.string(), ec.message());
+                         _errorMessage = fmt::format("Could not copy file '{}' to '{}' ({})", src.string(),
+                                                     dest.string(), ec.message());
                          return;
                      }
 
