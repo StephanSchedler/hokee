@@ -1,8 +1,26 @@
 # hokee - Automated Housekeeping Book
 
+TODO: short description
+
 ![Summary Page](https://repository-images.githubusercontent.com/270410626/7366c480-cb92-11ea-98b1-908f059a0013)
 
-## Used 3rdParty Resources
+## Motivation
+
+## How To Start
+
+### Normal Mode
+
+### Interactive Mode
+
+## Configure Hokee
+
+### General Settings
+
+### CSV Formats
+
+## Further Infos
+
+### 3rdParty Dependencies 
 
 Project | Type |Link | Description
 --- | --- | --- | ---
