@@ -13,7 +13,7 @@ using namespace hokee;
 
 int main(int /*unused*/, const char* argv[])
 {
-    std::set_terminate([]{Utils::TerminationHandler(false);});
+    std::set_terminate(Utils::TerminationHandler);
 
     bool success = true;
     try
@@ -98,15 +98,15 @@ int main(int /*unused*/, const char* argv[])
     }
     catch (const UserException& e)
     {
-        Utils::TerminationHandler(e, false);
+        Utils::TerminationHandler(e);
     }
     catch (const std::exception& e)
     {
-        Utils::TerminationHandler(e, false);
+        Utils::TerminationHandler(e);
     }
     catch (...)
     {
-        Utils::TerminationHandler(false);
+        Utils::TerminationHandler();
     }
 
     return success ? 0 : -1;

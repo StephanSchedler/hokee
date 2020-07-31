@@ -9,7 +9,7 @@ using namespace hokee;
 
 int main(int argc, const char* argv[])
 {
-    std::set_terminate([]{Utils::TerminationHandler(true);});
+    std::set_terminate(Utils::TerminationHandler);
 
     try
     {
@@ -17,22 +17,18 @@ int main(int argc, const char* argv[])
         std::unique_ptr<CsvDatabase> database = app.Run();
 
         Utils::PrintInfo("DONE");
-        if (std::system("pause"))
-        {
-            Utils::PrintError("Could not pause.");
-        }
     }
     catch (const UserException& e)
     {
-        Utils::TerminationHandler(e, true);
+        Utils::TerminationHandler(e);
     }
     catch (const std::exception& e)
     {
-        Utils::TerminationHandler(e, true);
+        Utils::TerminationHandler(e);
     }
     catch (...)
     {
-        Utils::TerminationHandler(true);
+        Utils::TerminationHandler();
     }
 
     return 0;
