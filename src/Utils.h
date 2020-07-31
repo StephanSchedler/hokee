@@ -19,7 +19,8 @@ void PrintInfo(std::string_view msg);
 void PrintWarning(std::string_view msg);
 void PrintError(std::string_view msg);
 
-std::string Run(const char* cmd);
+std::string RunSync(const std::string& cmd);
+void RunAsync(const std::string& cmd);
 
 bool AskYesNoQuestion(const std::string& question, bool defaultYes = true, bool batchMode = false);
 int GenerateId();

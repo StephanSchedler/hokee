@@ -305,6 +305,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
     _server->Get((std::string("/") + HtmlGenerator::EXIT_CMD).c_str(),
                  [&](const httplib::Request& /*req*/, httplib::Response& /*res*/) {
                      Utils::PrintTrace("Received exit request. Shutdown application...");
+                     _exitCode = 0;
                      _server->stop();
                      if (_loadThread)
                      {
@@ -314,13 +315,15 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
 
     // Clear cache, reload
     _server->Get((std::string("/") + HtmlGenerator::RELOAD_CMD).c_str(),
-                 [&](const httplib::Request& /*req*/, httplib::Response& res) {
-                     Utils::PrintTrace("Received reload request. Clear cache and reload...");
-                     _cache.clear();
+                 [&](const httplib::Request& /*req*/, httplib::Response& /*res*/) {
+                     Utils::PrintTrace("Received reload request. Restart...");
                      Utils::ResetIdGenerator();
-                     _database.ProgressValue = 0;
-                     Load();
-                     res.set_redirect(HtmlGenerator::INDEX_HTML);
+                     _exitCode = 1;
+                     _server->stop();
+                     if (_loadThread)
+                     {
+                         _loadThread->join();
+                     }
                  });
 
     // Copy Samples
@@ -454,9 +457,10 @@ void HttpServer::Load()
     });
 }
 
-void HttpServer::Run()
+int HttpServer::Run()
 {
     _server->listen("localhost", 80);
+    return _exitCode;
 }
 
 } // namespace hokee

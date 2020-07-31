@@ -19,7 +19,6 @@ class Application
     fs::path _configFile{};
     
     void ReadSettings();
-    void RunHttpServer();
     std::unique_ptr<CsvDatabase> RunInteractive();
 
   public:

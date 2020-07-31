@@ -35,6 +35,7 @@ class HttpServer
     std::atomic<int> _errorStatus{200};
     std::unique_ptr<std::thread> _loadThread{nullptr};
     std::timed_mutex _databaseMutex{};
+    int _exitCode{0};
 
     void Load();
     bool SetCacheContent(const httplib::Request& req, httplib::Response& res);
@@ -53,7 +54,7 @@ class HttpServer
     HttpServer(HttpServer&&) = delete;
     HttpServer& operator=(HttpServer&&) = delete;
 
-    void Run();
+    int Run();
 };
 
 } // namespace hokee
