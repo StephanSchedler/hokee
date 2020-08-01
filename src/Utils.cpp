@@ -1,6 +1,7 @@
 #include "Utils.h"
 #include "HtmlGenerator.h"
 #include "InternalException.h"
+#include "hokee.h"
 
 #include <fmt/format.h>
 
@@ -44,6 +45,37 @@ const std::string DropXmlTags(std::string_view msg)
     } while (openTagPos != std::string::npos);
 
     return result;
+}
+
+std::string ReadFileObfuscated(const fs::path& path, bool obfuscate)
+{
+    char c;
+    std::stringstream output;
+    std::ifstream inputStream(path, std::ios::binary);
+
+    char cipher[256];
+    for (int i = 0; i < 256; ++i)
+    {
+        cipher[i] = static_cast<char>(i);
+            if (i >= 48 && i <= 57)
+            {
+                cipher[i] = '1';
+            }
+            if ((i >= 65 && i <= 90) || (i >= 97 && i <= 122))
+            {
+                cipher[i] = (rand() % 26) + 65; // Random character A-Z
+            }
+    }
+
+    while (inputStream.get(c))
+    {
+        if (obfuscate)
+        {
+            c = cipher[static_cast<unsigned char>(c)];
+        }
+        output << c;
+    }
+    return output.str();
 }
 } // namespace
 
@@ -279,7 +311,7 @@ std::string GetEnv(const std::string& name)
     return pValue == nullptr ? "" : std::string(pValue);
 }
 
-fs::path GetHomePath()
+fs::path GetHomeDir()
 {
 #if defined(unix) || defined(__APPLE__)
     return Utils::GetEnv("HOME");
@@ -288,6 +320,23 @@ fs::path GetHomePath()
 #else
 #error Unsupported OS
 #endif
+}
+
+fs::path GetTempDir()
+{
+    // Detect Temporary Directory
+#ifdef _MSC_VER
+    static fs::path tempDir = fs::path(Utils::GetEnv("TEMP")) / "hokee";
+#elif __APPLE__
+    static fs::path tempDir = fs::path("/") / "var" / "tmp" / "hokee";
+#else
+    static fs::path tempDir = fs::path("/") / "tmp" / "hokee";
+#endif
+    if (!fs::exists(tempDir))
+    {
+        fs::create_directories(tempDir);
+    }
+    return tempDir;
 }
 
 void TerminationHandler()
@@ -327,6 +376,53 @@ void TerminationHandler(const UserException& e)
 {
     Utils::PrintError(e.what());
     std::abort();
+}
+
+void GenerateSupportMail(const fs::path& outputFile, const fs::path& ruleSetFile, const fs::path& inputDir)
+{
+    Utils::PrintInfo(fmt::format("Write support mail {}", outputFile.string()));
+    std::ofstream outputFileStream;
+    outputFileStream.open(outputFile, std::ios::binary);
+
+    outputFileStream << "Fill the section below and send it to: ";
+    outputFileStream << std::string("schedler").append("@").append("paderborn").append(".com") << std::endl;
+    outputFileStream << std::endl;
+    outputFileStream << "=============================================" << std::endl;
+    outputFileStream << fmt::format("Problem report for hokee {}", PROJECT_VERSION) << std::endl;
+    outputFileStream << "=============================================" << std::endl;
+    outputFileStream << std::endl;
+    outputFileStream << "Problem Description:" << std::endl;
+    outputFileStream << std::endl;
+    outputFileStream << "  >>> ADD SHORT PROBLEM DESCRIPTION <<<" << std::endl;
+    outputFileStream << std::endl;
+    outputFileStream << "Further Infos:" << std::endl;
+    outputFileStream << std::endl;
+#ifdef _MSC_VER
+    outputFileStream << "  Windows >>> ADD OS VERSION <<<" << std::endl;
+#elif __APPLE__
+    outputFileStream << "  MacOS >>> ADD OS VERSION <<<" << std::endl;
+#else
+    outputFileStream << "  Linux >>> ADD DISTRO & VERSION <<<" << std::endl;
+#endif
+    outputFileStream << std::endl;
+
+    outputFileStream << "=============================================" << std::endl;
+    outputFileStream << ruleSetFile << std::endl;
+    outputFileStream << "=============================================" << std::endl;
+    outputFileStream << ReadFileObfuscated(ruleSetFile, true) << std::endl;
+
+    for (const auto& file : fs::recursive_directory_iterator(inputDir))
+    {
+        if (fs::is_regular_file(file.path()))
+        {
+            outputFileStream << "=============================================" << std::endl;
+            outputFileStream << file.path() << std::endl;
+            outputFileStream << "=============================================" << std::endl;
+            outputFileStream << ReadFileObfuscated(file.path(), file.path().extension() != ".ini") << std::endl;
+        }
+    }
+
+    outputFileStream.close();
 }
 
 } // namespace hokee::Utils

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1.0)
 project(hokee 
-    VERSION 0.2.0
+    VERSION 1.0.0
     DESCRIPTION "Automated Housekeeping Book"
     HOMEPAGE_URL "https://github.com/StephanSchedler/hokee"
     LANGUAGES CXX
@@ -98,10 +98,12 @@ configure_file(third_party/small-n-flat/png/48/sign-warning.png ${PROJECT_BINARY
 configure_file(third_party/small-n-flat/png/48/sign-error.png ${PROJECT_BINARY_DIR}/images/48-sign-error.png COPYONLY)  
 configure_file(third_party/small-n-flat/png/48/sign-sync.png ${PROJECT_BINARY_DIR}/images/48-sign-sync.png COPYONLY)  
 configure_file(third_party/small-n-flat/png/48/file-excel.png ${PROJECT_BINARY_DIR}/images/48-file-excel.png COPYONLY)   
+configure_file(third_party/small-n-flat/png/48/file-exe.png ${PROJECT_BINARY_DIR}/images/48-file-exe.png COPYONLY)   
 configure_file(third_party/small-n-flat/png/48/cogs.png ${PROJECT_BINARY_DIR}/images/48-cogs.png COPYONLY)    
 configure_file(third_party/small-n-flat/png/48/search.png ${PROJECT_BINARY_DIR}/images/48-search.png COPYONLY) 
 configure_file(third_party/small-n-flat/png/48/box-full.png ${PROJECT_BINARY_DIR}/images/48-box-full.png COPYONLY)
 configure_file(third_party/small-n-flat/png/48/box-in.png ${PROJECT_BINARY_DIR}/images/48-box-in.png COPYONLY)  
+configure_file(third_party/small-n-flat/png/48/envelope-letter.png ${PROJECT_BINARY_DIR}/images/48-envelope-letter.png COPYONLY)  
 configure_file(third_party/small-n-flat/png/96/box.png ${PROJECT_BINARY_DIR}/images/96-box.png COPYONLY)
 configure_file(third_party/small-n-flat/png/96/sign-ban.png ${PROJECT_BINARY_DIR}/images/96-sign-ban.png COPYONLY)
 configure_file(src/images/sign-delete2.png ${PROJECT_BINARY_DIR}/images/48-sign-delete2.png COPYONLY)

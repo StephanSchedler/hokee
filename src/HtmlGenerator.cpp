@@ -19,7 +19,7 @@ std::string HtmlGenerator::GetButton(const std::string& link, const std::string&
 {
     return fmt::format(
         "<td style=\"border: hidden\"><a href=\"{}\" title=\"{}\"><main style=\"text-align:center;\"><img "
-        "src=\"{}\"/></main><footer style=\"text-align:center;\">{}</footer></a></td>",
+        "src=\"{}\" width=\"42\" height=\"42\"/></main><footer style=\"text-align:center;\">{}</footer></a></td>",
         link, tooltip, image, text);
 }
 
@@ -30,14 +30,14 @@ std::string HtmlGenerator::GetHeader(const CsvDatabase& database)
     result << "    <header style=\"border-bottom: 1px solid black;\">";
     result << "<table cellspacing=\"0\" cellpadding=\"0\" style=\"border: hidden\"><tr>";
 
-    result << GetButton(INDEX_HTML, "Show Summary", "48-money.png", "Summary");
+    result << GetButton(INDEX_HTML, "Show Summary", "48-file-excel.png", "Summary &nbsp;");
 
-    result << GetButton(RULES_HTML, "Show Rules", "48-file-excel.png",
+    result << GetButton(RULES_HTML, "Show Rules", "48-file-exe.png",
                         fmt::format("Rules ({})", database.Rules.size()));
 
     result << GetButton(ALL_HTML, "Show All Items", "48-file-text.png",
-                        fmt::format("All&nbsp;Items ({})", database.Data.size()));
-
+                        fmt::format("Items ({})", database.Data.size()));
+                        
     result << GetButton(ASSIGNED_HTML, "Show Assigned Items", "48-sign-check.png",
                         fmt::format("Assigned ({})", database.Assigned.size()));
 
@@ -63,11 +63,12 @@ std::string HtmlGenerator::GetHeader(const CsvDatabase& database)
                             fmt::format("Issues ({})", database.Issues.size()));
     }
 
-    result << "<td style=\"border: hidden\" width=\"99%\"></td>";
+    result << "<td style=\"border: hidden\" width=\"50%\"></td>";
 
     result << GetButton(RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
-    result << GetButton(INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
     result << GetButton(SEARCH_HTML, "Open Search Page", "48-search.png", "Search");
+    result << GetButton(INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
+    result << GetButton(SUPPORT_CMD, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Help");
     result << GetButton(SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
     result << GetButton(EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
 

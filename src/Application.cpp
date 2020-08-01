@@ -71,7 +71,7 @@ Application::Application(int argc, const char* argv[])
 
     if (_configFile.empty())
     {
-        _configFile = fs::absolute(Utils::GetHomePath() / "hokee" / "hokee.ini");
+        _configFile = fs::absolute(Utils::GetHomeDir() / "hokee" / "hokee.ini");
         if (!fs::exists(_configFile))
         {
             Utils::PrintWarning(
@@ -84,20 +84,6 @@ Application::Application(int argc, const char* argv[])
             Settings config;
             config.Save(_configFile);
         }
-    }
-
-    // Detect Temporary Directory
-#ifdef _MSC_VER
-    _tempDirectory = Utils::GetEnv("TEMP");
-#elif __APPLE__
-    _tempDirectory = "/var/tmp";
-#else
-    _tempDirectory = "/tmp";
-#endif
-    _tempDirectory = _tempDirectory / "hokee";
-    if (!fs::exists(_tempDirectory))
-    {
-        fs::create_directories(_tempDirectory);
     }
 }
 
@@ -170,7 +156,7 @@ std::unique_ptr<CsvDatabase> Application::RunInteractive()
             if (Utils::AskYesNoQuestion("Add rules?", defaultAddRules, _batchMode))
             {
                 std::string editor = _config.GetEditor();
-                csvDatabase->AddRules(_ruleSetFile, _tempDirectory, editor);
+                csvDatabase->AddRules(_ruleSetFile, editor);
 
                 restart = true;
                 continue;

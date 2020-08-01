@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <cstdio>
+#include <fstream>
 #include <iostream>
 #include <sstream>
 
@@ -379,6 +380,16 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                  [&](const httplib::Request& /*req*/, httplib::Response& res) {
                      Utils::PrintTrace("Received open input folder request. Open input folder...");
                      Utils::OpenFolder(_inputDirectory, _explorer);
+                     res.set_redirect(_lastUrl.c_str());
+                 });
+
+    // Generate support infos
+    _server->Get((std::string("/") + HtmlGenerator::SUPPORT_CMD).c_str(),
+                 [&](const httplib::Request& /*req*/, httplib::Response& res) {
+                     Utils::PrintTrace("Received support request. Generate mail...");
+                     fs::path supportFilename = Utils::GetTempDir() / "support.txt";
+                     Utils::GenerateSupportMail(supportFilename, _ruleSetFile, _inputDirectory);
+                     Utils::EditFile(supportFilename, _editor);
                      res.set_redirect(_lastUrl.c_str());
                  });
 
