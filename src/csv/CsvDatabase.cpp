@@ -89,8 +89,7 @@ void CsvDatabase::CheckRules()
     }
 }
 
-void CsvDatabase::AddRules(const fs::path& ruleSetFile, const fs::path& workingDirectory,
-                           const std::string& editor)
+void CsvDatabase::AddRules(const fs::path& ruleSetFile, const std::string& editor)
 {
     std::vector<std::string> categories = Rules.GetCategories();
     Utils::PrintInfo("Supported categories:");
@@ -120,7 +119,7 @@ void CsvDatabase::AddRules(const fs::path& ruleSetFile, const fs::path& workingD
     header.push_back("");
     Unassigned.SetCsvHeader(std::move(header));
 
-    fs::path unassignedCsv = workingDirectory / "unassigned.csv";
+    fs::path unassignedCsv = Utils::GetTempDir() / "unassigned.csv";
     Utils::PrintInfo(fmt::format("Open {}", unassignedCsv.string()));
     CsvWriter::Write(unassignedCsv, Unassigned);
 

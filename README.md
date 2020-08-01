@@ -12,6 +12,10 @@ TODO: short description
 
 ### Interactive Mode
 
+### Command Line Switches
+
+### Support
+
 ## Configure Hokee
 
 ### General Settings

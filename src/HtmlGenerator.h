@@ -42,6 +42,7 @@ class HtmlGenerator
     static constexpr const char* COPY_SAMPLES_CMD = "copy-samples";
     static constexpr const char* OPEN_CMD = "open";
     static constexpr const char* INPUT_CMD = "input";
+    static constexpr const char* SUPPORT_CMD = "support";
 
     static std::string GetProgressPage(size_t value, size_t max);
     static std::string GetErrorPage(int errorCode, const std::string& errorMessage);

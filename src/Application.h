@@ -14,7 +14,6 @@ class Application
     bool _interactiveMode{false};
     Settings _config;
     fs::path _inputDirectory{};
-    fs::path _tempDirectory{};
     fs::path _ruleSetFile{};
     fs::path _configFile{};
     

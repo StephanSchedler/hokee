@@ -30,8 +30,10 @@ void ResetIdGenerator();
 bool ExtractMissingString(std::string& extracted, const std::string& original, const std::string& missing);
 
 std::string GetEnv(const std::string& name);
-fs::path GetHomePath();
+fs::path GetHomeDir();
+fs::path GetTempDir();
 
+void GenerateSupportMail(const fs::path& filename, const fs::path& ruleSetFile, const fs::path& inputDir);
 
 void TerminationHandler();
 void TerminationHandler(const std::exception& e);
