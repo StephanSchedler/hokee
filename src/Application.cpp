@@ -31,7 +31,8 @@ Application::Application(int argc, const char* argv[])
             Utils::PrintInfo(fmt::format("{} version {}", fs::path(argv[0]).filename().string(), PROJECT_VERSION));
             Utils::PrintInfo(fmt::format("{} ({})", PROJECT_DESCRIPTION, PROJECT_HOMEPAGE_URL));
             Utils::PrintInfo("");
-            Utils::PrintInfo("usage: hokee [-i|--interactive [-b|--batch]] [path] | [-h|--help] | [-v|--version]");
+            Utils::PrintInfo("usage: hokee [-i|--interactive [-b|--batch]] [path] | [-h|--help] |");
+            Utils::PrintInfo("             [-s|--support] | [-v|--version]");
             Utils::PrintInfo(
                 "  -b,--batch      - Batch mode that does not ask questions for interactive mode, but");
             Utils::PrintInfo("                    uses default values from settings file.");
@@ -40,12 +41,14 @@ Application::Application(int argc, const char* argv[])
             Utils::PrintInfo(
                 "                    (This option is ignored, if there are neither issues nor unassigned");
             Utils::PrintInfo("                     items.)");
-            Utils::PrintInfo("  -v,--version    - Show this help.");
+            Utils::PrintInfo("  -s,--support    - Generate anonymized support information.");
+            Utils::PrintInfo("  -v,--verbose    - Show trace infos.");
+            Utils::PrintInfo("  --version       - Show version infos.");
             Utils::PrintInfo("  path            - Path to config file.");
             Utils::PrintInfo("                    (default: ~/hokee/hokee.ini)");
             std::exit(EXIT_SUCCESS);
         }
-        else if (arg == "-v" || arg == "-version" || arg == "--version")
+        else if (arg == "-version" || arg == "--version")
         {
             Utils::PrintInfo(fmt::format("{} version {}", fs::path(argv[0]).filename().string(), PROJECT_VERSION));
             Utils::PrintInfo(fmt::format("{} ({})", PROJECT_DESCRIPTION, PROJECT_HOMEPAGE_URL));
@@ -58,6 +61,14 @@ Application::Application(int argc, const char* argv[])
         else if (arg == "-i" || arg == "-interactive" || arg == "--interactive")
         {
             _interactiveMode = true;
+        }
+        else if (arg == "-s" || arg == "-support" || arg == "--support")
+        {
+            _supportMode = true;
+        }
+        else if (arg == "-v" || arg == "-verbose" || arg == "--verbose")
+        {
+            Utils::SetVerbose(true);
         }
         else
         {
@@ -84,6 +95,15 @@ Application::Application(int argc, const char* argv[])
             Settings config;
             config.Save(_configFile);
         }
+    }
+
+    if (_supportMode)
+    {
+        ReadSettings();
+        fs::path supportFilename = Utils::GetTempDir() / "support.txt";
+        Utils::GenerateSupportMail(supportFilename, _ruleSetFile, _inputDirectory);
+        Utils::EditFile(supportFilename, _config.GetEditor());
+        std::exit(EXIT_SUCCESS);
     }
 }
 
@@ -191,7 +211,7 @@ std::unique_ptr<CsvDatabase> Application::Run()
         catch (UserException& e)
         {
             Utils::PrintError(e.what());
-            //Continue, HttpServer will show error page
+            // Continue, HttpServer will show error page
         }
         if (_interactiveMode)
         {
@@ -203,7 +223,7 @@ std::unique_ptr<CsvDatabase> Application::Run()
             catch (UserException& e)
             {
                 Utils::PrintError(e.what());
-                //Continue, HttpServer will show error page
+                // Continue, HttpServer will show error page
             }
             if (_batchMode)
             {

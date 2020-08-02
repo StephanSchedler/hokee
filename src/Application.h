@@ -12,6 +12,7 @@ class Application
 {
     bool _batchMode{false};
     bool _interactiveMode{false};
+    bool _supportMode{false};
     Settings _config;
     fs::path _inputDirectory{};
     fs::path _ruleSetFile{};

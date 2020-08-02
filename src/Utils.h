@@ -14,6 +14,7 @@ std::string ToLower(const std::string& str);
 std::string ToUpper(const std::string& str);
 
 const std::vector<std::string> GetLastMessages();
+void SetVerbose(bool verbose);
 void PrintTrace(std::string_view msg);
 void PrintInfo(std::string_view msg);
 void PrintWarning(std::string_view msg);

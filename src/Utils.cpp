@@ -25,6 +25,7 @@ namespace
 std::mutex _lastMessageMutex{};
 std::vector<std::string> _lastMessages{};
 int _uniqueId{0};
+bool _verbose{false};
 
 const std::string DropXmlTags(std::string_view msg)
 {
@@ -57,14 +58,14 @@ std::string ReadFileObfuscated(const fs::path& path, bool obfuscate)
     for (int i = 0; i < 256; ++i)
     {
         cipher[i] = static_cast<char>(i);
-            if (i >= 48 && i <= 57)
-            {
-                cipher[i] = '1';
-            }
-            if ((i >= 65 && i <= 90) || (i >= 97 && i <= 122))
-            {
-                cipher[i] = (rand() % 26) + 65; // Random character A-Z
-            }
+        if (i >= 48 && i <= 57)
+        {
+            cipher[i] = '1';
+        }
+        if ((i >= 65 && i <= 90) || (i >= 97 && i <= 122))
+        {
+            cipher[i] = (rand() % 26) + 65; // Random character A-Z
+        }
     }
 
     while (inputStream.get(c))
@@ -187,9 +188,17 @@ int GenerateId()
     return ++_uniqueId;
 }
 
+void SetVerbose(bool verbose)
+{
+    _verbose = verbose;
+}
+
 void PrintTrace(std::string_view msg)
 {
-    std::cout << "TRACE: " << DropXmlTags(msg) << std::endl;
+    if (_verbose)
+    {
+        std::cout << "TRACE: " << DropXmlTags(msg) << std::endl;
+    }
 }
 
 void PrintInfo(std::string_view msg)
