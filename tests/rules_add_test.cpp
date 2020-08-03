@@ -20,7 +20,12 @@ int main(int /*unused*/, const char* argv[])
     {
         Settings config;
         std::string configPath = "../test_data/rules_add_test/rules_add_test.ini";
-        config.SetRuleSetFile("rules_add_test.csv");
+
+        fs::path rulesPathSrc = fs::path("..") / "test_data" / "rules_add_test" / "rules_add_test.csv";
+        fs::path rulesPathDest = fs::path("..") / "test_data" / "rules_add_test" / "rules.csv";
+        fs::copy_file(rulesPathSrc, rulesPathDest, fs::copy_options::overwrite_existing);
+
+        config.SetRuleSetFile("rules.csv");
         config.Save(configPath);
         const char* testArgv[] = {argv[0], "-i", "-b", configPath.c_str(), nullptr};
         int testArgc = sizeof(testArgv)/sizeof(testArgv[0]) - 1;
