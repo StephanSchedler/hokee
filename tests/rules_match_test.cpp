@@ -19,8 +19,6 @@ int main(int /*unused*/, const char* argv[])
     {
         Settings config;
         std::string configPath = "../test_data/rules_match_test/rules_match_test.ini";
-        config.SetAddRules(false);
-        config.SetUpdateRules(false);
         config.SetRuleSetFile("rules_match_test.csv");
         config.Save(configPath);
         const char* testArgv[] = {argv[0], "-i", "-b", configPath.c_str(), nullptr};

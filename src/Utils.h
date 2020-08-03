@@ -23,7 +23,7 @@ void PrintError(std::string_view msg);
 std::string RunSync(const std::string& cmd);
 void RunAsync(const std::string& cmd);
 
-bool AskYesNoQuestion(const std::string& question, bool defaultYes = true, bool batchMode = false);
+bool AskYesNoQuestion(const std::string& question);
 int GenerateId();
 void EditFile(const fs::path& file, const std::string& editor);
 void OpenFolder(const fs::path& folder, const std::string& explorer);
