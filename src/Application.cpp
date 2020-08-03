@@ -31,21 +31,21 @@ Application::Application(int argc, const char* argv[])
             Utils::PrintInfo(fmt::format("{} version {}", fs::path(argv[0]).filename().string(), PROJECT_VERSION));
             Utils::PrintInfo(fmt::format("{} ({})", PROJECT_DESCRIPTION, PROJECT_HOMEPAGE_URL));
             Utils::PrintInfo("");
-            Utils::PrintInfo("usage: hokee [-i|--interactive [-b|--batch]] [path] | [-h|--help] |");
-            Utils::PrintInfo("             [-s|--support] | [-v|--version]");
-            Utils::PrintInfo(
-                "  -b,--batch      - Batch mode that does not ask questions for interactive mode, but");
-            Utils::PrintInfo("                    uses default values from settings file.");
-            Utils::PrintInfo("  -h,--help       - Show this help.");
-            Utils::PrintInfo("  -i,--iteractive - Interactive commandline mode that is useful to fix issues.");
-            Utils::PrintInfo(
-                "                    (This option is ignored, if there are neither issues nor unassigned");
-            Utils::PrintInfo("                     items.)");
-            Utils::PrintInfo("  -s,--support    - Generate anonymized support information.");
-            Utils::PrintInfo("  -v,--verbose    - Show trace infos.");
-            Utils::PrintInfo("  --version       - Show version infos.");
+            Utils::PrintInfo("usage: hokee [options] [path]");
+            Utils::PrintInfo("");
             Utils::PrintInfo("  path            - Path to config file.");
             Utils::PrintInfo("                    (default: ~/hokee/hokee.ini)");
+            Utils::PrintInfo("  -i,--iteractive - Interactive commandline mode that is useful to fix issues.");
+            Utils::PrintInfo("  -b,--batch      - Do not show html report.");
+            Utils::PrintInfo("                    (interactive mode, only)");
+            Utils::PrintInfo("  -a,--add-rules -  Open editor to add rules for unassigned items.");
+            Utils::PrintInfo("                    (interactive mode, only)");
+            Utils::PrintInfo("  -e,--edit-rules - Open editor to edit rules and categories.");
+            Utils::PrintInfo("                    (interactive batch mode, only)");
+            Utils::PrintInfo("  -v,--verbose    - Print trace infos to console.");
+            Utils::PrintInfo("  --version       - Show version infos.");
+            Utils::PrintInfo("  -h,--help       - Show this help.");
+            Utils::PrintInfo("  -s,--support    - Generate anonymized support information.");
             std::exit(EXIT_SUCCESS);
         }
         else if (arg == "-version" || arg == "--version")
@@ -69,6 +69,14 @@ Application::Application(int argc, const char* argv[])
         else if (arg == "-v" || arg == "-verbose" || arg == "--verbose")
         {
             Utils::SetVerbose(true);
+        }
+        else if (arg == "-a" || arg == "-add-rules" || arg == "--add-rules")
+        {
+            _addRules = true;
+        }
+        else if (arg == "-e" || arg == "-edit-rules" || arg == "--edit-rules")
+        {
+            _editRules = true;
         }
         else
         {
@@ -172,8 +180,7 @@ std::unique_ptr<CsvDatabase> Application::RunInteractive()
 
         if (csvDatabase->Unassigned.size() > 0)
         {
-            bool defaultAddRules = _config.GetAddRules();
-            if (Utils::AskYesNoQuestion("Add rules?", defaultAddRules, _batchMode))
+            if (_addRules || (!_batchMode && Utils::AskYesNoQuestion("Add rules for unassigned items?")))
             {
                 std::string editor = _config.GetEditor();
                 csvDatabase->AddRules(_ruleSetFile, editor);
@@ -183,16 +190,12 @@ std::unique_ptr<CsvDatabase> Application::RunInteractive()
             }
         }
 
-        if (csvDatabase->Issues.size() > 0 || csvDatabase->Unassigned.size() > 0)
+        if (_editRules || (!_batchMode && Utils::AskYesNoQuestion("Edit rules & categories?")))
         {
-            bool defaultUpdateRules = _config.GetUpdateRules();
-            if (Utils::AskYesNoQuestion("Update rules & categories?", defaultUpdateRules, _batchMode))
-            {
-                std::string editor = _config.GetEditor();
-                Utils::EditFile(_ruleSetFile, editor);
-                restart = true;
-                continue;
-            }
+            std::string editor = _config.GetEditor();
+            Utils::EditFile(_ruleSetFile, editor);
+            restart = true;
+            continue;
         }
     } while (restart);
 

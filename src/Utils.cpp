@@ -237,24 +237,10 @@ void PrintError(std::string_view msg)
     }
 }
 
-bool AskYesNoQuestion(const std::string& question, bool defaultYes, bool batchMode)
+bool AskYesNoQuestion(const std::string& question)
 {
-    if (batchMode)
-    {
-        return defaultYes;
-    }
-
-    char answer;
-    if (defaultYes)
-    {
-        answer = 'Y';
-        Utils::PrintInfo(fmt::format("{} [Y/n]", question));
-    }
-    else
-    {
-        answer = 'N';
-        Utils::PrintInfo(fmt::format("{} [y/N]", question));
-    }
+    char answer = 'Y';
+    Utils::PrintInfo(fmt::format("{} [Y/n]", question));
 
     std::string input;
     std::getline(std::cin, input);
@@ -263,7 +249,7 @@ bool AskYesNoQuestion(const std::string& question, bool defaultYes, bool batchMo
         std::istringstream stream(input);
         stream >> answer;
     }
-    return defaultYes ? (answer == 'Y' || answer == 'y') : (answer == 'N' || answer == 'n');
+    return answer == 'Y' || answer == 'y';
 }
 
 void RunAsync(const std::string& cmd)

@@ -20,16 +20,12 @@ class Settings final : public CsvConfig
     const std::string GetEditor() const;
     const std::string GetExplorer() const;
     const std::string GetBrowser() const;
-    bool GetAddRules() const;
-    bool GetUpdateRules() const;
 
     void SetInputDirectory(const fs::path& value);
     void SetRuleSetFile(const fs::path& value);
     void SetEditor(const std::string& value);
     void SetExplorer(const std::string& value);
     void SetBrowser(const std::string& value);
-    void SetAddRules(bool value);
-    void SetUpdateRules(bool value);
 };
 
 } // namespace hokee

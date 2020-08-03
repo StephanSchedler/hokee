@@ -22,8 +22,6 @@ Settings::Settings()
     SetExplorer("nautilus");
     SetBrowser("firefox");
 #endif
-    SetAddRules("true");
-    SetUpdateRules("true");
 }
 
 Settings::Settings(const fs::path& file)
@@ -79,26 +77,6 @@ const std::string Settings::GetBrowser() const
 void Settings::SetBrowser(const std::string& value)
 {
     SetString("Browser", value);
-}
-
-bool Settings::GetAddRules() const
-{
-    return GetBool("AddRules");
-}
-
-void Settings::SetAddRules(bool value)
-{
-    SetBool("AddRules", value);
-}
-
-bool Settings::GetUpdateRules() const
-{
-    return GetBool("UpdateRules");
-}
-
-void Settings::SetUpdateRules(bool value)
-{
-    SetBool("UpdateRules", value);
 }
 
 } // namespace hokee

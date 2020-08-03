@@ -20,8 +20,6 @@ int main(int /*unused*/, const char* argv[])
     {
         Settings config;
         std::string configPath = "../test_data/rules_add_test/rules_add_test.ini";
-        config.SetAddRules(false);
-        config.SetUpdateRules(false);
         config.SetRuleSetFile("rules_add_test.csv");
         config.Save(configPath);
         const char* testArgv[] = {argv[0], "-i", "-b", configPath.c_str(), nullptr};
@@ -34,7 +32,7 @@ int main(int /*unused*/, const char* argv[])
         if (database->Assigned.size() != expectedAssignedSize)
         {
             Utils::PrintError(fmt::format("Number of assigned items {} does not match expeted count {} !",
-                                          database->Unassigned.size(), expectedAssignedSize));
+                                          database->Assigned.size(), expectedAssignedSize));
             success = false;
         }
         uint64_t expectedUnassignedSize = database->Data.size();
@@ -53,7 +51,8 @@ int main(int /*unused*/, const char* argv[])
         }
 
         // Add rules        
-        config.SetAddRules(true);
+        const char* testArgv2[] = {argv[0], "-i", "-b", "-a", configPath.c_str(), nullptr};
+        int testArgc2 = sizeof(testArgv2)/sizeof(testArgv2[0]) - 1;
         fs::path csvFile = fs::absolute("../test_data/rules_add_test/input_add_test.csv");
 #ifdef _MSC_VER
         config.SetEditor(fmt::format("copy /Y {}", csvFile.make_preferred().string()));
@@ -61,7 +60,7 @@ int main(int /*unused*/, const char* argv[])
         config.SetEditor(fmt::format("cp -f {}", csvFile.string()));
 #endif
         config.Save(configPath);
-        Application app2(testArgc, testArgv);
+        Application app2(testArgc2, testArgv2);
         database = app2.Run();
 
         // Check result
