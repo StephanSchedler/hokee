@@ -2,34 +2,32 @@
 
 #include "IHtmlPrintable.h"
 
-#include <vector>
-#include <unordered_map>
 #include <memory>
+#include <unordered_map>
+#include <vector>
+
 
 namespace hokee
 {
-class HtmlElement final : IHtmlPrintable
+class HtmlElement : IHtmlPrintable
 {
-  bool _printInline{false};
-  int _indent{0};
-  std::string _name{};
-  std::vector<std::unique_ptr<HtmlElement>> _elements{};
-  std::unordered_map<std::string,std::string> _attributes{};
-  
+    bool _printInline{false};
+    int _indent{0};
+    std::string _name{};
+    std::vector<std::unique_ptr<IHtmlPrintable>> _elements{};
+    std::unordered_map<std::string, std::string> _attributes{};
+
+    void SetIndent(int indent);
+
   public:
     HtmlElement() = delete;
     HtmlElement(const std::string& name, bool printInline);
     virtual ~HtmlElement() = default;
 
-    HtmlElement(const HtmlElement&) = delete;
-    HtmlElement& operator=(const HtmlElement&) = delete;
-    HtmlElement(HtmlElement&&) = delete;
-    HtmlElement& operator=(HtmlElement&&) = delete;
-
-    void SetIndent(int indent);
-    void AddElement(std::unique_ptr<HtmlElement>&& element);
+    void AddElement(std::unique_ptr<IHtmlPrintable>&& element);
+    void SetElements(std::vector<std::unique_ptr<IHtmlPrintable>>&& elements);
     void AddAttribute(const std::string& attributeName, const std::string& attributeValue);
-    
+
     std::string ToString() override;
     void ToString(std::stringstream& output) override;
 };
