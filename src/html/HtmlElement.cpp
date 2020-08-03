@@ -1,13 +1,21 @@
 #include "HtmlElement.h"
+#include "html/HtmlText.h"
 
 #include <fmt/format.h>
 
 namespace hokee
 {
-HtmlElement::HtmlElement(const std::string& name, bool printInline)
-    : _printInline{printInline}
+HtmlElement::HtmlElement(const std::string& name)
+    : _printInline{false}
     , _name{name}
 {
+}
+
+HtmlElement::HtmlElement(const std::string& name, const std::string& text)
+    : _printInline{true}
+    , _name{name}
+{
+    AddElement(text);
 }
 
 void HtmlElement::SetIndent(int indent)
@@ -25,14 +33,18 @@ void HtmlElement::AddElement(std::unique_ptr<IHtmlPrintable>&& element)
     _elements.push_back(std::move(element));
 }
 
+void HtmlElement::AddElement(const std::string& text)
+{
+    _elements.push_back(std::make_unique<HtmlText>(text));
+}
+
 void HtmlElement::AddAttribute(const std::string& attributeName, const std::string& attributeValue)
 {
     _attributes[attributeName] = attributeValue;
 }
 
-std::string HtmlElement::ToString()
+void HtmlElement::ToString(std::ostream& output) const
 {
-    std::stringstream output;
     if (!_printInline)
     {
         output << std::string(_indent, ' ');
@@ -67,7 +79,7 @@ std::string HtmlElement::ToString()
         }
         for (auto& element : _elements)
         {
-            element->ToString(output);
+            output << *element;
         }
 
         if (!_printInline)
@@ -80,12 +92,5 @@ std::string HtmlElement::ToString()
             output << std::endl;
         }
     }
-
-    return output.str();
-}
-
-void HtmlElement::ToString(std::stringstream& output)
-{
-    output << ToString();
 }
 } // namespace hokee

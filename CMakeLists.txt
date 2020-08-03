@@ -78,8 +78,10 @@ set(PROJECT_SOURCE_FILES
     src/csv/CsvDatabase.cpp
     src/csv/CsvRules.cpp 
     src/html/HtmlGenerator.cpp
+    src/html/HtmlPage.cpp
     src/html/HtmlElement.cpp
     src/html/HtmlText.cpp
+    src/html/IHtmlPrintable.cpp
     src/Application.cpp
     src/Settings.cpp
     src/InternalException.cpp
@@ -115,24 +117,29 @@ configure_file(src/images/sign-warning2.png ${PROJECT_BINARY_DIR}/images/48-sign
 add_executable(hokee src/hokee.cpp ${PROJECT_SOURCE_FILES})
 add_executable(rules_match_test tests/rules_match_test.cpp ${PROJECT_SOURCE_FILES})
 add_executable(rules_add_test tests/rules_add_test.cpp ${PROJECT_SOURCE_FILES})
+add_executable(html_test tests/html_test.cpp ${PROJECT_SOURCE_FILES})
 
 target_link_libraries(hokee Threads::Threads fmt::fmt)
 target_link_libraries(rules_match_test Threads::Threads fmt::fmt)
 target_link_libraries(rules_add_test Threads::Threads fmt::fmt)
+target_link_libraries(html_test Threads::Threads fmt::fmt)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
     target_link_libraries(hokee stdc++fs)
     target_link_libraries(rules_match_test stdc++fs)
     target_link_libraries(rules_add_test stdc++fs)
+    target_link_libraries(html_test stdc++fs)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang|Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
     target_link_libraries(hokee c++fs)
     target_link_libraries(rules_match_test c++fs)
     target_link_libraries(rules_add_test c++fs)
+    target_link_libraries(html_test c++fs)
 endif()
 
 install(TARGETS hokee RUNTIME DESTINATION ./bin)
 install(TARGETS rules_match_test RUNTIME DESTINATION ./bin)
 install(TARGETS rules_add_test RUNTIME DESTINATION ./bin)
+install(TARGETS html_test RUNTIME DESTINATION ./bin)
 if(CMAKE_EXPORT_COMPILE_COMMANDS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     install(FILES ${PROJECT_BINARY_DIR}/compile_commands.json DESTINATION .)
 endif()
@@ -143,6 +150,7 @@ install(DIRECTORY favicon DESTINATION ./images)
 enable_testing()
 add_test(NAME rules_match_test COMMAND rules_match_test)
 add_test(NAME rules_add_test COMMAND rules_add_test)
+add_test(NAME html_test COMMAND html_test)
 install(FILES tests/test_data/rules_match_test.csv DESTINATION ./test_data/rules_match_test)
 install(FILES tests/test_data/ABC/Account_123456790_2020_1.csv DESTINATION ./test_data/rules_match_test/input/ABC)
 install(FILES tests/test_data/ABC/Account_123456790_2020_2.csv DESTINATION ./test_data/rules_match_test/input/ABC)

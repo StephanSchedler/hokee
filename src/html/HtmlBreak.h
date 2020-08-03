@@ -2,16 +2,12 @@
 
 #include "HtmlElement.h"
 
-#include <vector>
-#include <unordered_map>
-#include <memory>
-
 namespace hokee
 {
-class HtmlBreak final : HtmlElement
+class HtmlBreak final : public HtmlElement
 {  
   public:
-    HtmlBreak() : HtmlElement("br", true) {};
+    HtmlBreak() : HtmlElement("br") {};
     virtual ~HtmlBreak() = default;
 };
 

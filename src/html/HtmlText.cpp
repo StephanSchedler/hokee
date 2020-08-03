@@ -3,41 +3,35 @@
 namespace hokee
 {
 HtmlText::HtmlText(const std::string& text)
+    : _text{text}
 {
-    _text.reserve(static_cast<size_t>(text.size()*1.1));
-    for (size_t pos = 0; pos != text.size(); ++pos)
+}
+
+void HtmlText::ToString(std::ostream& output) const
+{
+    for (size_t pos = 0; pos != _text.size(); ++pos)
     {
-        switch (text[pos])
+        switch (_text[pos])
         {
             case '&':
-                _text.append("&amp;");
+                output << "&amp;";
                 break;
             case '\"':
-                _text.append("&quot;");
+                output << "&quot;";
                 break;
             case '\'':
-                _text.append("&apos;");
+                output << "&apos;";
                 break;
             case '<':
-                _text.append("&lt;");
+                output << "&lt;";
                 break;
             case '>':
-                _text.append("&gt;");
+                output << "&gt;";
                 break;
             default:
-                _text.append(&text[pos], 1);
+                output << _text[pos];
                 break;
         }
     }
-}
-
-std::string HtmlText::ToString()
-{
-    return _text;
-}
-
-void HtmlText::ToString(std::stringstream& output)
-{
-    output << _text;
 }
 } // namespace hokee

@@ -1,15 +1,18 @@
 #pragma once
-#include <string>
+#include <iostream>
 #include <sstream>
+#include <string>
 
 namespace hokee
 {
 class IHtmlPrintable
 {
+    friend std::ostream& operator<<(std::ostream& os, const IHtmlPrintable& obj);
+
+    virtual void ToString(std::ostream& output) const = 0;
+
   public:
-    virtual ~IHtmlPrintable() = default;    
-    virtual std::string ToString() = 0;
-    virtual void ToString(std::stringstream& output) = 0;
+    virtual ~IHtmlPrintable() = default;
 };
 
 } // namespace hokee
