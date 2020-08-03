@@ -1,5 +1,5 @@
 #include "Application.h"
-#include "HtmlGenerator.h"
+#include "html/HtmlGenerator.h"
 #include "HttpServer.h"
 #include "InternalException.h"
 #include "Utils.h"

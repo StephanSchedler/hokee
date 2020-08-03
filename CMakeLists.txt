@@ -77,9 +77,10 @@ set(PROJECT_SOURCE_FILES
     src/csv/CsvDate.cpp
     src/csv/CsvDatabase.cpp
     src/csv/CsvRules.cpp 
+    src/html/HtmlGenerator.cpp
+    src/html/HtmlElement.cpp
     src/Application.cpp
     src/Settings.cpp
-    src/HtmlGenerator.cpp
     src/InternalException.cpp
     src/UserException.cpp
     src/Utils.cpp

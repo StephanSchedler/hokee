@@ -1,6 +1,6 @@
 #pragma once
 
-#include "HtmlGenerator.h"
+#include "html/HtmlGenerator.h"
 #include <memory>
 #include <mutex>
 #include <thread>
