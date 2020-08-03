@@ -1,5 +1,5 @@
 #include "csv/CsvDatabase.h"
-#include "HtmlGenerator.h"
+#include "html/HtmlGenerator.h"
 #include "InternalException.h"
 #include "Utils.h"
 #include "csv/CsvDate.h"

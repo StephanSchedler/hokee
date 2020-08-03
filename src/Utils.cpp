@@ -1,5 +1,5 @@
 #include "Utils.h"
-#include "HtmlGenerator.h"
+#include "html/HtmlGenerator.h"
 #include "InternalException.h"
 #include "hokee.h"
 
