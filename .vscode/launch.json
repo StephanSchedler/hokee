@@ -29,6 +29,17 @@
             "externalConsole": false
         },
         {
+            "name": "html_test",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "html_test",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/bin",
+            "environment": [],
+            "externalConsole": false
+        },
+        {
             "name": "rules_add_test",
             "type": "cppvsdbg",
             "request": "launch",

@@ -4,16 +4,16 @@
 
 namespace hokee
 {
-class HtmlText final : IHtmlPrintable
+class HtmlText final : public IHtmlPrintable
 {
     std::string _text{};
+
+    void ToString(std::ostream& output) const override;
+
   public:
     HtmlText() = delete;
     HtmlText(const std::string& text);
     virtual ~HtmlText() = default;
-
-    std::string ToString() override;
-    void ToString(std::stringstream& output) override;
 };
 
 } // namespace hokee
