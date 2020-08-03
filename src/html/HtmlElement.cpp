@@ -15,9 +15,13 @@ void HtmlElement::SetIndent(int indent)
     _indent = indent;
 }
 
-void HtmlElement::AddElement(std::unique_ptr<HtmlElement>&& element)
+void HtmlElement::SetElements(std::vector<std::unique_ptr<IHtmlPrintable>>&& elements)
 {
-    element->SetIndent(_indent + 2);
+    _elements = std::move(elements);
+}
+
+void HtmlElement::AddElement(std::unique_ptr<IHtmlPrintable>&& element)
+{
     _elements.push_back(std::move(element));
 }
 
@@ -66,7 +70,10 @@ std::string HtmlElement::ToString()
             element->ToString(output);
         }
 
-        output << std::string(_indent, ' ');
+        if (!_printInline)
+        {
+            output << std::string(_indent, ' ');
+        }
         output << fmt::format("</{}>", _name);
         if (!_printInline)
         {
