@@ -126,8 +126,7 @@ void CsvDatabase::AddRules(const fs::path& ruleSetFile, const std::string& edito
     Utils::PrintInfo(fmt::format("Open {}", unassignedCsv.string()));
 
     std::string cmd = fmt::format("{} \"{}\"", editor, fs::absolute(unassignedCsv).string());
-    Utils::PrintInfo(fmt::format("Run: {}", cmd));
-    if (std::system(cmd.c_str()) < 0)
+    if (Utils::RunSync(cmd.c_str()) < 0)
     {
         throw UserException(fmt::format("Could not open editor: {}", cmd));
     }
@@ -285,5 +284,6 @@ void CsvDatabase::Load(const fs::path& inputDirectory, const fs::path& ruleSetFi
     LoadRules(ruleSetFile);
     MatchRules();
     CheckRules();
+    Utils::PrintInfo("Done.");
 }
 } // namespace hokee

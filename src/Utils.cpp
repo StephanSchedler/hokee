@@ -161,8 +161,7 @@ bool ExtractMissingString(std::string& extracted, const std::string& original, c
 void EditFile(const fs::path& file, const std::string& editor)
 {
     std::string cmd = fmt::format("{} \"{}\"", editor, fs::absolute(file).string());
-    Utils::PrintInfo(fmt::format("Run: {}", cmd));
-    if (std::system(cmd.c_str()) < 0)
+    if (Utils::RunSync(cmd.c_str()) != 0)
     {
         throw UserException(fmt::format("Could not open editor: {}", cmd));
     }
@@ -171,8 +170,7 @@ void EditFile(const fs::path& file, const std::string& editor)
 void OpenFolder(const fs::path& folder, const std::string& explorer)
 {
     std::string cmd = fmt::format("{} \"{}\"", explorer, fs::absolute(folder).string());
-    Utils::PrintInfo(fmt::format("Run: {}", cmd));
-    if (std::system(cmd.c_str()) < 0)
+    if (Utils::RunSync(cmd.c_str()) != 0)
     {
         throw UserException(fmt::format("Could not open folder: {}", cmd));
     }
@@ -257,9 +255,9 @@ void RunAsync(const std::string& cmd)
     std::thread browserThread([=] {
         try
         {
-            if (std::system(cmd.c_str()) < 0)
+            if (Utils::RunSync(cmd.c_str()) != 0)
             {
-                throw UserException("Could not open result.");
+                throw UserException(fmt::format("Could run async: {}", cmd));
             }
         }
         catch (const UserException& e)
@@ -278,26 +276,10 @@ void RunAsync(const std::string& cmd)
     browserThread.detach();
 }
 
-std::string RunSync(const std::string& cmd)
+int RunSync(const std::string& cmd)
 {
-    std::array<char, 256> buffer;
-    std::string result;
-
-#ifdef _WIN32
-    std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd.c_str(), "r"), _pclose);
-#else
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
-#endif
-    if (!pipe)
-    {
-        Utils::PrintError(fmt::format("popen({}) failed!", cmd));
-        return "";
-    }
-    while (std::fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) != nullptr)
-    {
-        result += buffer.data();
-    }
-    return result;
+    Utils::PrintInfo(fmt::format("Run: {}", cmd));
+    return std::system(cmd.c_str());
 }
 
 std::string GetEnv(const std::string& name)
