@@ -1,17 +1,14 @@
 #pragma once
 
-#include "Utils.h"
-#include "csv/CsvDatabase.h"
+#include "IHtmlPrintable.h"
 
 #include <vector>
-#include <string>
-#include <sstream>
 #include <unordered_map>
 #include <memory>
 
 namespace hokee
 {
-class HtmlElement
+class HtmlElement final : IHtmlPrintable
 {
   bool _printInline{false};
   int _indent{0};
@@ -22,7 +19,7 @@ class HtmlElement
   public:
     HtmlElement() = delete;
     HtmlElement(const std::string& name, bool printInline);
-    ~HtmlElement() = default;
+    virtual ~HtmlElement() = default;
 
     HtmlElement(const HtmlElement&) = delete;
     HtmlElement& operator=(const HtmlElement&) = delete;
@@ -33,8 +30,8 @@ class HtmlElement
     void AddElement(std::unique_ptr<HtmlElement>&& element);
     void AddAttribute(const std::string& attributeName, const std::string& attributeValue);
     
-    std::string ToString();
-    void ToString(std::stringstream& output);
+    std::string ToString() override;
+    void ToString(std::stringstream& output) override;
 };
 
 } // namespace hokee
