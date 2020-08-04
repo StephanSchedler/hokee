@@ -7,6 +7,10 @@
 #include "html/HtmlLink.h"
 #include "html/HtmlParagraph.h"
 #include "html/HtmlDivision.h"
+#include "html/HtmlHeader.h"
+#include "html/HtmlMain.h"
+#include "html/HtmlFooter.h"
+#include "html/HtmlImage.h"
 #include "html/HtmlBreak.h"
 
 
@@ -37,19 +41,34 @@ int main(int /*unused*/, const char** /*unused*/)
         head->AddElement(std::make_unique<HtmlTitle>("Title"));
         auto body = std::make_unique<HtmlBody>();
 
+        auto header = std::make_unique<HtmlHeader>();
+
         auto h2 = std::make_unique<HtmlHeading>(2,"Heading 2");
-        body->AddElement(std::move(h2));
+        header->AddElement(std::move(h2));
+        
+        body->AddElement(std::move(header));
+        
+        auto main = std::make_unique<HtmlMain>();
         
         auto p = std::make_unique<HtmlParagraph>();
         p->AddElement("AAA BBB");
         p->AddElement(std::make_unique<HtmlBreak>());
         p->AddElement("CCC <escaped> DDD \"EEE\" GGG.");
-        body->AddElement(std::move(p));
+        main->AddElement(std::move(p));
+  
+        auto img = std::make_unique<HtmlImage>("https://www.fillmurray.com/200/100","fillmurray", 200, 100);
+        main->AddElement(std::move(img));
+      
+        body->AddElement(std::move(main));
+
+        auto footer = std::make_unique<HtmlFooter>();
 
         auto div = std::make_unique<HtmlDivision>();
         div->AddElement("HHH III: ");
-        div->AddElement(std::make_unique<HtmlLink>("https://www.google.de", "Link2Google", "www.google.de"));
-        body->AddElement(std::move(div));
+        div->AddElement(std::make_unique<HtmlLink>("https://www.fillmurray.com", "Link to fillmurray.com", "www.fillmurray.com"));
+        footer->AddElement(std::move(div));
+        
+        body->AddElement(std::move(footer));
 
         HtmlPage htmlPage(std::move(head), std::move(body));
         htmlStream << htmlPage;
