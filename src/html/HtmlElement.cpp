@@ -21,6 +21,14 @@ HtmlElement::HtmlElement(const std::string& name, const std::string& text)
 void HtmlElement::SetIndent(int indent)
 {
     _indent = indent;
+    for (auto& element : _elements)
+    {
+        auto htmlElement = dynamic_cast<HtmlElement*>(element.get());
+        if (htmlElement)
+        {
+            htmlElement->SetIndent(_indent + 2);
+        }
+    }
 }
 
 void HtmlElement::AddElement(std::unique_ptr<IHtmlPrintable>&& element)

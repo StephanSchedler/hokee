@@ -17,7 +17,7 @@ class HtmlElement : public IHtmlPrintable
     std::unordered_map<std::string, std::string> _attributes{};
 
     void SetIndent(int indent);
-    void ToString(std::ostream& output) const override;
+    void ToString(std::ostream& output) const final;
 
   public:
     HtmlElement() = delete;
