@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include "html/HtmlPage.h"
 
+#include <filesystem>
 #include <fmt/format.h>
 
 #include <exception>
@@ -10,6 +11,7 @@
 #include <map>
 #include <ostream>
 #include <string>
+#include <thread>
 
 using namespace hokee;
 
@@ -20,10 +22,6 @@ int main(int /*unused*/, const char** /*unused*/)
     bool success = true;
     try
     {
-        fs::path htmlPath = Utils::GetTempDir() / "index.html";
-        std::ofstream htmlStream;
-        htmlStream.open(htmlPath, std::ios::binary);
-
         auto head = std::make_unique<HtmlHead>();
         head->AddElement(std::make_unique<HtmlTitle>("Title"));
 
@@ -101,17 +99,41 @@ int main(int /*unused*/, const char** /*unused*/)
         auto p = std::make_unique<HtmlParagraph>();
         p->AddElement(std::make_unique<HtmlBold>("BOLD: "));
         p->AddElement(std::make_unique<HtmlHyperlink>("https://www.fillmurray.com", "Link to fillmurray.com",
-                                                 "www.fillmurray.com"));
+                                                      "www.fillmurray.com"));
         footer->AddElement(std::move(p));
 
         body->AddElement(std::move(footer));
 
         HtmlPage htmlPage(std::move(head), std::move(body));
-        htmlStream << htmlPage;
 
-        htmlStream.close();
+        fs::path htmlPath = Utils::GetTempDir() / "index.html";
+        std::ofstream ofStream;
+        ofStream.open(htmlPath, std::ios::binary);
+        ofStream << htmlPage;
+        ofStream.close();
 
-        Utils::RunSync(fmt::format("start {}", htmlPath.string()));
+        fs::path referencePath = fs::path("..") / "test_data" / "html_test" / "index.html";
+        success = Utils::CompareFiles(htmlPath, referencePath);
+
+        if (success)
+        {
+            Utils::PrintInfo("TEST PASSED");
+        }
+        else
+        {
+            fs::path testDataPath = fs::current_path() / ".." / "tests" / "test_data" / "index.html";
+            Utils::PrintInfo("Update test data:");
+            Utils::PrintInfo(fmt::format("  copy /Y \"{}\" \"{}\"", htmlPath.make_preferred().string(),
+                                         testDataPath.make_preferred().string()));
+            Utils::PrintInfo(fmt::format("  cp -f \"{}\" \"{}\"", htmlPath.string(), testDataPath.string()));
+
+#ifdef _MSC_VER
+            Utils::RunAsync(fmt::format("start {}", htmlPath.string()));
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+#endif
+
+            Utils::PrintInfo("TEST FAILED");
+        }
     }
     catch (const UserException& e)
     {
