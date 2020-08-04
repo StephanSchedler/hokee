@@ -4,22 +4,22 @@
 
 namespace hokee
 {
-class HtmlLink final : public HtmlElement
+class HtmlHyperlink final : public HtmlElement
 {
   public:
-    HtmlLink(const std::string& link, const std::string& title)
+    HtmlHyperlink(const std::string& link, const std::string& title)
         : HtmlElement("a")
     {
         AddAttribute("href", link);
         AddAttribute("title", title);
     };
-    HtmlLink(const std::string& link, const std::string& title, const std::string& text)
+    HtmlHyperlink(const std::string& link, const std::string& title, const std::string& text)
         : HtmlElement("a", text)
     {
         AddAttribute("href", link);
         AddAttribute("title", title);
     };
-    virtual ~HtmlLink() = default;
+    virtual ~HtmlHyperlink() = default;
 };
 
 } // namespace hokee
