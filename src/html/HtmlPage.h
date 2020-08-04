@@ -5,7 +5,7 @@
 #include "HtmlTitle.h"
 #include "HtmlText.h"
 #include "HtmlHeading.h"
-#include "HtmlLink.h"
+#include "HtmlHyperlink.h"
 #include "HtmlParagraph.h"
 #include "HtmlDivision.h"
 #include "HtmlHeader.h"

@@ -86,7 +86,7 @@ int main(int /*unused*/, const char** /*unused*/)
 
         auto p = std::make_unique<HtmlParagraph>();
         p->AddElement(std::make_unique<HtmlBold>("BOLD: "));
-        p->AddElement(std::make_unique<HtmlLink>("https://www.fillmurray.com", "Link to fillmurray.com",
+        p->AddElement(std::make_unique<HtmlHyperlink>("https://www.fillmurray.com", "Link to fillmurray.com",
                                                  "www.fillmurray.com"));
         footer->AddElement(std::move(p));
 
