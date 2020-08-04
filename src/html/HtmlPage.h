@@ -1,5 +1,8 @@
 #pragma once
 
+#include "HtmlMeta.h"
+#include "HtmlLink.h"
+#include "HtmlStyle.h"
 #include "HtmlBody.h"
 #include "HtmlHead.h"
 #include "HtmlTitle.h"
