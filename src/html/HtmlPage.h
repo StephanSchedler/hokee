@@ -1,8 +1,20 @@
 #pragma once
 
 #include "HtmlBody.h"
-#include "HtmlElement.h"
 #include "HtmlHead.h"
+#include "HtmlTitle.h"
+#include "HtmlText.h"
+#include "HtmlHeading.h"
+#include "HtmlLink.h"
+#include "HtmlParagraph.h"
+#include "HtmlDivision.h"
+#include "HtmlHeader.h"
+#include "HtmlTable.h"
+#include "HtmlMain.h"
+#include "HtmlBold.h"
+#include "HtmlFooter.h"
+#include "HtmlImage.h"
+#include "HtmlBreak.h"
 
 #include <memory>
 

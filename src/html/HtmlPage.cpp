@@ -14,7 +14,7 @@ HtmlPage::HtmlPage(std::unique_ptr<HtmlHead> head, std::unique_ptr<HtmlBody> bod
 void HtmlPage::ToString(std::ostream& output) const
 {
     output << "<!DOCTYPE html>" << std::endl;
-    output << "<html>" << std::endl;
+    output << "<html lang=\"en\">" << std::endl;
     output << "  " << *_head << std::endl;
     output << "  " << *_body << std::endl;
     output << "</html>" << std::endl;
