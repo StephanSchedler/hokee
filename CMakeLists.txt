@@ -81,7 +81,7 @@ set(PROJECT_SOURCE_FILES
     src/html/HtmlPage.cpp
     src/html/HtmlElement.cpp
     src/html/HtmlText.cpp
-    src/html/IHtmlPrintable.cpp
+    src/html/IPrintable.cpp
     src/Application.cpp
     src/Settings.cpp
     src/InternalException.cpp

@@ -5,14 +5,14 @@
 
 namespace hokee
 {
-class IHtmlPrintable
+class IPrintable
 {
-    friend std::ostream& operator<<(std::ostream& os, const IHtmlPrintable& obj);
+    friend std::ostream& operator<<(std::ostream& os, const IPrintable& obj);
 
     virtual void ToString(std::ostream& output) const = 0;
 
   public:
-    virtual ~IHtmlPrintable() = default;
+    virtual ~IPrintable() = default;
 };
 
 } // namespace hokee

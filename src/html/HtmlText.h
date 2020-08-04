@@ -1,10 +1,10 @@
 #pragma once
 
-#include "html/IHtmlPrintable.h"
+#include "html/IPrintable.h"
 
 namespace hokee
 {
-class HtmlText final : public IHtmlPrintable
+class HtmlText final : public IPrintable
 {
     std::string _text{};
 

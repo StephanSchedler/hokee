@@ -31,7 +31,7 @@ void HtmlElement::SetIndent(int indent)
     }
 }
 
-void HtmlElement::AddElement(std::unique_ptr<IHtmlPrintable>&& element)
+void HtmlElement::AddElement(std::unique_ptr<IPrintable>&& element)
 {
     auto htmlElement = dynamic_cast<HtmlElement*>(element.get());
     if (htmlElement)
