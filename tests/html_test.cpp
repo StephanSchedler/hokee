@@ -26,6 +26,20 @@ int main(int /*unused*/, const char** /*unused*/)
 
         auto head = std::make_unique<HtmlHead>();
         head->AddElement(std::make_unique<HtmlTitle>("Title"));
+
+        auto meta = std::make_unique<HtmlMeta>();
+        meta->AddAttribute("name", "html_test");
+        meta->AddAttribute("content", "unit-test");
+        meta->AddAttribute("charset", "UTF-8");
+        head->AddElement(std::move(meta));
+
+        auto link = std::make_unique<HtmlLink>();
+        link->AddAttribute("rel", "icon");
+        link->AddAttribute("type", "image/jpg");
+        link->AddAttribute("sizes", "32x32");
+        link->AddAttribute("href", "https://www.fillmurray.com/32/32");
+        head->AddElement(std::move(link));
+
         auto body = std::make_unique<HtmlBody>();
 
         auto header = std::make_unique<HtmlHeader>();
