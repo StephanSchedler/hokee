@@ -4,7 +4,9 @@
 #include "html/HtmlTitle.h"
 #include "html/HtmlText.h"
 #include "html/HtmlHeading.h"
+#include "html/HtmlLink.h"
 #include "html/HtmlParagraph.h"
+#include "html/HtmlDivision.h"
 #include "html/HtmlBreak.h"
 
 
@@ -38,11 +40,16 @@ int main(int /*unused*/, const char** /*unused*/)
         auto h2 = std::make_unique<HtmlHeading>(2,"Heading 2");
         body->AddElement(std::move(h2));
         
-        auto p1 = std::make_unique<HtmlParagraph>();
-        p1->AddElement("Some text");
-        p1->AddElement(std::make_unique<HtmlBreak>());
-        p1->AddElement("Some text 2");
-        body->AddElement(std::move(p1));
+        auto p = std::make_unique<HtmlParagraph>();
+        p->AddElement("AAA BBB");
+        p->AddElement(std::make_unique<HtmlBreak>());
+        p->AddElement("CCC <escaped> DDD \"EEE\" GGG.");
+        body->AddElement(std::move(p));
+
+        auto div = std::make_unique<HtmlDivision>();
+        div->AddElement("HHH III: ");
+        div->AddElement(std::make_unique<HtmlLink>("https://www.google.de", "Link2Google", "www.google.de"));
+        body->AddElement(std::move(div));
 
         HtmlPage htmlPage(std::move(head), std::move(body));
         htmlStream << htmlPage;
