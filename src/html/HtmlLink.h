@@ -7,17 +7,17 @@ namespace hokee
 class HtmlLink final : public HtmlElement
 {
   public:
-    HtmlLink(const std::string& link, const std::string& tooltip)
+    HtmlLink(const std::string& link, const std::string& title)
         : HtmlElement("a")
     {
         AddAttribute("href", link);
-        AddAttribute("title", tooltip);
+        AddAttribute("title", title);
     };
-    HtmlLink(const std::string& link, const std::string& tooltip, const std::string& text)
+    HtmlLink(const std::string& link, const std::string& title, const std::string& text)
         : HtmlElement("a", text)
     {
         AddAttribute("href", link);
-        AddAttribute("title", tooltip);
+        AddAttribute("title", title);
     };
     virtual ~HtmlLink() = default;
 };
