@@ -27,7 +27,6 @@ class HtmlElement : public IHtmlPrintable
 
     void AddElement(const std::string& text);
     void AddElement(std::unique_ptr<IHtmlPrintable>&& element);
-    void SetElements(std::vector<std::unique_ptr<IHtmlPrintable>>&& elements);
     void AddAttribute(const std::string& attributeName, const std::string& attributeValue);
 };
 

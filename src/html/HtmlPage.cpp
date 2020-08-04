@@ -15,8 +15,8 @@ void HtmlPage::ToString(std::ostream& output) const
 {
     output << "<!DOCTYPE html>" << std::endl;
     output << "<html>" << std::endl;
-    output << *_head;
-    output << *_body;
+    output << "  " << *_head << std::endl;
+    output << "  " << *_body << std::endl;
     output << "</html>" << std::endl;
 }
 } // namespace hokee
