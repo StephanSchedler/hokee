@@ -9,6 +9,7 @@
 #include "html/HtmlDivision.h"
 #include "html/HtmlHeader.h"
 #include "html/HtmlMain.h"
+#include "html/HtmlBold.h"
 #include "html/HtmlFooter.h"
 #include "html/HtmlImage.h"
 #include "html/HtmlBreak.h"
@@ -64,7 +65,7 @@ int main(int /*unused*/, const char** /*unused*/)
         auto footer = std::make_unique<HtmlFooter>();
 
         auto div = std::make_unique<HtmlDivision>();
-        div->AddElement("HHH III: ");
+        div->AddElement(std::make_unique<HtmlBold>("BOLD: "));
         div->AddElement(std::make_unique<HtmlLink>("https://www.fillmurray.com", "Link to fillmurray.com", "www.fillmurray.com"));
         footer->AddElement(std::move(div));
         
