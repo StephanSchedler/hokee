@@ -23,7 +23,7 @@
 
 namespace hokee
 {
-class HtmlPage : public IHtmlPrintable
+class HtmlPage : public IPrintable
 {
     std::unique_ptr<HtmlHead> _head{};
     std::unique_ptr<HtmlBody> _body{};
