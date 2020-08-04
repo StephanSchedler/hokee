@@ -30,6 +30,8 @@ void OpenFolder(const fs::path& folder, const std::string& explorer);
 void ResetIdGenerator();
 bool ExtractMissingString(std::string& extracted, const std::string& original, const std::string& missing);
 
+bool CompareFiles(const fs::path& file1, const fs::path& file2);
+
 std::string GetEnv(const std::string& name);
 fs::path GetHomeDir();
 fs::path GetTempDir();

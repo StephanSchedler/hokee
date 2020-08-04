@@ -160,3 +160,4 @@ install(FILES tests/test_data/rules_add_test.csv DESTINATION ./test_data/rules_a
 install(FILES tests/test_data/ABC/Account_123456790_2020_1.csv DESTINATION ./test_data/rules_add_test/input/ABC)
 install(FILES tests/test_data/ABC/Account_123456790_2020_2.csv DESTINATION ./test_data/rules_add_test/input/ABC)
 install(FILES tests/test_data/ABC/format.ini DESTINATION ./test_data/rules_add_test/input/ABC)
+install(FILES tests/test_data/index.html DESTINATION ./test_data/html_test)

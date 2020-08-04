@@ -1,7 +1,7 @@
 #include "Utils.h"
-#include "html/HtmlGenerator.h"
 #include "InternalException.h"
 #include "hokee.h"
+#include "html/HtmlGenerator.h"
 
 #include <fmt/format.h>
 
@@ -402,4 +402,39 @@ void GenerateSupportMail(const fs::path& outputFile, const fs::path& ruleSetFile
     outputFileStream.close();
 }
 
+bool CompareFiles(const fs::path& file1, const fs::path& file2)
+{
+    char c1, c2;
+    int line = 1;
+    int col = 0;
+    std::ifstream fileStream1(file1);
+    std::ifstream fileStream2(file2);
+    while (fileStream1.get(c1) && fileStream2.get(c2))
+    {
+        col++;
+        if (c1 == '\n')
+        {
+            line++;
+            col = 0;
+        }
+        if (c1 != c2)
+        {
+            Utils::PrintError(
+                fmt::format("Files {}, {} differ in line {}:{}.", file1.string(), file2.string(), line, col));
+            return false;
+        }
+    }
+    if (!fileStream1.eof())
+    {
+        Utils::PrintError(fmt::format("File {} is larger than {}.", file1.string(), file2.string()));
+        return false;
+    }
+    if (!fileStream2.get(c2).eof())
+    {
+        Utils::PrintError(fmt::format("File {} is smaller than {}.", file1.string(), file2.string()));
+        return false;
+    }
+
+    return true;
+}
 } // namespace hokee::Utils
