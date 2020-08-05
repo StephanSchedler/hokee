@@ -420,7 +420,7 @@ bool CompareFiles(const fs::path& file1, const fs::path& file2)
         if (c1 != c2)
         {
             Utils::PrintError(
-                fmt::format("Files {}, {} differ in line {}:{}.", file1.string(), file2.string(), line, col));
+                fmt::format("Files {}, {} differ in line {}:{}. (expected: '{}', found: '{}')", file1.string(), file2.string(), line, col, c1, c2));
             return false;
         }
     }

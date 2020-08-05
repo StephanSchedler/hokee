@@ -78,7 +78,6 @@ set(PROJECT_SOURCE_FILES
     src/csv/CsvDatabase.cpp
     src/csv/CsvRules.cpp 
     src/html/HtmlGenerator.cpp
-    src/html/HtmlPage.cpp
     src/html/HtmlElement.cpp
     src/html/HtmlText.cpp
     src/html/IPrintable.cpp
