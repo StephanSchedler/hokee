@@ -28,7 +28,7 @@ void HtmlElement::SetIndent(int indent)
 
 void HtmlElement::SetAttribute(const std::string& attributeName, const std::string& attributeValue)
 {
-    _attributes[attributeName] = fmt::format("\"{}\"", attributeValue);
+    _attributes.emplace_back(attributeName, fmt::format("\"{}\"", attributeValue));
 }
 
 void HtmlElement::ToString(std::ostream& output) const

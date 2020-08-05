@@ -5,6 +5,7 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <utility>
 
 namespace hokee
 {
@@ -14,7 +15,7 @@ class HtmlElement : public IPrintable
     int _indent{0};
     std::string _name{};
     std::vector<std::unique_ptr<IPrintable>> _elements{};
-    std::unordered_map<std::string, std::string> _attributes{};
+    std::vector<std::pair<std::string, std::string>> _attributes{};
 
     void SetIndent(int indent);
     void ToString(std::ostream& output) const final;
