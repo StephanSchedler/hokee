@@ -8,7 +8,7 @@ class Settings final : public CsvConfig
 {
   public:
     Settings();
-    Settings(const fs::path& file);
+    explicit Settings(const fs::path& file);
 
     Settings(const Settings&) = default;
     Settings& operator=(const Settings&) = default;
