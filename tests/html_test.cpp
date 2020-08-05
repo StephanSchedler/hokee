@@ -1,6 +1,6 @@
 #include "UserException.h"
 #include "Utils.h"
-#include "html/HtmlPage.h"
+#include "html/HtmlElement.h"
 
 #include <filesystem>
 #include <fmt/format.h>
@@ -22,94 +22,52 @@ int main(int /*unused*/, const char** /*unused*/)
     bool success = true;
     try
     {
-        auto head = std::make_unique<HtmlHead>();
-        head->AddElement(std::make_unique<HtmlTitle>("Title"));
+        HtmlElement html;
+        auto head = html.AddHead();
+        head->AddTitle("Title");
 
-        auto meta = std::make_unique<HtmlMeta>();
-        meta->AddAttribute("name", "html_test");
-        meta->AddAttribute("content", "unit-test");
-        meta->AddAttribute("charset", "UTF-8");
-        head->AddElement(std::move(meta));
+        auto meta = head->AddMeta();
+        meta->SetAttribute("name", "html_test");
+        meta->SetAttribute("content", "unit-test");
+        meta->SetAttribute("charset", "UTF-8");
 
-        auto link = std::make_unique<HtmlLink>();
-        link->AddAttribute("rel", "icon");
-        link->AddAttribute("type", "image/jpg");
-        link->AddAttribute("sizes", "32x32");
-        link->AddAttribute("href", "https://www.fillmurray.com/32/32");
-        head->AddElement(std::move(link));
+        auto link = head->AddLink();
+        link->SetAttribute("rel", "icon");
+        link->SetAttribute("type", "image/jpg");
+        link->SetAttribute("sizes", "32x32");
+        link->SetAttribute("href", "https://www.fillmurray.com/32/32");
 
-        auto body = std::make_unique<HtmlBody>();
+        auto body = html.AddBody();
+        auto header = body->AddHeader();
+        header->AddHeading(2, "Heading 2");
 
-        auto header = std::make_unique<HtmlHeader>();
+        auto main = body->AddMain();
+        auto div = main->AddDivision();
+        auto table = div->AddTable();
+        auto tableRow0 = table->AddTableRow();
+        tableRow0->AddTableHeaderCell("Head 1");
+        tableRow0->AddTableHeaderCell("Head 2");
+        auto tableRow1 = table->AddTableRow();
+        auto tableCell1 = tableRow1->AddTableCell();
+        tableCell1->AddText("AAA BBB");
+        tableCell1->AddBreak();
+        tableCell1->AddText("CCC <escaped>");
+        tableCell1->AddBreak();
+        tableCell1->AddText("DDD \"EEE\"");
+        tableCell1->AddBreak();
+        tableCell1->AddText("GGG.");
+        auto tableCell2 = tableRow1->AddTableCell();
+        tableCell2->AddImage("https://www.fillmurray.com/200/250", "fillmurray", 200, 250);
 
-        auto h2 = std::make_unique<HtmlHeading>(2, "Heading 2");
-        header->AddElement(std::move(h2));
-
-        body->AddElement(std::move(header));
-
-        auto main = std::make_unique<HtmlMain>();
-
-        auto div = std::make_unique<HtmlDivision>();
-
-        auto table = std::make_unique<HtmlTable>();
-
-        auto tableHeader = std::make_unique<HtmlTableRow>();
-
-        auto tableHead1 = std::make_unique<HtmlTableHeader>();
-        tableHead1->AddElement("Head 1");
-        tableHeader->AddElement(std::move(tableHead1));
-
-        auto tableHead2 = std::make_unique<HtmlTableHeader>();
-        tableHead2->AddElement("Head 2");
-        tableHeader->AddElement(std::move(tableHead2));
-
-        table->AddElement(std::move(tableHeader));
-
-        auto tableRow1 = std::make_unique<HtmlTableRow>();
-
-        auto tableCell1 = std::make_unique<HtmlTableCell>();
-
-        tableCell1->AddElement("AAA BBB");
-        tableCell1->AddElement(std::make_unique<HtmlBreak>());
-        tableCell1->AddElement("CCC <escaped>");
-        tableCell1->AddElement(std::make_unique<HtmlBreak>());
-        tableCell1->AddElement("DDD \"EEE\"");
-        tableCell1->AddElement(std::make_unique<HtmlBreak>());
-        tableCell1->AddElement("GGG.");
-
-        tableRow1->AddElement(std::move(tableCell1));
-
-        auto tableCell2 = std::make_unique<HtmlTableCell>();
-
-        tableCell2->AddElement(
-            std::make_unique<HtmlImage>("https://www.fillmurray.com/200/250", "fillmurray", 200, 250));
-
-        tableRow1->AddElement(std::move(tableCell2));
-
-        table->AddElement(std::move(tableRow1));
-
-        div->AddElement(std::move(table));
-
-        main->AddElement(std::move(div));
-
-        body->AddElement(std::move(main));
-
-        auto footer = std::make_unique<HtmlFooter>();
-
-        auto p = std::make_unique<HtmlParagraph>();
-        p->AddElement(std::make_unique<HtmlBold>("BOLD: "));
-        p->AddElement(std::make_unique<HtmlHyperlink>("https://www.fillmurray.com", "Link to fillmurray.com",
-                                                      "www.fillmurray.com"));
-        footer->AddElement(std::move(p));
-
-        body->AddElement(std::move(footer));
-
-        HtmlPage htmlPage(std::move(head), std::move(body));
-
+        auto footer = body->AddFooter();
+        auto p = footer->AddParagraph();
+        p->AddBold("BOLD: ");
+        p->AddHyperlink("https://www.fillmurray.com", "Link to fillmurray.com", "www.fillmurray.com");
+        
         fs::path htmlPath = Utils::GetTempDir() / "index.html";
         std::ofstream ofStream;
         ofStream.open(htmlPath, std::ios::binary);
-        ofStream << htmlPage;
+        ofStream << html;
         ofStream.close();
 
         fs::path referencePath = fs::path("..") / "test_data" / "html_test" / "index.html";
