@@ -10,7 +10,7 @@ jobs:
   build:
 
     runs-on: ${{ matrix.os }}
-    
+
     defaults:
       run:
         shell: bash
@@ -20,29 +20,30 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
-        #config: [Debug, Release]
+        # config: [Debug, Release]
         config: [Release]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Run build
-      run: bash build.sh ${{ matrix.config }}
-    - name: Run tests
-      run: cd build; ctest -C ${{ matrix.config }} --output-on-failure
-    - name: Run CPack
-      if: ${{ matrix.config == 'Release' }}
-      run: cd build; cmake --build . --config ${{ matrix.config }} --target package --parallel
-    - name: Remove old artifacts
-      uses: c-hive/gha-remove-artifacts@v1
-      if: ${{ matrix.config == 'Release' && matrix.os == 'windows-latest' }}
-      with:
-        age: '1 day'
-        # Optional inputs
-        # skip-tags: true
-        # skip-recent: 5
-    - name: Upload packages
-      uses: actions/upload-artifact@v2
-      if: ${{ matrix.config == 'Release' }}
-      with:
-        name: ${{ matrix.os }}-${{ matrix.config }}-packages
-        path: build/hokee-*
+      - uses: actions/checkout@v2
+      - name: Run build
+        run: bash build.sh ${{ matrix.config }}
+      - name: Run tests
+        run: |
+          cd build
+          ctest -C ${{ matrix.config }} --output-on-failure
+      - name: Run CPack
+        if: ${{ matrix.config == 'Release' }}
+        run: |
+          cd build
+          cmake --build . --config ${{ matrix.config }} --target package --parallel
+      - name: Remove old artifacts
+        uses: c-hive/gha-remove-artifacts@v1
+        if: ${{ matrix.config == 'Release' && matrix.os == 'windows-latest' }}
+        with:
+          age: '1 day'
+      - name: Upload packages
+        uses: actions/upload-artifact@v2
+        if: ${{ matrix.config == 'Release' }}
+        with:
+          name: ${{ matrix.os }}-${{ matrix.config }}-packages
+          path: build/hokee-*
