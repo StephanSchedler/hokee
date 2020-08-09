@@ -4,8 +4,9 @@
 
 #include <memory>
 #include <unordered_map>
-#include <vector>
 #include <utility>
+#include <vector>
+
 
 namespace hokee
 {
@@ -27,20 +28,23 @@ class HtmlElement : public IPrintable
     HtmlElement(const std::string& name, const std::string& text);
     virtual ~HtmlElement() = default;
 
-    void SetAttribute(const std::string& attributeName, const std::string& attributeValue);
-
+    void AddBreak();
     void AddText(const std::string& text);
+    void AddProgress(size_t value, size_t max);
+    void AddImage(const std::string& src, const std::string& title, int width, int height);
+    void AddImage(const std::string& src, const std::string& title, int size);
+    void AddHyperlinkImage(const std::string& link, const std::string& title, const std::string& src, int width,
+                           int height);
+    void AddHyperlinkImage(const std::string& link, const std::string& title, const std::string& src, int size);
+
     HtmlElement* AddBody(const std::string& text = "");
     HtmlElement* AddBold(const std::string& text = "");
-    HtmlElement* AddBreak();
     HtmlElement* AddDivision(const std::string& text = "");
     HtmlElement* AddFooter(const std::string& text = "");
     HtmlElement* AddHead(const std::string& text = "");
     HtmlElement* AddHeader(const std::string& text = "");
     HtmlElement* AddHeading(int size, const std::string& text = "");
     HtmlElement* AddHyperlink(const std::string& link, const std::string& title, const std::string& text = "");
-    HtmlElement* AddImage(const std::string& src, const std::string& title, int width, int height);
-    HtmlElement* AddImage(const std::string& src, const std::string& title, int size);
     HtmlElement* AddLink(const std::string& text = "");
     HtmlElement* AddMain(const std::string& text = "");
     HtmlElement* AddMeta(const std::string& text = "");
@@ -51,6 +55,9 @@ class HtmlElement : public IPrintable
     HtmlElement* AddTableHeaderCell(const std::string& text = "");
     HtmlElement* AddTableRow(const std::string& text = "");
     HtmlElement* AddTitle(const std::string& text = "");
+
+    void SetAttribute(const std::string& attributeName, const std::string& attributeValue);
+    std::string ToString() const;
 };
 
 } // namespace hokee

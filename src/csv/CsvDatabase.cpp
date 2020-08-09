@@ -77,13 +77,13 @@ void CsvDatabase::CheckRules()
                 {
                     Issues.push_back(rule1);
                 }
-                std::stringstream issueStream{};
-                issueStream << "ERROR: Redefinition of rule ";
-                HtmlGenerator::GetItemReference(issueStream, rule2->Id);
-                issueStream << "(";
-                issueStream << HtmlGenerator::GetEditorReference(rule2->File);
-                issueStream << ")!";
-                rule1->Issues.push_back(issueStream.str());
+                HtmlElement div("div", "ERROR: Redefinition of rule ");
+
+                HtmlGenerator::AddItemHyperlink(&div, rule2->Id);
+                div.AddText("(");
+                HtmlGenerator::AddEditorHyperlink(&div, rule2->File);
+                div.AddText("(");
+                rule1->Issues.push_back(div.ToString());
             }
         }
     }
