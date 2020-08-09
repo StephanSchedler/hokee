@@ -14,75 +14,171 @@
 
 namespace hokee
 {
-std::string HtmlGenerator::GetButton(const std::string& link, const std::string& tooltip, const std::string& image,
-                                     const std::string& text)
+void HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& link, const std::string& tooltip,
+                              const std::string& image, const std::string& text)
 {
-    return fmt::format(
-        "<td style=\"border: hidden\"><a href=\"{}\" title=\"{}\"><main style=\"text-align:center;\"><img "
-        "src=\"{}\" width=\"42\" height=\"42\"/></main><footer style=\"text-align:center;\">{}</footer></a></td>",
-        link, tooltip, image, text);
+    auto cell = tableRow->AddTableCell();
+    cell->SetAttribute("style", "border: hidden;");
+    auto hyperlink = cell->AddHyperlink(link, tooltip);
+    auto main = hyperlink->AddMain();
+    main->SetAttribute("style", "text-align:center;");
+    main->AddImage(image, text, 42);
+    auto footer = hyperlink->AddFooter(text);
+    footer->SetAttribute("style", "text-align:center;");
 }
 
-std::string HtmlGenerator::GetHeader(const CsvDatabase& database)
+void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& database)
 {
-    std::stringstream result;
+    auto header = body->AddHeader();
+    header->SetAttribute("style", "border-bottom: 1px solid black;");
+    auto table = header->AddTable();
+    table->SetAttribute("cellspacing", "0");
+    table->SetAttribute("cellpadding", "0");
+    table->SetAttribute("style", "border: hidden;");
+    auto row = table->AddTableRow();
 
-    result << "    <header style=\"border-bottom: 1px solid black;\">";
-    result << "<table cellspacing=\"0\" cellpadding=\"0\" style=\"border: hidden\"><tr>";
-
-    result << GetButton(INDEX_HTML, "Show Summary", "48-file-excel.png", "Summary &nbsp;");
-
-    result << GetButton(RULES_HTML, "Show Rules", "48-file-exe.png",
-                        fmt::format("Rules ({})", database.Rules.size()));
-
-    result << GetButton(ALL_HTML, "Show All Items", "48-file-text.png",
-                        fmt::format("Items ({})", database.Data.size()));
-                        
-    result << GetButton(ASSIGNED_HTML, "Show Assigned Items", "48-sign-check.png",
-                        fmt::format("Assigned ({})", database.Assigned.size()));
+    AddButton(row, INDEX_HTML, "Show Summary", "48-file-excel.png", "Summary &nbsp;");
+    AddButton(row, RULES_HTML, "Show Rules", "48-file-exe.png", fmt::format("Rules ({})", database.Rules.size()));
+    AddButton(row, ALL_HTML, "Show All Items", "48-file-text.png",
+              fmt::format("Items ({})", database.Data.size()));
+    AddButton(row, ASSIGNED_HTML, "Show Assigned Items", "48-sign-check.png",
+              fmt::format("Assigned ({})", database.Assigned.size()));
 
     if (database.Unassigned.size() == 0)
     {
-        result << GetButton(UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-delete2.png",
-                            fmt::format("Unassigned ({})", database.Unassigned.size()));
+        AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-delete2.png",
+                  fmt::format("Unassigned ({})", database.Unassigned.size()));
     }
     else
     {
-        result << GetButton(UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-delete.png",
-                            fmt::format("Unassigned ({})", database.Unassigned.size()));
+        AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-delete.png",
+                  fmt::format("Unassigned ({})", database.Unassigned.size()));
     }
 
     if (database.Issues.size() == 0)
     {
-        result << GetButton(ISSUES_HTML, "Show Issues", "48-sign-warning2.png",
-                            fmt::format("Issues ({})", database.Issues.size()));
+        AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-warning2.png",
+                  fmt::format("Issues ({})", database.Issues.size()));
     }
     else
     {
-        result << GetButton(ISSUES_HTML, "Show Issues", "48-sign-warning.png",
-                            fmt::format("Issues ({})", database.Issues.size()));
+        AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-warning.png",
+                  fmt::format("Issues ({})", database.Issues.size()));
     }
 
-    result << "<td style=\"border: hidden\" width=\"50%\"></td>";
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("style", "border: hidden;");
+    cell->SetAttribute("width", "50%");
 
-    result << GetButton(RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
-    result << GetButton(SEARCH_HTML, "Open Search Page", "48-search.png", "Search");
-    result << GetButton(INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
-    result << GetButton(SUPPORT_CMD, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Help");
-    result << GetButton(SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
-    result << GetButton(EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
+    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
+    AddButton(row, SEARCH_HTML, "Open Search Page", "48-search.png", "Search");
+    AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
+    AddButton(row, SUPPORT_CMD, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Help");
+    AddButton(row, SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
+    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
+}
 
-    result << "</tr></table>";
+HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
+{
+    auto head = html->AddHead();
+    head->AddTitle("hokee");
+    auto meta = head->AddMeta();
+    meta->SetAttribute("name", "hokee");
+    meta->SetAttribute("content", "Summary");
+    meta->SetAttribute("charset", "UTF-8");
 
-    result << "</header>";
-    return result.str();
+    auto link = head->AddLink();
+    link->SetAttribute("rel", "apple-touch-icon");
+    link->SetAttribute("sizes", "180x180");
+    link->SetAttribute("href", "/apple-touch-icon.png");
+
+    link = head->AddLink();
+    link->SetAttribute("rel", "icon");
+    link->SetAttribute("type", "image/png");
+    link->SetAttribute("sizes", "32x32");
+    link->SetAttribute("href", "/favicon-32x32.png");
+
+    link = head->AddLink();
+    link->SetAttribute("rel", "icon");
+    link->SetAttribute("type", "image/png");
+    link->SetAttribute("sizes", "16x16");
+    link->SetAttribute("href", "/favicon-16x16.png");
+
+    link = head->AddLink();
+    link->SetAttribute("rel", "mask-icon");
+    link->SetAttribute("href", "/safari-pinned-tab.svg");
+    link->SetAttribute("color", "#5bbad5");
+
+    head->AddStyle("#left {width: 10%; display: inline-block; text-align:left;}\n"
+                   "#middle {width: 80%; display: inline-block; text-align:center;}\n"
+                   "#right {width: 10%; display: inline-block; text-align:right;}\n"
+                   "table {\n"
+                   "  width:100%;\n"
+                   "}\n"
+                   "table, th, td {\n"
+                   "  border: 1px solid #008;\n"
+                   "  border-collapse: collapse;\n"
+                   "}\n"
+                   "th, td {\n"
+                   "  padding: 5px;\n"
+                   "  text-align: left;\n"
+                   "}\n"
+                   "table#t01 tr:nth-child(even) {\n"
+                   "  background-color: #eef;\n"
+                   "}\n"
+                   "table#t01 tr:nth-child(odd) {\n"
+                   "  background-color: #fff;\n"
+                   "}\n"
+                   "table#t01 th {\n"
+                   "  background-color: #008;\n"
+                   "  color: white;\n"
+                   "}\n");
+    return head;
+}
+
+void HtmlGenerator::AddItemTableHeader(HtmlElement* table)
+{
+    auto row = table->AddTableRow();
+    row->AddTableHeaderCell("#");
+    row->AddTableHeaderCell("Category");
+    row->AddTableHeaderCell("Payer/Payee");
+    row->AddTableHeaderCell("Description");
+    row->AddTableHeaderCell("Type");
+    row->AddTableHeaderCell("Date");
+    row->AddTableHeaderCell("Account");
+    row->AddTableHeaderCell("Value");
+}
+
+void HtmlGenerator::AddSummaryTableHeader(HtmlElement* table, const std::vector<std::string>& categories)
+{
+    auto row = table->AddTableRow();
+    row->AddTableHeaderCell("Date");
+    row->AddTableHeaderCell("*");
+
+    for (size_t i = 1; i < categories.size(); ++i)
+    {
+        std::string cat = categories[i];
+        if (!cat.empty() && cat.back() == '!')
+        {
+            // remove tailing "!"
+            cat.pop_back();
+        }
+        row->AddTableHeaderCell(cat);
+    }
 }
 
 std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
 {
-    std::stringstream htmlPage;
-    htmlPage << GetItemStart(database, "Summary");
+    HtmlElement html;
+    AddHtmlHead(&html);
 
+    auto body = html.AddBody();
+    AddNavigationHeader(body, database);
+
+    auto main = body->AddMain();
+    main->AddHeading(2, "Summary");
+
+    // Determine (used) Categories
     std::vector<std::string> categories{""};
     for (auto& rule : database.Rules)
     {
@@ -92,6 +188,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
         }
     }
 
+    // Sort data
     int minYear = 3000;
     int maxYear = 1900;
     std::map<int, std::map<int, std::map<std::string, CsvTable>>> sortedTables;
@@ -114,24 +211,12 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
         }
     }
 
-    htmlPage << "<table id=\"t01\">\n";
-
-    std::string tableHead = "<tr><th>Date</th><th>*</th>";
-    for (size_t i = 1; i < categories.size(); ++i)
-    {
-        std::string cat = categories[i];
-        if (!cat.empty() && cat.back() == '!')
-        {
-            // remove tailing "!"
-            cat.pop_back();
-        }
-        tableHead += fmt::format("<th>{}</th>", cat);
-    }
-    tableHead += "</tr>\n";
+    auto table = main->AddTable();
+    table->SetAttribute("id", "t01");
 
     for (int year = minYear; year <= maxYear; ++year)
     {
-        htmlPage << tableHead;
+        AddSummaryTableHeader(table, categories);
 
         for (int month = 0; month <= 12; ++month)
         {
@@ -140,10 +225,12 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
             if (month == 0)
             {
                 name = fmt::format("{}", year);
-                rowStyle = " style=\"background-color:#ccf;\"";
+                rowStyle = "background-color:#ccf;";
             }
 
-            htmlPage << fmt::format("<tr {}><td>{}</td>", rowStyle, name);
+            auto row = table->AddTableRow();
+            row->SetAttribute("style", rowStyle);
+            row->AddTableCell(name);
             for (auto& cat : categories)
             {
                 double sum = 0;
@@ -171,137 +258,157 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
                 {
                     if (month == 0)
                     {
-                        cellStyle = " style=\"background-color:#ada;\"";
+                        cellStyle = "background-color:#ada;";
                     }
                     else
                     {
-                        cellStyle = " style=\"background-color:#cfc;\"";
+                        cellStyle = "background-color:#cfc;";
                     }
                 }
                 if (sum < 0)
                 {
                     if (month == 0)
                     {
-                        cellStyle = " style=\"background-color:#daa;\"";
+                        cellStyle = "background-color:#daa;";
                     }
                     else
                     {
-                        cellStyle = " style=\"background-color:#fcc;\"";
+                        cellStyle = "background-color:#fcc;";
                     }
                 }
-                htmlPage << fmt::format("<td {}>", cellStyle);
-                GetItemsReference(htmlPage, year, month, cat, fmt::format("{:.2f}&euro;", sum));
-                htmlPage << "</td>\n";
+
+                auto cell = row->AddTableCell();
+                cell->SetAttribute("style", cellStyle);
+                cell->AddHyperlink(fmt::format("{}?year={}&month={}&category={}", ITEMS_HTML, year, month, cat),
+                                   "Open details", fmt::format("{:.2f}&euro;", sum));
             }
-            htmlPage << "</tr>";
         }
     }
-    htmlPage << "</table>\n";
-
-    htmlPage << "</body>\n"
-                "</html>";
-    return htmlPage.str();
+    return html.ToString();
 }
 
 std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::string& title,
                                         const CsvTable& data)
 {
-    std::stringstream htmlPage;
-    htmlPage << GetItemStart(database, title);
-    htmlPage << GetTableStart();
+    HtmlElement html;
+    AddHtmlHead(&html);
+
+    auto body = html.AddBody();
+    AddNavigationHeader(body, database);
+
+    auto main = body->AddMain();
+    main->AddHeading(2, title);
+
+    auto table = main->AddTable();
+    table->SetAttribute("id", "t01");
+    AddItemTableHeader(table);
     for (const auto& row : data)
     {
-        htmlPage << GetTableRow(row.get());
+        AddItemTableRow(table, row.get());
     }
-    htmlPage << GetTableEnd();
-    htmlPage << GetItemEnd();
-    return htmlPage.str();
+
+    return html.ToString();
 }
 
 std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorMessage)
 {
     Utils::PrintError(fmt::format("HttpServer operation failed: {}", errorMessage));
-    std::stringstream htmlPage{};
-    htmlPage << "<!DOCTYPE html>\n"
-                "<html>\n"
-                "  <head>\n";
-    htmlPage << GetHead();
-    htmlPage << "  </head>\n"
-                "  <body>\n";
 
-    htmlPage << fmt::format(
-        "    <main style=\"padding: 50px 0;\">\n"
-        "      <div style=\"text-align:center;\n"
-        "                   color: red;\n"
-        "                   margin: auto;\n"
-        "                   width: 80%;\n"
-        "                   padding: 20px;\n"
-        "                   background: #F0F0F0;\n"
-        "                   border: 1px solid #DDD;\n"
-        "                   box-shadow: 3px 3px 0px rgba(0,0,0, .2);\">\n"
-        "        <p><a href=\"{}\" title=\"Stop hokee\"><img src=\"96-sign-ban.png\"/></a></p>\n"
-        "        <h2>ERROR {}</h2>\n"
-        "        <p><b>{}</b></p>\n"
-        "        <p>&nbsp;</p>\n"
-        "        <p style=\"color: #000000;\">What next?</p>\n"
-        "        <p><table cellspacing=\"0\" cellpadding=\"0\" style=\"border: hidden\"><tr>",
-        EXIT_CMD, errorCode, errorMessage);
+    HtmlElement html;
+    AddHtmlHead(&html);
 
-    htmlPage << "<td style=\"border: hidden\" width=\"50%\"></td>";
-    htmlPage << GetButton(RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
-    htmlPage << GetButton(INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
-    htmlPage << GetButton(SUPPORT_CMD, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Help");
-    htmlPage << GetButton(SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
-    htmlPage << GetButton(EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
-    htmlPage << "<td style=\"border: hidden\" width=\"50%\"></td>";
+    auto body = html.AddBody();
+    auto main = body->AddMain();
+    main->SetAttribute("style", "padding: 50px 0;");
 
-    htmlPage << "        </tr></table><p>\n"
-                "      </div>\n"
-                "    </main>\n";
-    htmlPage << "  </body>\n"
-                "</html>";
-    return htmlPage.str();
+    auto div = main->AddDivision();
+    div->SetAttribute("style", "text-align:center;\n"
+                               "color: red;\n"
+                               "margin: auto;\n"
+                               "width: 80%;\n"
+                               "padding: 20px;\n"
+                               "background: #F0F0F0;\n"
+                               "border: 1px solid #DDD;\n"
+                               "box-shadow: 3px 3px 0px rgba(0,0,0, .2);");
+
+    auto p = div->AddParagraph();
+    p->AddHyperlinkImage(EXIT_CMD, "Stop hokee", "96-sign-ban.png", 96);
+
+    div->AddHeading(2, fmt::format("ERROR {}", errorCode));
+    div->AddParagraph()->AddBold(errorMessage);
+
+    div->AddParagraph();
+    div->AddParagraph("What next?")->SetAttribute("style", "color: #000000;");
+    auto table = div->AddParagraph()->AddTable();
+    table->SetAttribute("cellspacing", "0");
+    table->SetAttribute("cellpadding", "0");
+    table->SetAttribute("style", "border: hidden;");
+
+    auto row = table->AddTableRow();
+
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("style", "border: hidden;");
+    cell->SetAttribute("width", "50%");
+
+    AddButton(row, RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
+    AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
+    AddButton(row, SUPPORT_CMD, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Help");
+    AddButton(row, SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
+    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("style", "border: hidden;");
+    cell->SetAttribute("width", "50%");
+
+    return html.ToString();
 }
 
 std::string HtmlGenerator::GetEmptyInputPage()
 {
-    std::stringstream htmlPage{};
-    htmlPage << "<!DOCTYPE html>\n"
-                "<html>\n"
-                "  <head>\n";
-    htmlPage << GetHead();
-    htmlPage << "  </head>\n"
-                "  <body>\n";
+    HtmlElement html;
+    AddHtmlHead(&html);
 
-    htmlPage << "    <main style=\"padding: 50px 0;\">\n"
-                "      <div style=\"text-align:center;\n"
-                "                   margin: auto;\n"
-                "                   width: 80%;\n"
-                "                   padding: 20px;\n"
-                "                   background: #F0F0F0;\n"
-                "                   border: 1px solid #DDD;\n"
-                "                   box-shadow: 3px 3px 0px rgba(0,0,0, .2);\">\n";
-    htmlPage << fmt::format(
-        "        <p><a href=\"{}\" title=\"Open Input Folder\"><img src=\"96-box.png\"/></a></p>\n", INPUT_CMD);
-    htmlPage << "        <h2>Could not find any input data!</h2>\n"
-                "        <p>\n"
-                "          <table cellspacing=\"0\" cellpadding=\"0\" style=\"border: hidden\"><tr>";
+    auto body = html.AddBody();
+    auto main = body->AddMain();
+    main->SetAttribute("style", "padding: 50px 0;");
 
-    htmlPage << "<td style=\"border: hidden\" width=\"50%\"></td>";
-    htmlPage << GetButton(COPY_SAMPLES_CMD, "Copy Samples", "48-box-in.png", "Copy&nbsp;Samples");
-    htmlPage << GetButton(RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
-    htmlPage << GetButton(SETTINGS_CMD, "Open Settings", "48-cogs.png", "Open&nbsp;Settings");
-    htmlPage << GetButton(EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
-    htmlPage << "<td style=\"border: hidden\" width=\"50%\"></td>";
+    auto div = main->AddDivision();
+    div->SetAttribute("style", "text-align:center;\n"
+                               "margin: auto;\n"
+                               "width: 80%;\n"
+                               "padding: 20px;\n"
+                               "background: #F0F0F0;\n"
+                               "border: 1px solid #DDD;\n"
+                               "box-shadow: 3px 3px 0px rgba(0,0,0, .2);");
 
-    htmlPage << "        </tr></table>\n"
-                "        </p>\n"
-                "      </div>\n"
-                "    </main>\n"
-                "  </body>\n"
-                "</html>";
+    auto p = div->AddParagraph();
+    p->AddHyperlinkImage(INPUT_CMD, "Open Input Folder", "96-box.png", 96);
 
-    return htmlPage.str();
+    div->AddHeading(2, "Could not find any input data!");
+
+    div->AddParagraph();
+    div->AddParagraph("What next?")->SetAttribute("style", "color: #000000;");
+    auto table = div->AddParagraph()->AddTable();
+    table->SetAttribute("cellspacing", "0");
+    table->SetAttribute("cellpadding", "0");
+    table->SetAttribute("style", "border: hidden;");
+
+    auto row = table->AddTableRow();
+
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("style", "border: hidden;");
+    cell->SetAttribute("width", "50%");
+
+    AddButton(row, COPY_SAMPLES_CMD, "Copy Samples", "48-box-in.png", "Copy&nbsp;Samples");
+    AddButton(row, RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
+    AddButton(row, SETTINGS_CMD, "Open Settings", "48-cogs.png", "Open&nbsp;Settings");
+    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("style", "border: hidden;");
+    cell->SetAttribute("width", "50%");
+
+    return html.ToString();
 }
 
 std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
@@ -316,79 +423,64 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
     const std::string m6 = lastMessages.size() > 6 ? lastMessages[6] : "";
     const std::string m7 = lastMessages.size() > 7 ? lastMessages[7] : "";
 
-    std::stringstream htmlPage{};
-    htmlPage << "<!DOCTYPE html>\n"
-                "<html>\n"
-                "  <head>\n";
-    htmlPage << GetHead();
-    htmlPage << "    <meta http-equiv=\"refresh\" content=\"1\">\n"
-                "  </head>\n"
-                "  <body>\n";
-    htmlPage << fmt::format("    <main style=\"padding: 50px 0;\">\n"
-                            "      <div style=\"text-align:center;\n"
-                            "                   margin: auto;\n"
-                            "                   width: 80%;\n"
-                            "                   padding: 20px;\n"
-                            "                   background: #F0F0F0;\n"
-                            "                   border: 1px solid #DDD;\n"
-                            "                   box-shadow: 3px 3px 0px rgba(0,0,0, .2);\">\n"
-                            "        <p>&nbsp;</p>\n"
-                            "        <div style=\"color: #E0E0E0\">{}</div>\n"
-                            "        <div style=\"color: #C0C0C0\">{}</div>\n"
-                            "        <div style=\"color: #A0A0A0\">{}</div>\n"
-                            "        <div style=\"color: #808080\">{}</div>\n"
-                            "        <div style=\"color: #606060\">{}</div>\n"
-                            "        <div style=\"color: #$04040\">{}</div>\n"
-                            "        <div style=\"color: #202020\">{}</div>\n"
-                            "        <div style=\"color: #000000\">{}</div>\n"
-                            "        <p><progress value=\"{}\" max=\"{}\"/></p>\n"
-                            "      </div>\n"
-                            "    </main>\n",
-                            m7, m6, m5, m4, m3, m2, m1, m0, value, max);
-    htmlPage << "  </body>\n"
-                "</html>";
-    return htmlPage.str();
+    HtmlElement html;
+    auto head = AddHtmlHead(&html);
+    auto meta = head->AddMeta();
+    meta->SetAttribute("http-equiv", "refresh");
+    meta->SetAttribute("content", "1");
+
+    auto body = html.AddBody();
+    auto main = body->AddMain();
+    main->SetAttribute("style", "padding: 50px 0;");
+
+    auto div = main->AddDivision();
+    div->SetAttribute("style", "text-align:center;\n"
+                               "margin: auto;\n"
+                               "width: 80%;\n"
+                               "padding: 20px;\n"
+                               "background: #F0F0F0;\n"
+                               "border: 1px solid #DDD;\n"
+                               "box-shadow: 3px 3px 0px rgba(0,0,0, .2);");
+    div->AddParagraph();
+    div->AddDivision(m7)->SetAttribute("style", "color: #E0E0E0;");
+    div->AddDivision(m6)->SetAttribute("style", "color: #C0C0C0;");
+    div->AddDivision(m5)->SetAttribute("style", "color: #A0A0A0;");
+    div->AddDivision(m4)->SetAttribute("style", "color: #808080;");
+    div->AddDivision(m3)->SetAttribute("style", "color: #404040;");
+    div->AddDivision(m2)->SetAttribute("style", "color: #202020;");
+    div->AddDivision(m1)->SetAttribute("style", "color: #000000;");
+    div->AddParagraph()->AddProgress(value, max);
+    return html.ToString();
 }
 
-void HtmlGenerator::GetItemReference(std::stringstream& output, int id)
+void HtmlGenerator::AddItemHyperlink(HtmlElement* cell, int id)
 {
-    output << fmt::format("<a href=\"{0}?id={1}\">{1:#04}</a>", HtmlGenerator::ITEM_HTML, id);
+    cell->AddHyperlink(fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, id), "Open item",
+                          fmt::format("{:#04}", id));
 }
 
-void HtmlGenerator::GetItemsReference(std::stringstream& output, int year, int month, const std::string& category,
-                                      const std::string& text)
+void HtmlGenerator::AddEditorHyperlink(HtmlElement* element, const fs::path& file)
 {
-    output << fmt::format("<a href=\"{}?year={}&month={}&category={}\">{}</a>", ITEMS_HTML, year, month, category,
-                          text);
-}
-
-std::string HtmlGenerator::GetEditorReference(const fs::path& file)
-{
-    std::stringstream output;
     if (fs::is_directory(file))
     {
-        output << fmt::format(
-            "<a href=\"{}?folder={}\"><img src=\"24-folder.png\" title=\"Open folder\"/></a>",
-            HtmlGenerator::OPEN_CMD, file.string());
+        std::string link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, file.string());
+        element->AddHyperlinkImage(link, "Open folder", "24-folder.png", 24);
     }
     else
     {
-        output << fmt::format(
-            "<a href=\"{}?file={}\" title=\"Open in editor\"><img src=\"24-notepad.png\"/></a>\n",
-            HtmlGenerator::EDIT_CMD, file.string());
-        output << fmt::format(
-            "<a href=\"{}?folder={}\"><img src=\"24-folder.png\" title=\"Open parent folder\"/></a>",
-            HtmlGenerator::OPEN_CMD, file.parent_path().string());
+        std::string link = fmt::format("{}?file={}", HtmlGenerator::EDIT_CMD, file.string());
+        element->AddHyperlinkImage(link, "Open in editor", "24-notepad.png", 24);
+
+        link = fmt::format("{}?file={}", HtmlGenerator::OPEN_CMD, file.parent_path().string());
+        element->AddHyperlinkImage(link, "Open parent folder", "24-folder.png", 24);
 
         fs::path formatFile = file.parent_path() / "format.ini";
         if (file.extension().string() == ".csv" && fs::exists(formatFile))
         {
-            output << fmt::format("<a href=\"{}?file={}\" title=\"Open corresponding format file\"><img "
-                                  "src=\"24-wrench-screwdriver.png\"/></a>",
-                                  HtmlGenerator::EDIT_CMD, formatFile.string());
+            link = fmt::format("{}?file={}", HtmlGenerator::EDIT_CMD, formatFile.string());
+            element->AddHyperlinkImage(link, "Open corresponding format file", "24-wrench-screwdriver.png", 24);
         }
     }
-    return output.str();
 }
 
 std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
@@ -424,162 +516,97 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         }
     }
 
-    std::stringstream htmlPage;
+    HtmlElement html;
+    AddHtmlHead(&html);
 
-    title += GetEditorReference(item->File);
-    htmlPage << GetItemStart(database, title);
-    htmlPage << "<div>";
-    htmlPage << item->File.filename().string();
+    auto body = html.AddBody();
+    AddNavigationHeader(body, database);
+
+    auto main = body->AddMain();
+    auto h2 = main->AddHeading(2, title);
+    AddEditorHyperlink(h2, item->File);
+
+    std::string divText = item->File.filename().string();
     if (item->Line >= 0)
     {
-        htmlPage << fmt::format(":{}", item->Line);
+        divText += fmt::format(":{}", item->Line);
     }
-    htmlPage << "</div>\n";
+    main->AddDivision(divText);
 
-    htmlPage << "<p>\n";
+    auto table = main->AddParagraph()->AddTable();
+    AddItemTableHeader(table);
+    AddItemTableRow(table, item.get());
 
-    htmlPage << GetTableStart();
-    htmlPage << GetTableRow(item.get());
-    htmlPage << GetTableEnd();
-
-    htmlPage << "</p>\n";
-
-    htmlPage << "<h3>Issues: </h3>\n";
+    main->AddHeading(3, "Issues:");
     for (auto& issue : item->Issues)
     {
-        htmlPage << "<p style=\"color:red;\">" << issue << "</p>";
+        main->AddParagraph(issue)->SetAttribute("style", "color:red;");
     }
 
     if (isItem)
     {
-        htmlPage << "<h3>Rules: </h3>\n";
+        main->AddHeading(3, "Rules:");
     }
     else
     {
-        htmlPage << "<h3>Items: </h3>\n";
+        main->AddHeading(3, "Items:");
     }
-    htmlPage << GetTableStart();
+
+    table = main->AddParagraph()->AddTable();
+    AddItemTableHeader(table);
+
     for (auto& ref : item->References)
     {
-        htmlPage << GetTableRow(ref);
+        AddItemTableRow(table, ref);
     }
-    htmlPage << GetTableEnd();
-    htmlPage << GetItemEnd();
-    return htmlPage.str();
+
+    return html.ToString();
 }
 
-std::string HtmlGenerator::GetHead()
+void HtmlGenerator::AddItemTableRow(HtmlElement* table, CsvItem* row)
 {
-    return "    <title>hokee</title>\n"
-           "    <meta name=\"application-name\" content=\"hokee\">\n"
-           "    <meta charset=\"UTF-8\">\n"
-           "    <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/apple-touch-icon.png\">\n"
-           "    <link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/favicon-32x32.png\">\n"
-           "    <link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/favicon-16x16.png\">\n"
-           "    <link rel=\"mask-icon\" href=\"/safari-pinned-tab.svg\" color=\"#5bbad5\">\n"
-           "    <style>\n"
-           "      #left {width: 10%; display: inline-block; text-align:left;}\n"
-           "      #middle {width: 80%; display: inline-block; text-align:center;}\n"
-           "      #right {width: 10%; display: inline-block; text-align:right;}\n"
-           "      table {\n"
-           "        width:100%;\n"
-           "      }\n"
-           "      table, th, td {\n"
-           "        border: 1px solid #008;\n"
-           "        border-collapse: collapse;\n"
-           "      }\n"
-           "      th, td {\n"
-           "        padding: 5px;\n"
-           "        text-align: left;\n"
-           "      }\n"
-           "      table#t01 tr:nth-child(even) {\n"
-           "        background-color: #eef;\n"
-           "      }\n"
-           "      table#t01 tr:nth-child(odd) {\n"
-           "        background-color: #fff;\n"
-           "      }\n"
-           "      table#t01 th {\n"
-           "        background-color: #008;\n"
-           "        color: white;\n"
-           "      }\n"
-           "    </style>\n";
-}
-
-std::string HtmlGenerator::GetItemStart(const CsvDatabase& database, const std::string& title)
-{
-    std::stringstream htmlPage{};
-    htmlPage << "<!DOCTYPE html>\n"
-                "<html>\n"
-                "  <head>\n";
-    htmlPage << GetHead();
-    htmlPage << "  </head>\n"
-                "  <body>\n";
-    htmlPage << GetHeader(database);
-    htmlPage << "    <main>\n";
-    htmlPage << fmt::format("      <h2>{}</h2>\n", title);
-
-    return htmlPage.str();
-}
-
-std::string HtmlGenerator::GetItemEnd()
-{
-    return "    </main>\n"
-           "  </body>\n"
-           "</html>";
-}
-
-std::string HtmlGenerator::GetTableStart()
-{
-    return "<table id=\"t01\">\n"
-           "<tr><th>#</th><th>Category</th><th>Payer/Payee</th><th>Description</th>"
-           "<th>Type</th><th>Date</th><th>Account</th><th>Value</th></tr>\n";
-}
-
-std::string HtmlGenerator::GetTableRow(CsvItem* row)
-{
-    std::string backgroundColor = "";
+    std::string backgroundColorStyle = "";
     if (row->References.size() == 0)
     {
-        backgroundColor = " style=\"background-color:#ffc;\"";
+        backgroundColorStyle = "background-color:#ffc;";
     }
     if (row->Issues.size() > 0)
     {
-        backgroundColor = " style=\"background-color:#fcc;\"";
+        backgroundColorStyle = "background-color:#fcc;";
     }
 
     double value;
-    std::string color{};
+    std::string colorStyle{};
     try
     {
         value = std::stod(row->Value);
         if (value < 0)
         {
-            color = " style=\"color: #FF0000;\"";
+            colorStyle = "color: #FF0000;";
         }
         else
         {
-            color = " style=\"color: #007F00;\"";
+            colorStyle = "color: #007F00;";
         }
     }
     catch (const std::exception&)
     {
-        color = "";
+        colorStyle = "";
     }
 
-    std::stringstream htmlTableRow{};
-    htmlTableRow << "<tr" << backgroundColor << "><td>";
-    GetItemReference(htmlTableRow, row->Id);
-    const std::string rowFormat = "</td><td>{}</"
-                                  "td><td>{}</td><td>{}</td><td>{}</"
-                                  "td><td>{}</td><td>{}</td><td{}>{}</td></tr>\n";
-    htmlTableRow << fmt::format(rowFormat, row->Category, row->PayerPayee, row->Description, row->Type,
-                                row->Date.ToString(), row->Account, color, row->Value);
-    return htmlTableRow.str();
-}
+    auto htmlRow = table->AddTableRow();
+    htmlRow->SetAttribute("style", backgroundColorStyle);
+    auto cell = htmlRow->AddTableCell();
+    AddItemHyperlink(cell, row->Id);
 
-std::string HtmlGenerator::GetTableEnd()
-{
-    return "</table>\n";
+    htmlRow->AddTableCell(row->Category);
+    htmlRow->AddTableCell(row->PayerPayee);
+    htmlRow->AddTableCell(row->Description);
+    htmlRow->AddTableCell(row->Type);
+    htmlRow->AddTableCell(row->Date.ToString());
+    cell = htmlRow->AddTableCell(row->Account);
+    cell->SetAttribute("style", colorStyle);
+    htmlRow->AddTableCell(row->Value);
 }
 
 } // namespace hokee

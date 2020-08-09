@@ -1,5 +1,6 @@
 #pragma once
 
+#include "HtmlElement.h"
 #include "Utils.h"
 #include "csv/CsvDatabase.h"
 
@@ -9,13 +10,11 @@ namespace hokee
 {
 class HtmlGenerator
 {
-    static std::string GetHead();
-    static std::string GetHeader(const CsvDatabase& pDatabase);
-    static std::string GetItemStart(const CsvDatabase& pDatabase, const std::string& title);
-    static std::string GetItemEnd();
-    static std::string GetTableStart();
-    static std::string GetTableRow(CsvItem* row);
-    static std::string GetTableEnd();
+    static HtmlElement* AddHtmlHead(HtmlElement* html);
+    static void AddNavigationHeader(HtmlElement* body, const CsvDatabase& pDatabase);
+    static void AddSummaryTableHeader(HtmlElement* table, const std::vector<std::string>& categories);
+    static void AddItemTableHeader(HtmlElement* table);
+    static void AddItemTableRow(HtmlElement* table, CsvItem* row);
 
   public:
     HtmlGenerator() = delete;
@@ -51,13 +50,11 @@ class HtmlGenerator
     static std::string GetTablePage(const CsvDatabase& pDatabase, const std::string& title, const CsvTable& data);
 
     static std::string GetEmptyInputPage();
-    static void GetItemReference(std::stringstream& output, int id);
-    static void GetItemsReference(std::stringstream& output, int year, int month, const std::string& category,
-                                  const std::string& text);
+    static void AddItemHyperlink(HtmlElement* cell, int id);
 
-    static std::string GetButton(const std::string& link, const std::string& tooltip, const std::string& image,
+    static void AddButton(HtmlElement* tableRow, const std::string& link, const std::string& tooltip, const std::string& image,
                                  const std::string& text);
-    static std::string GetEditorReference(const fs::path& file);
+    static void AddEditorHyperlink(HtmlElement* element, const fs::path& file);
 };
 
 } // namespace hokee

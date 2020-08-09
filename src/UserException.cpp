@@ -11,18 +11,19 @@ namespace
 {
 std::string GenerateMessage(const std::string& msg, const fs::path& file, int line)
 {
-    std::stringstream result{};
-    result << msg;
+    HtmlElement div("div", msg);
     if (!file.empty())
     {
-        result << fmt::format(" <br>{}", file.string());
+        div.AddText(" ");
+        div.AddBreak();
+        div.AddText(file.string());
         if (line > 0)
         {
-            result << fmt::format(":{}", line);
+            div.AddText(fmt::format(":{}", line));
         }
-        result << HtmlGenerator::GetEditorReference(file);
+        HtmlGenerator::AddEditorHyperlink(&div, file);
     }
-    return result.str();
+    return div.ToString();
 }
 } // namespace
 

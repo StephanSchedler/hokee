@@ -2,6 +2,7 @@
 #include "html/HtmlText.h"
 
 #include <fmt/format.h>
+#include <sstream>
 
 namespace hokee
 {
@@ -29,6 +30,13 @@ void HtmlElement::SetIndent(int indent)
 void HtmlElement::SetAttribute(const std::string& attributeName, const std::string& attributeValue)
 {
     _attributes.emplace_back(attributeName, fmt::format("\"{}\"", attributeValue));
+}
+
+std::string HtmlElement::ToString() const
+{
+    std::stringstream output;
+    ToString(output);
+    return output.str();
 }
 
 void HtmlElement::ToString(std::ostream& output) const
@@ -100,9 +108,16 @@ HtmlElement* HtmlElement::AddBold(const std::string& text)
     return AddElement("b", text);
 }
 
-HtmlElement* HtmlElement::AddBreak()
+void HtmlElement::AddProgress(size_t value, size_t max)
 {
-    return AddElement("br");
+    auto element = AddElement("progress");
+    element->SetAttribute("value", fmt::format("{}", value));
+    element->SetAttribute("max", fmt::format("{}", max));
+}
+
+void HtmlElement::AddBreak()
+{
+    AddElement("br");
 }
 
 HtmlElement* HtmlElement::AddDivision(const std::string& text)
@@ -138,19 +153,30 @@ HtmlElement* HtmlElement::AddHyperlink(const std::string& link, const std::strin
     return element;
 }
 
-HtmlElement* HtmlElement::AddImage(const std::string& src, const std::string& title, int width, int height)
+void HtmlElement::AddHyperlinkImage(const std::string& link, const std::string& title, const std::string& src,
+                                    int width, int height)
+{
+    AddHyperlink(link, title)->AddImage(src, title, width, height);
+}
+
+void HtmlElement::AddHyperlinkImage(const std::string& link, const std::string& title, const std::string& src,
+                                    int size)
+{
+    AddHyperlink(link, title)->AddImage(src, title, size);
+}
+
+void HtmlElement::AddImage(const std::string& src, const std::string& title, int width, int height)
 {
     auto element = AddElement("img");
     element->SetAttribute("src", src);
     element->SetAttribute("title", title);
     element->SetAttribute("width", fmt::format("{}", width));
     element->SetAttribute("height", fmt::format("{}", height));
-    return element;
 }
 
-HtmlElement* HtmlElement::AddImage(const std::string& src, const std::string& title, int size)
+void HtmlElement::AddImage(const std::string& src, const std::string& title, int size)
 {
-    return AddImage(src, title, size, size);
+    AddImage(src, title, size, size);
 }
 
 HtmlElement* HtmlElement::AddLink(const std::string& text)
