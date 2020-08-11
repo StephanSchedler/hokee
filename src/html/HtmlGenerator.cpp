@@ -279,7 +279,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
 
                 auto cell = row->AddTableCell();
                 cell->SetAttribute("style", cellStyle);
-                cell->AddHyperlink(fmt::format("{}?year={}&month={}&category={}", ITEMS_HTML, year, month, cat),
+                cell->AddHyperlink(fmt::format("{}?year={}&amp;month={}&amp;category={}", ITEMS_HTML, year, month, cat),
                                    "Open details", fmt::format("{:.2f}&euro;", sum));
             }
         }
