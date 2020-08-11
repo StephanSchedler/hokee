@@ -110,7 +110,7 @@ HtmlElement* HtmlElement::AddBold(const std::string& text)
 
 void HtmlElement::AddProgress(size_t value, size_t max)
 {
-    auto element = AddElement("progress");
+    auto element = AddElement("progress", fmt::format("{}%", value));
     element->SetAttribute("value", fmt::format("{}", value));
     element->SetAttribute("max", fmt::format("{}", max));
 }
