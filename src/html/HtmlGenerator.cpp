@@ -32,9 +32,7 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     auto header = body->AddHeader();
     header->SetAttribute("style", "border-bottom: 1px solid black;");
     auto table = header->AddTable();
-    table->SetAttribute("cellspacing", "0");
-    table->SetAttribute("cellpadding", "0");
-    table->SetAttribute("style", "border: hidden;");
+    table->SetAttribute("style", "border: hidden; cellspacing: 0; cellpadding: 0;");
     auto row = table->AddTableRow();
 
     AddButton(row, INDEX_HTML, "Show Summary", "48-file-excel.png", "Summary &nbsp;");
@@ -85,6 +83,7 @@ HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
     auto meta = head->AddMeta();
     meta->SetAttribute("name", "hokee");
     meta->SetAttribute("content", "Summary");
+    meta = head->AddMeta();
     meta->SetAttribute("charset", "UTF-8");
 
     auto link = head->AddLink();
@@ -279,8 +278,9 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
 
                 auto cell = row->AddTableCell();
                 cell->SetAttribute("style", cellStyle);
-                cell->AddHyperlink(fmt::format("{}?year={}&amp;month={}&amp;category={}", ITEMS_HTML, year, month, cat),
-                                   "Open details", fmt::format("{:.2f}&euro;", sum));
+                cell->AddHyperlink(
+                    fmt::format("{}?year={}&amp;month={}&amp;category={}", ITEMS_HTML, year, month, cat),
+                    "Open details", fmt::format("{:.2f}&euro;", sum));
             }
         }
     }
@@ -331,18 +331,17 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
                                "border: 1px solid #DDD;\n"
                                "box-shadow: 3px 3px 0px rgba(0,0,0, .2);");
 
-    auto p = div->AddParagraph();
+    auto p = div->AddDivision();
     p->AddHyperlinkImage(EXIT_CMD, "Stop hokee", "96-sign-ban.png", 96);
 
     div->AddHeading(2, fmt::format("ERROR {}", errorCode));
     div->AddParagraph()->AddBold(errorMessage);
 
-    div->AddParagraph();
+    div->AddParagraph("&nbsp;");
+    div->AddParagraph("&nbsp;");
     div->AddParagraph("What next?")->SetAttribute("style", "color: #000000;");
-    auto table = div->AddParagraph()->AddTable();
-    table->SetAttribute("cellspacing", "0");
-    table->SetAttribute("cellpadding", "0");
-    table->SetAttribute("style", "border: hidden;");
+    auto table = div->AddDivision()->AddTable();
+    table->SetAttribute("style", "border: hidden; cellspacing: 0; cellpadding: 0;");
 
     auto row = table->AddTableRow();
 
@@ -386,12 +385,11 @@ std::string HtmlGenerator::GetEmptyInputPage()
 
     div->AddHeading(2, "Could not find any input data!");
 
-    div->AddParagraph();
+    div->AddParagraph("&nbsp;");
+    div->AddParagraph("&nbsp;");
     div->AddParagraph("What next?")->SetAttribute("style", "color: #000000;");
-    auto table = div->AddParagraph()->AddTable();
-    table->SetAttribute("cellspacing", "0");
-    table->SetAttribute("cellpadding", "0");
-    table->SetAttribute("style", "border: hidden;");
+    auto table = div->AddDivision()->AddTable();
+    table->SetAttribute("style", "border: hidden; cellspacing: 0; cellpadding: 0;");
 
     auto row = table->AddTableRow();
 
@@ -441,7 +439,7 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
                                "background: #F0F0F0;\n"
                                "border: 1px solid #DDD;\n"
                                "box-shadow: 3px 3px 0px rgba(0,0,0, .2);");
-    div->AddParagraph();
+    div->AddParagraph("&nbsp;");
     div->AddDivision(m7)->SetAttribute("style", "color: #E0E0E0;");
     div->AddDivision(m6)->SetAttribute("style", "color: #C0C0C0;");
     div->AddDivision(m5)->SetAttribute("style", "color: #A0A0A0;");
@@ -449,14 +447,15 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
     div->AddDivision(m3)->SetAttribute("style", "color: #404040;");
     div->AddDivision(m2)->SetAttribute("style", "color: #202020;");
     div->AddDivision(m1)->SetAttribute("style", "color: #000000;");
-    div->AddParagraph()->AddProgress(value, max);
+    div->AddParagraph("&nbsp;");
+    div->AddDivision()->AddProgress(value, max);
     return html.ToString();
 }
 
 void HtmlGenerator::AddItemHyperlink(HtmlElement* cell, int id)
 {
     cell->AddHyperlink(fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, id), "Open item",
-                          fmt::format("{:#04}", id));
+                       fmt::format("{:#04}", id));
 }
 
 void HtmlGenerator::AddEditorHyperlink(HtmlElement* element, const fs::path& file)
@@ -533,14 +532,17 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     }
     main->AddDivision(divText);
 
-    auto table = main->AddParagraph()->AddTable();
+    auto table = main->AddDivision()->AddTable();
     AddItemTableHeader(table);
     AddItemTableRow(table, item.get());
 
-    main->AddHeading(3, "Issues:");
-    for (auto& issue : item->Issues)
+    if (!item->Issues.empty())
     {
-        main->AddParagraph(issue)->SetAttribute("style", "color:red;");
+        main->AddHeading(3, "Issues:");
+        for (auto& issue : item->Issues)
+        {
+            main->AddParagraph(issue)->SetAttribute("style", "color:red;");
+        }
     }
 
     if (isItem)
@@ -552,7 +554,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         main->AddHeading(3, "Items:");
     }
 
-    table = main->AddParagraph()->AddTable();
+    table = main->AddDivision()->AddTable();
     AddItemTableHeader(table);
 
     for (auto& ref : item->References)
