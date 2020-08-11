@@ -170,7 +170,12 @@ void EditFile(const fs::path& file, const std::string& editor)
 void OpenFolder(const fs::path& folder, const std::string& explorer)
 {
     std::string cmd = fmt::format("{} \"{}\"", explorer, fs::absolute(folder).string());
-    if (Utils::RunSync(cmd.c_str()) != 0)
+    int result = Utils::RunSync(cmd.c_str());
+#ifdef _MSC_VER
+    if (result < 0)
+#else
+    if (result != 0)
+#endif
     {
         throw UserException(fmt::format("Could not open folder: {}", cmd));
     }
