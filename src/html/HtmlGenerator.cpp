@@ -472,7 +472,7 @@ void HtmlGenerator::AddEditorHyperlink(HtmlElement* element, const fs::path& fil
         element->AddHyperlinkImage(link, "Open parent folder", "24-folder.png", 24);
 
         fs::path formatFile = file.parent_path() / "format.ini";
-        if (file.extension().string() == ".csv" && fs::exists(formatFile))
+        if (Utils::ToLower(file.extension().string()) == ".csv" && fs::exists(formatFile))
         {
             ref = formatFile.string();
             replace(ref.begin(), ref.end(), '\\', '/' );
@@ -533,6 +533,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     main->AddDivision(divText);
 
     auto table = main->AddDivision()->AddTable();
+    table->SetAttribute("id", "t01");
     AddItemTableHeader(table);
     AddItemTableRow(table, item.get());
 
@@ -555,6 +556,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     }
 
     table = main->AddDivision()->AddTable();
+    table->SetAttribute("id", "t01");
     AddItemTableHeader(table);
 
     for (auto& ref : item->References)
