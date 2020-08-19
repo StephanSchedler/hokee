@@ -18,13 +18,10 @@ void HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& link, co
                               const std::string& image, const std::string& text)
 {
     auto cell = tableRow->AddTableCell();
-    cell->SetAttribute("style", "border: hidden;");
+    cell->SetAttribute("style", "border: hidden; text-align:center;");
     auto hyperlink = cell->AddHyperlink(link, tooltip);
-    auto main = hyperlink->AddMain();
-    main->SetAttribute("style", "text-align:center;");
-    main->AddImage(image, text, 42);
-    auto footer = hyperlink->AddFooter(text);
-    footer->SetAttribute("style", "text-align:center;");
+    hyperlink->AddImage(image, tooltip, 42);
+    hyperlink->AddText(text);
 }
 
 void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& database)
@@ -32,7 +29,7 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     auto header = body->AddHeader();
     header->SetAttribute("style", "border-bottom: 1px solid black;");
     auto table = header->AddTable();
-    table->SetAttribute("style", "border: hidden; cellspacing: 0; cellpadding: 0;");
+    table->SetAttribute("style", "border-collapse: collapse; border: hidden;");
     auto row = table->AddTableRow();
 
     AddButton(row, INDEX_HTML, "Show Summary", "48-file-excel.png", "Summary &nbsp;");
@@ -64,9 +61,8 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
                   fmt::format("Issues ({})", database.Issues.size()));
     }
 
-    auto cell = row->AddTableCell();
-    cell->SetAttribute("style", "border: hidden;");
-    cell->SetAttribute("width", "50%");
+    auto cell = row->AddTableCell("&nbsp;");
+    cell->SetAttribute("style", "border: hidden; width:50%;");
 
     AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, SEARCH_HTML, "Open Search Page", "48-search.png", "Search");
@@ -341,13 +337,12 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     div->AddParagraph("&nbsp;");
     div->AddParagraph("What next?")->SetAttribute("style", "color: #000000;");
     auto table = div->AddDivision()->AddTable();
-    table->SetAttribute("style", "border: hidden; cellspacing: 0; cellpadding: 0;");
+    table->SetAttribute("style", "border-collapse: collapse; border: hidden;");
 
     auto row = table->AddTableRow();
 
-    auto cell = row->AddTableCell();
-    cell->SetAttribute("style", "border: hidden;");
-    cell->SetAttribute("width", "50%");
+    auto cell = row->AddTableCell("&nbsp;");
+    cell->SetAttribute("style", "border: hidden; width:50%;");
 
     AddButton(row, RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
@@ -355,9 +350,8 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     AddButton(row, SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
 
-    cell = row->AddTableCell();
-    cell->SetAttribute("style", "border: hidden;");
-    cell->SetAttribute("width", "50%");
+    cell = row->AddTableCell("&nbsp;");
+    cell->SetAttribute("style", "border: hidden; width:50%;");
 
     return html.ToString();
 }
@@ -389,22 +383,20 @@ std::string HtmlGenerator::GetEmptyInputPage()
     div->AddParagraph("&nbsp;");
     div->AddParagraph("What next?")->SetAttribute("style", "color: #000000;");
     auto table = div->AddDivision()->AddTable();
-    table->SetAttribute("style", "border: hidden; cellspacing: 0; cellpadding: 0;");
+    table->SetAttribute("style", "border-collapse: collapse; border: hidden;");
 
     auto row = table->AddTableRow();
 
-    auto cell = row->AddTableCell();
-    cell->SetAttribute("style", "border: hidden;");
-    cell->SetAttribute("width", "50%");
+    auto cell = row->AddTableCell("&nbsp;");
+    cell->SetAttribute("style", "border: hidden; width:50%;");
 
     AddButton(row, COPY_SAMPLES_CMD, "Copy Samples", "48-box-in.png", "Copy&nbsp;Samples");
     AddButton(row, RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
     AddButton(row, SETTINGS_CMD, "Open Settings", "48-cogs.png", "Open&nbsp;Settings");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
 
-    cell = row->AddTableCell();
-    cell->SetAttribute("style", "border: hidden;");
-    cell->SetAttribute("width", "50%");
+    cell = row->AddTableCell("&nbsp;");
+    cell->SetAttribute("style", "border: hidden; width:50%;");
 
     return html.ToString();
 }
@@ -462,21 +454,29 @@ void HtmlGenerator::AddEditorHyperlink(HtmlElement* element, const fs::path& fil
 {
     if (fs::is_directory(file))
     {
-        std::string link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, file.string());
+        std::string ref = file.string();
+        replace(ref.begin(), ref.end(), '\\', '/' );
+        std::string link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, ref);
         element->AddHyperlinkImage(link, "Open folder", "24-folder.png", 24);
     }
     else
     {
-        std::string link = fmt::format("{}?file={}", HtmlGenerator::EDIT_CMD, file.string());
+        std::string ref = file.string();
+        replace(ref.begin(), ref.end(), '\\', '/' );
+        std::string link = fmt::format("{}?file={}", HtmlGenerator::EDIT_CMD, ref);
         element->AddHyperlinkImage(link, "Open in editor", "24-notepad.png", 24);
 
-        link = fmt::format("{}?file={}", HtmlGenerator::OPEN_CMD, file.parent_path().string());
+        ref = file.parent_path().string();
+        replace(ref.begin(), ref.end(), '\\', '/' );
+        link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, ref);
         element->AddHyperlinkImage(link, "Open parent folder", "24-folder.png", 24);
 
         fs::path formatFile = file.parent_path() / "format.ini";
         if (file.extension().string() == ".csv" && fs::exists(formatFile))
         {
-            link = fmt::format("{}?file={}", HtmlGenerator::EDIT_CMD, formatFile.string());
+            ref = formatFile.string();
+            replace(ref.begin(), ref.end(), '\\', '/' );
+            link = fmt::format("{}?file={}", HtmlGenerator::EDIT_CMD, ref);
             element->AddHyperlinkImage(link, "Open corresponding format file", "24-wrench-screwdriver.png", 24);
         }
     }
@@ -601,14 +601,14 @@ void HtmlGenerator::AddItemTableRow(HtmlElement* table, CsvItem* row)
     auto cell = htmlRow->AddTableCell();
     AddItemHyperlink(cell, row->Id);
 
-    htmlRow->AddTableCell(row->Category);
-    htmlRow->AddTableCell(row->PayerPayee);
-    htmlRow->AddTableCell(row->Description);
-    htmlRow->AddTableCell(row->Type);
-    htmlRow->AddTableCell(row->Date.ToString());
-    cell = htmlRow->AddTableCell(row->Account);
+    htmlRow->AddTableCell(row->Category.empty() ? "&nbsp;" : row->Category);
+    htmlRow->AddTableCell(row->PayerPayee.empty() ? "&nbsp;" : row->PayerPayee);
+    htmlRow->AddTableCell(row->Description.empty() ? "&nbsp;" : row->Description);
+    htmlRow->AddTableCell(row->Type.empty() ? "&nbsp;" : row->Type);
+    htmlRow->AddTableCell(row->Date.ToString().empty() ? "&nbsp;" : row->Date.ToString());
+    cell = htmlRow->AddTableCell(row->Account.empty() ? "&nbsp;" : row->Account);
     cell->SetAttribute("style", colorStyle);
-    htmlRow->AddTableCell(row->Value);
+    htmlRow->AddTableCell(row->Value.empty() ? "&nbsp;" : row->Value);
 }
 
 } // namespace hokee
