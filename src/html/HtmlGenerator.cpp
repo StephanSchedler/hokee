@@ -1,6 +1,7 @@
 #include "HtmlGenerator.h"
 #include "InternalException.h"
 #include "Utils.h"
+#include "hokee.h"
 
 #include <fmt/core.h>
 #include <fmt/format.h>
@@ -67,8 +68,9 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, SEARCH_HTML, "Open Search Page", "48-search.png", "Search");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
-    AddButton(row, SUPPORT_CMD, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Help");
     AddButton(row, SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
+    AddButton(row, SUPPORT_CMD, "Generate Support Mail", "48-envelope-letter.png", "Support");
+    AddButton(row, fmt::format("{}{}", PROJECT_HOMEPAGE_URL, "/blob/master/README.md"), "Open Online Help", "48-sign-question.png", "Help");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
 }
 
@@ -346,7 +348,7 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
 
     AddButton(row, RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
-    AddButton(row, SUPPORT_CMD, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Help");
+    AddButton(row, SUPPORT_CMD, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Support");
     AddButton(row, SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
 
