@@ -2,7 +2,12 @@
 
 TODO: short description
 
-![Summary Page](https://repository-images.githubusercontent.com/270410626/7366c480-cb92-11ea-98b1-908f059a0013)
+## Exemplary HTML Report
+
+[![Summary Page](https://repository-images.githubusercontent.com/270410626/7366c480-cb92-11ea-98b1-908f059a0013)](http://stephanschedler.github.io/hokee)
+**(click image to view report)**
+
+> Note that this is a static html report. Dynamic content (such as editing files) does not work!
 
 ## Motivation
 
