@@ -37,8 +37,17 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     AddButton(row, RULES_HTML, "Show Rules", "48-file-exe.png", fmt::format("Rules ({})", database.Rules.size()));
     AddButton(row, ALL_HTML, "Show All Items", "48-file-text.png",
               fmt::format("Items ({})", database.Data.size()));
-    AddButton(row, ASSIGNED_HTML, "Show Assigned Items", "48-sign-check.png",
-              fmt::format("Assigned ({})", database.Assigned.size()));
+
+    if (database.Unassigned.size() == 0 && database.Issues.size() == 0)
+    {
+        AddButton(row, ASSIGNED_HTML, "Show Assigned Items", "48-sign-check.png",
+                  fmt::format("Assigned ({})", database.Assigned.size()));
+    }
+    else
+    {
+        AddButton(row, ASSIGNED_HTML, "Show Assigned Items", "48-sign-check2.png",
+                  fmt::format("Assigned ({})", database.Assigned.size()));
+    }
 
     if (database.Unassigned.size() == 0)
     {
@@ -63,14 +72,22 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     }
 
     auto cell = row->AddTableCell("&nbsp;");
-    cell->SetAttribute("style", "border: hidden; width:50%;");
+    cell->SetAttribute("style", "border: hidden; width:30%;");
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("style", "border: hidden; text-align:center;");
+    cell->AddBold(fmt::format("hokee {}", PROJECT_VERSION));
+
+    cell = row->AddTableCell("&nbsp;");
+    cell->SetAttribute("style", "border: hidden; width:30%;");
 
     AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, SEARCH_HTML, "Open Search Page", "48-search.png", "Search");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
     AddButton(row, SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
     AddButton(row, SUPPORT_CMD, "Generate Support Mail", "48-envelope-letter.png", "Support");
-    AddButton(row, fmt::format("{}{}", PROJECT_HOMEPAGE_URL, "/blob/master/README.md"), "Open Online Help", "48-sign-question.png", "Help");
+    AddButton(row, fmt::format("{}{}", PROJECT_HOMEPAGE_URL, "/blob/master/README.md"), "Open Online Help",
+              "48-sign-question.png", "Help");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
 }
 
@@ -457,19 +474,19 @@ void HtmlGenerator::AddEditorHyperlink(HtmlElement* element, const fs::path& fil
     if (fs::is_directory(file))
     {
         std::string ref = file.string();
-        replace(ref.begin(), ref.end(), '\\', '/' );
+        replace(ref.begin(), ref.end(), '\\', '/');
         std::string link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, ref);
         element->AddHyperlinkImage(link, "Open folder", "24-folder.png", 24);
     }
     else
     {
         std::string ref = file.string();
-        replace(ref.begin(), ref.end(), '\\', '/' );
+        replace(ref.begin(), ref.end(), '\\', '/');
         std::string link = fmt::format("{}?file={}", HtmlGenerator::EDIT_CMD, ref);
         element->AddHyperlinkImage(link, "Open in editor", "24-notepad.png", 24);
 
         ref = file.parent_path().string();
-        replace(ref.begin(), ref.end(), '\\', '/' );
+        replace(ref.begin(), ref.end(), '\\', '/');
         link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, ref);
         element->AddHyperlinkImage(link, "Open parent folder", "24-folder.png", 24);
 
@@ -477,7 +494,7 @@ void HtmlGenerator::AddEditorHyperlink(HtmlElement* element, const fs::path& fil
         if (Utils::ToLower(file.extension().string()) == ".csv" && fs::exists(formatFile))
         {
             ref = formatFile.string();
-            replace(ref.begin(), ref.end(), '\\', '/' );
+            replace(ref.begin(), ref.end(), '\\', '/');
             link = fmt::format("{}?file={}", HtmlGenerator::EDIT_CMD, ref);
             element->AddHyperlinkImage(link, "Open corresponding format file", "24-wrench-screwdriver.png", 24);
         }

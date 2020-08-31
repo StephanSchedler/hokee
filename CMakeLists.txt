@@ -112,6 +112,7 @@ configure_file(third_party/small-n-flat/png/96/box.png ${PROJECT_BINARY_DIR}/ima
 configure_file(third_party/small-n-flat/png/96/sign-ban.png ${PROJECT_BINARY_DIR}/images/96-sign-ban.png COPYONLY)
 configure_file(src/images/sign-delete2.png ${PROJECT_BINARY_DIR}/images/48-sign-delete2.png COPYONLY)
 configure_file(src/images/sign-warning2.png ${PROJECT_BINARY_DIR}/images/48-sign-warning2.png COPYONLY)
+configure_file(src/images/sign-check2.png ${PROJECT_BINARY_DIR}/images/48-sign-check2.png COPYONLY)
 
 # Execuables
 add_executable(hokee src/hokee.cpp ${PROJECT_SOURCE_FILES})
