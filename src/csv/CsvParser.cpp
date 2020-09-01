@@ -50,8 +50,6 @@ void CsvParser::ValidateValue(const std::string value)
 
 void CsvParser::Load(CsvTable& csvData)
 {
-    auto item = std::make_shared<CsvItem>();
-
     std::string line;
     std::vector<std::string> header{};
     while (_lineCounter < _format.GetIgnoreLines())
@@ -62,6 +60,7 @@ void CsvParser::Load(CsvTable& csvData)
     }
     csvData.SetCsvHeader(std::move(header));
 
+    auto item = std::make_shared<CsvItem>();
     while (ParseItem(item))
     {
         csvData.push_back(item);
@@ -89,6 +88,11 @@ bool CsvParser::GetItem(CsvRowShared& item)
     while (std::getline(_ifstream, line))
     {
         ++_lineCounter;
+
+        if (line.empty())
+        {
+            continue;
+        }
 
         // replace nonprintable characters
         for (auto& c : line)

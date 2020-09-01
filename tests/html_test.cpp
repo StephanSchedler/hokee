@@ -51,9 +51,9 @@ int main(int /*unused*/, const char** /*unused*/)
         auto cell = row->AddTableCell();
         cell->AddText("AAA BBB");
         cell->AddBreak();
-        cell->AddText("CCC <escaped>");
+        cell->AddText("CCC &lt;escaped&gt;");
         cell->AddBreak();
-        cell->AddText("DDD \"EEE\"");
+        cell->AddText("DDD &quot;EEE&quot;");
         cell->AddBreak();
         cell->AddText("GGG.");
         cell = row->AddTableCell();
