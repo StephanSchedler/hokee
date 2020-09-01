@@ -38,10 +38,11 @@ const std::string DropXmlTags(std::string_view msg)
         if (openTagPos != std::string::npos)
         {
             size_t closeTagPos = result.find('>', openTagPos);
-            if (closeTagPos != std::string::npos)
+            if (closeTagPos == std::string::npos)
             {
-                result = result.erase(openTagPos, closeTagPos - openTagPos + 1);
+                break;
             }
+            result = result.erase(openTagPos, closeTagPos - openTagPos + 1);
         }
     } while (openTagPos != std::string::npos);
 
