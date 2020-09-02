@@ -77,7 +77,7 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     cell = row->AddTableCell();
     cell->SetAttribute("style", "border: hidden; text-align:center;");
     cell->AddHeading(2, "hookee");
-    cell->AddText(PROJECT_VERSION);
+    cell->AddText(PROJECT_VERSION_SHORT);
 
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("style", "border: hidden; width:30%;");
