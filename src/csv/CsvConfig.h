@@ -3,6 +3,7 @@
 #include "../Filesystem.h"
 
 #include <unordered_map>
+#include <vector>
 
 namespace hokee
 {
