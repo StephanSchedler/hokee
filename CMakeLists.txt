@@ -1,10 +1,23 @@
 cmake_minimum_required(VERSION 3.1.0)
 project(hokee 
     VERSION 1.0.0
-    DESCRIPTION "Automated Housekeeping Book"
+    DESCRIPTION "Automated HOuseKEEping Book"
     HOMEPAGE_URL "https://github.com/StephanSchedler/hokee"
     LANGUAGES CXX
 )
+
+find_package (Git)
+if (GIT_FOUND)
+    message("git found: ${GIT_EXECUTABLE} in version ${GIT_VERSION_STRING}")
+endif (GIT_FOUND)
+
+execute_process(
+    COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+    RESULT_VARIABLE GIT_EXEC_RESULT
+    OUTPUT_VARIABLE GIT_COMMIT_HASH)
+string(REGEX REPLACE "\n$" "" GIT_COMMIT_HASH "${GIT_COMMIT_HASH}")
+string(REGEX REPLACE "\r$" "" GIT_COMMIT_HASH "${GIT_COMMIT_HASH}")
+message("GIT_COMMIT_HASH = '${GIT_COMMIT_HASH}'")
 
 configure_file(src/hokee.cmake.h hokee.h)
 
