@@ -15,11 +15,11 @@ jobs:
       run:
         shell: bash
 
-    timeout-minutes: 5
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-latest, macos-latest, ubuntu-18.04, ubuntu-20.04]
         # config: [Debug, Release]
         config: [Release]
 
