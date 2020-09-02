@@ -1,4 +1,4 @@
-# hokee - Automated Housekeeping Book
+# hokee - Automated HOuseKEEping Book
 
 TODO: short description
 
