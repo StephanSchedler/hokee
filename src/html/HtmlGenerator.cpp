@@ -628,9 +628,9 @@ void HtmlGenerator::AddItemTableRow(HtmlElement* table, CsvItem* row)
     htmlRow->AddTableCell(row->Description.empty() ? "&nbsp;" : row->Description);
     htmlRow->AddTableCell(row->Type.empty() ? "&nbsp;" : row->Type);
     htmlRow->AddTableCell(row->Date.ToString().empty() ? "&nbsp;" : row->Date.ToString());
-    cell = htmlRow->AddTableCell(row->Account.empty() ? "&nbsp;" : row->Account);
+    htmlRow->AddTableCell(row->Account.empty() ? "&nbsp;" : row->Account);
+    cell = htmlRow->AddTableCell(row->Value.empty() ? "&nbsp;" : row->Value);
     cell->SetAttribute("style", colorStyle);
-    htmlRow->AddTableCell(row->Value.empty() ? "&nbsp;" : row->Value);
 }
 
 } // namespace hokee
