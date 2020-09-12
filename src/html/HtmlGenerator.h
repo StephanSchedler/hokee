@@ -11,7 +11,7 @@ namespace hokee
 class HtmlGenerator
 {
     static HtmlElement* AddHtmlHead(HtmlElement* html);
-    static void AddNavigationHeader(HtmlElement* body, const CsvDatabase& pDatabase);
+    static void AddNavigationHeader(HtmlElement* body, const CsvDatabase& database);
     static void AddSummaryTableHeader(HtmlElement* table, const std::vector<std::string>& categories);
     static void AddItemTableHeader(HtmlElement* table);
     static void AddItemTableRow(HtmlElement* table, CsvItem* row);
@@ -34,6 +34,7 @@ class HtmlGenerator
     static constexpr const char* ITEM_HTML = "item.html";
     static constexpr const char* ITEMS_HTML = "items.html";
     static constexpr const char* SEARCH_HTML = "search.html";
+    static constexpr const char* HELP_HTML = "help.html";
     static constexpr const char* SETTINGS_CMD = "settings";
     static constexpr const char* EXIT_CMD = "exit";
     static constexpr const char* EDIT_CMD = "edit";
@@ -43,11 +44,12 @@ class HtmlGenerator
     static constexpr const char* INPUT_CMD = "input";
     static constexpr const char* SUPPORT_CMD = "support";
 
+    static std::string GetHelpPage(const CsvDatabase& database);
     static std::string GetProgressPage(size_t value, size_t max);
     static std::string GetErrorPage(int errorCode, const std::string& errorMessage);
-    static std::string GetSummaryPage(const CsvDatabase& pDatabase);
-    static std::string GetItemPage(const CsvDatabase& pDatabase, int id);
-    static std::string GetTablePage(const CsvDatabase& pDatabase, const std::string& title, const CsvTable& data);
+    static std::string GetSummaryPage(const CsvDatabase& database);
+    static std::string GetItemPage(const CsvDatabase& database, int id);
+    static std::string GetTablePage(const CsvDatabase& database, const std::string& title, const CsvTable& data);
 
     static std::string GetEmptyInputPage();
     static void AddItemHyperlink(HtmlElement* cell, int id);

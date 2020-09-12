@@ -27,9 +27,12 @@ void HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& link, co
 
 void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& database)
 {
-    auto header = body->AddHeader();
-    header->SetAttribute("style", "border-bottom: 1px solid black;");
-    auto table = header->AddTable();
+    auto div = body->AddDivision();
+    div->SetAttribute("style", "border-bottom: 1px solid black; position: fixed; "
+                               "background: #F0F0FF;"
+                               "border: 1px solid #DDD;"
+                               "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
+    auto table = div->AddTable();
     table->SetAttribute("style", "border-collapse: collapse; border: hidden;");
     auto row = table->AddTableRow();
 
@@ -87,7 +90,7 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
     AddButton(row, SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
     AddButton(row, SUPPORT_CMD, "Generate Support Mail", "48-envelope-letter.png", "Support");
-    AddButton(row, fmt::format("{}{}", PROJECT_HOMEPAGE_URL, "/blob/master/README.md"), "Open Online Help",
+    AddButton(row, HELP_HTML, "Open Online Help",
               "48-sign-question.png", "Help");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
 }
@@ -191,6 +194,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
     AddNavigationHeader(body, database);
 
     auto main = body->AddMain();
+    main->SetAttribute("style", "padding-top: 100px;");
     main->AddHeading(2, "Summary");
 
     // Determine (used) Categories
@@ -313,6 +317,7 @@ std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::
     AddNavigationHeader(body, database);
 
     auto main = body->AddMain();
+    main->SetAttribute("style", "padding-top: 100px;");
     main->AddHeading(2, title);
 
     auto table = main->AddTable();
@@ -343,9 +348,9 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
                                "margin: auto;\n"
                                "width: 80%;\n"
                                "padding: 20px;\n"
-                               "background: #F0F0F0;\n"
+                               "background: #F0F0FF;\n"
                                "border: 1px solid #DDD;\n"
-                               "box-shadow: 3px 3px 0px rgba(0,0,0, .2);");
+                               "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
 
     auto p = div->AddDivision();
     p->AddHyperlinkImage(EXIT_CMD, "Stop hokee", "96-sign-ban.png", 96);
@@ -376,6 +381,22 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     return html.ToString();
 }
 
+std::string HtmlGenerator::GetHelpPage(const CsvDatabase& database)
+{
+    HtmlElement html;
+    AddHtmlHead(&html);
+
+    auto body = html.AddBody();
+    AddNavigationHeader(body, database);
+
+    auto main = body->AddMain();
+    main->SetAttribute("style", "padding-top: 100px;");
+    main->AddText("AAAA");
+    main->AddText("BBBB");
+
+    return html.ToString();
+}
+
 std::string HtmlGenerator::GetEmptyInputPage()
 {
     HtmlElement html;
@@ -390,9 +411,9 @@ std::string HtmlGenerator::GetEmptyInputPage()
                                "margin: auto;\n"
                                "width: 80%;\n"
                                "padding: 20px;\n"
-                               "background: #F0F0F0;\n"
+                               "background: #F0F0FF;\n"
                                "border: 1px solid #DDD;\n"
-                               "box-shadow: 3px 3px 0px rgba(0,0,0, .2);");
+                               "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
 
     auto p = div->AddParagraph();
     p->AddHyperlinkImage(INPUT_CMD, "Open Input Folder", "96-box.png", 96);
@@ -448,9 +469,9 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
                                "margin: auto;\n"
                                "width: 80%;\n"
                                "padding: 20px;\n"
-                               "background: #F0F0F0;\n"
+                               "background: #F0F0FF;\n"
                                "border: 1px solid #DDD;\n"
-                               "box-shadow: 3px 3px 0px rgba(0,0,0, .2);");
+                               "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
     div->AddParagraph("&nbsp;");
     div->AddDivision(m7)->SetAttribute("style", "color: #E0E0E0;");
     div->AddDivision(m6)->SetAttribute("style", "color: #C0C0C0;");
@@ -542,6 +563,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     AddNavigationHeader(body, database);
 
     auto main = body->AddMain();
+    main->SetAttribute("style", "padding-top: 100px;");
     auto h2 = main->AddHeading(2, title);
     AddEditorHyperlink(h2, item->File);
 
