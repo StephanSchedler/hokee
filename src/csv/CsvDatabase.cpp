@@ -284,6 +284,6 @@ void CsvDatabase::Load(const fs::path& inputDirectory, const fs::path& ruleSetFi
     LoadRules(ruleSetFile);
     MatchRules();
     CheckRules();
-    Utils::PrintInfo("Done.");
+    Utils::PrintInfo("Finished loading.");
 }
 } // namespace hokee
