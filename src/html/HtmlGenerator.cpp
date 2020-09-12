@@ -29,11 +29,11 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
 {
     auto div = body->AddDivision();
     div->SetAttribute("style", "border-bottom: 1px solid black; position: fixed; "
-                               "background: #F0F0FF;"
+                               "background: #E0E0E0;"
                                "border: 1px solid #DDD;"
                                "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
     auto table = div->AddTable();
-    table->SetAttribute("style", "border-collapse: collapse; border: hidden;");
+    table->SetAttribute("style", "border-collapse: collapse; border: hidden; box-shadow: none;");
     auto row = table->AddTableRow();
 
     AddButton(row, INDEX_HTML, "Show Summary", "48-file-excel.png", "Summary &nbsp;");
@@ -79,7 +79,7 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
 
     cell = row->AddTableCell();
     cell->SetAttribute("style", "border: hidden; text-align:center;");
-    cell->AddHeading(2, "hookee");
+    cell->AddBold("hookee");
     cell->AddText(PROJECT_VERSION_SHORT);
 
     cell = row->AddTableCell("&nbsp;");
@@ -90,8 +90,7 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
     AddButton(row, SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
     AddButton(row, SUPPORT_CMD, "Generate Support Mail", "48-envelope-letter.png", "Support");
-    AddButton(row, HELP_HTML, "Open Online Help",
-              "48-sign-question.png", "Help");
+    AddButton(row, HELP_HTML, "Open Online Help", "48-sign-question.png", "Help");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
 }
 
@@ -130,11 +129,28 @@ HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
     head->AddStyle("#left {width: 10%; display: inline-block; text-align:left;}\n"
                    "#middle {width: 80%; display: inline-block; text-align:center;}\n"
                    "#right {width: 10%; display: inline-block; text-align:right;}\n"
+                   "a:link {\n"
+                   "    text-decoration: none;\n"
+                   "    color: inherit;\n"
+                   "}\n"
+                   "a:visited {\n"
+                   "    text-decoration: none;\n"
+                   "    color: inherit;\n"
+                   "}\n"
+                   "a:hover {\n"
+                   "    text-decoration: underline;\n"
+                   "    color: inherit;\n"
+                   "}\n"
+                   "a:active {\n"
+                   "    text-decoration: none;\n"
+                   "    color: inherit;\n"
+                   "}\n"
                    "table {\n"
                    "  width:100%;\n"
+                   "  box-shadow: 5px 5px 5px rgba(0,0,0, .2);\n"
                    "}\n"
                    "table, th, td {\n"
-                   "  border: 1px solid #008;\n"
+                   "  border: 1px solid #333;\n"
                    "  border-collapse: collapse;\n"
                    "}\n"
                    "th, td {\n"
@@ -142,13 +158,13 @@ HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
                    "  text-align: left;\n"
                    "}\n"
                    "table#t01 tr:nth-child(even) {\n"
-                   "  background-color: #eef;\n"
+                   "  background-color: #E0E0E0;\n"
                    "}\n"
                    "table#t01 tr:nth-child(odd) {\n"
-                   "  background-color: #fff;\n"
+                   "  background-color: #F7F7F7;\n"
                    "}\n"
                    "table#t01 th {\n"
-                   "  background-color: #008;\n"
+                   "  background-color: #333;\n"
                    "  color: white;\n"
                    "}\n");
     return head;
@@ -244,7 +260,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
             if (month == 0)
             {
                 name = fmt::format("{}", year);
-                rowStyle = "background-color:#ccf;";
+                rowStyle = "background-color:#999; font-weight: bold";
             }
 
             auto row = table->AddTableRow();
@@ -275,32 +291,34 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
                 std::string cellStyle = "";
                 if (sum > 0)
                 {
+                    cellStyle = "color: #007F00;";
                     if (month == 0)
                     {
-                        cellStyle = "background-color:#ada;";
+                        cellStyle += " background-color:#9C9; font-weight: bold;";
                     }
                     else
                     {
-                        cellStyle = "background-color:#cfc;";
+                        cellStyle += " background-color:#CFC;";
                     }
                 }
                 if (sum < 0)
                 {
+                    cellStyle = "color: #BF0000;";
                     if (month == 0)
                     {
-                        cellStyle = "background-color:#daa;";
+                        cellStyle += " background-color:#C99; font-weight: bold;";
                     }
                     else
                     {
-                        cellStyle = "background-color:#fcc;";
+                        cellStyle += " background-color:#FCC;";
                     }
                 }
 
                 auto cell = row->AddTableCell();
+                cellStyle += " cursor: pointer;";
                 cell->SetAttribute("style", cellStyle);
-                cell->AddHyperlink(
-                    fmt::format("{}?year={}&amp;month={}&amp;category={}", ITEMS_HTML, year, month, cat),
-                    "Open details", fmt::format("{:.2f}&euro;", sum));
+                cell->SetAttribute("onclick", fmt::format("window.location='{}?year={}&amp;month={}&amp;category={}';", ITEMS_HTML, year, month, cat));
+                cell->AddText(fmt::format("{:.2f}&euro;", sum));
             }
         }
     }
@@ -348,7 +366,7 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
                                "margin: auto;\n"
                                "width: 80%;\n"
                                "padding: 20px;\n"
-                               "background: #F0F0FF;\n"
+                               "background: #F0F0F0;\n"
                                "border: 1px solid #DDD;\n"
                                "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
 
@@ -362,7 +380,7 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     div->AddParagraph("&nbsp;");
     div->AddParagraph("What next?")->SetAttribute("style", "color: #000000;");
     auto table = div->AddDivision()->AddTable();
-    table->SetAttribute("style", "border-collapse: collapse; border: hidden;");
+    table->SetAttribute("style", "border-collapse: collapse; border: hidden; box-shadow: none;");
 
     auto row = table->AddTableRow();
 
@@ -391,8 +409,13 @@ std::string HtmlGenerator::GetHelpPage(const CsvDatabase& database)
 
     auto main = body->AddMain();
     main->SetAttribute("style", "padding-top: 100px;");
-    main->AddText("AAAA");
-    main->AddText("BBBB");
+
+    fs::path htmlPart = fs::current_path() / ".." / "html" / "help.html.part";
+
+    std::ifstream ifstream(htmlPart, std::ios::binary);
+    std::stringstream sstream{};
+    sstream << ifstream.rdbuf();
+    main->AddText(sstream.str());
 
     return html.ToString();
 }
@@ -411,7 +434,7 @@ std::string HtmlGenerator::GetEmptyInputPage()
                                "margin: auto;\n"
                                "width: 80%;\n"
                                "padding: 20px;\n"
-                               "background: #F0F0FF;\n"
+                               "background: #F0F0F0;\n"
                                "border: 1px solid #DDD;\n"
                                "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
 
@@ -424,7 +447,7 @@ std::string HtmlGenerator::GetEmptyInputPage()
     div->AddParagraph("&nbsp;");
     div->AddParagraph("What next?")->SetAttribute("style", "color: #000000;");
     auto table = div->AddDivision()->AddTable();
-    table->SetAttribute("style", "border-collapse: collapse; border: hidden;");
+    table->SetAttribute("style", "border-collapse: collapse; border: hidden; box-shadow: none;");
 
     auto row = table->AddTableRow();
 
@@ -469,7 +492,7 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
                                "margin: auto;\n"
                                "width: 80%;\n"
                                "padding: 20px;\n"
-                               "background: #F0F0FF;\n"
+                               "background: #F0F0F0;\n"
                                "border: 1px solid #DDD;\n"
                                "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
     div->AddParagraph("&nbsp;");
@@ -567,17 +590,17 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     auto h2 = main->AddHeading(2, title);
     AddEditorHyperlink(h2, item->File);
 
+    auto table = main->AddDivision()->AddTable();
+    table->SetAttribute("id", "t01");
+    AddItemTableHeader(table);
+    AddItemTableRow(table, item.get());
+
     std::string divText = item->File.filename().string();
     if (item->Line >= 0)
     {
         divText += fmt::format(":{}", item->Line);
     }
     main->AddDivision(divText);
-
-    auto table = main->AddDivision()->AddTable();
-    table->SetAttribute("id", "t01");
-    AddItemTableHeader(table);
-    AddItemTableRow(table, item.get());
 
     if (!item->Issues.empty())
     {

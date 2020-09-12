@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1.0)
 project(hokee 
     VERSION 1.0.0
-    DESCRIPTION "Automated HOuseKEEping Book"
+    DESCRIPTION "Automated Housekeeping Book"
     HOMEPAGE_URL "https://github.com/StephanSchedler/hokee"
     LANGUAGES CXX
 )
@@ -103,29 +103,31 @@ set(PROJECT_SOURCE_FILES
 )
 
 # Images
-configure_file(third_party/small-n-flat/png/24/notepad.png ${PROJECT_BINARY_DIR}/images/24-notepad.png COPYONLY)
-configure_file(third_party/small-n-flat/png/24/wrench-screwdriver.png ${PROJECT_BINARY_DIR}/images/24-wrench-screwdriver.png COPYONLY)
-configure_file(third_party/small-n-flat/png/24/folder.png ${PROJECT_BINARY_DIR}/images/24-folder.png COPYONLY)
-configure_file(third_party/small-n-flat/png/48/money.png ${PROJECT_BINARY_DIR}/images/48-money.png COPYONLY)
-configure_file(third_party/small-n-flat/png/48/file-text.png ${PROJECT_BINARY_DIR}/images/48-file-text.png COPYONLY) 
-configure_file(third_party/small-n-flat/png/48/sign-check.png ${PROJECT_BINARY_DIR}/images/48-sign-check.png COPYONLY)
-configure_file(third_party/small-n-flat/png/48/sign-delete.png ${PROJECT_BINARY_DIR}/images/48-sign-delete.png COPYONLY)
-configure_file(third_party/small-n-flat/png/48/sign-warning.png ${PROJECT_BINARY_DIR}/images/48-sign-warning.png COPYONLY)
-configure_file(third_party/small-n-flat/png/48/sign-error.png ${PROJECT_BINARY_DIR}/images/48-sign-error.png COPYONLY)  
-configure_file(third_party/small-n-flat/png/48/sign-sync.png ${PROJECT_BINARY_DIR}/images/48-sign-sync.png COPYONLY)    
-configure_file(third_party/small-n-flat/png/48/sign-question.png ${PROJECT_BINARY_DIR}/images/48-sign-question.png COPYONLY) 
-configure_file(third_party/small-n-flat/png/48/file-excel.png ${PROJECT_BINARY_DIR}/images/48-file-excel.png COPYONLY)   
-configure_file(third_party/small-n-flat/png/48/file-exe.png ${PROJECT_BINARY_DIR}/images/48-file-exe.png COPYONLY)   
-configure_file(third_party/small-n-flat/png/48/cogs.png ${PROJECT_BINARY_DIR}/images/48-cogs.png COPYONLY)    
-configure_file(third_party/small-n-flat/png/48/search.png ${PROJECT_BINARY_DIR}/images/48-search.png COPYONLY) 
-configure_file(third_party/small-n-flat/png/48/box-full.png ${PROJECT_BINARY_DIR}/images/48-box-full.png COPYONLY)
-configure_file(third_party/small-n-flat/png/48/box-in.png ${PROJECT_BINARY_DIR}/images/48-box-in.png COPYONLY)  
-configure_file(third_party/small-n-flat/png/48/envelope-letter.png ${PROJECT_BINARY_DIR}/images/48-envelope-letter.png COPYONLY)  
-configure_file(third_party/small-n-flat/png/96/box.png ${PROJECT_BINARY_DIR}/images/96-box.png COPYONLY)
-configure_file(third_party/small-n-flat/png/96/sign-ban.png ${PROJECT_BINARY_DIR}/images/96-sign-ban.png COPYONLY)
-configure_file(src/images/sign-delete2.png ${PROJECT_BINARY_DIR}/images/48-sign-delete2.png COPYONLY)
-configure_file(src/images/sign-warning2.png ${PROJECT_BINARY_DIR}/images/48-sign-warning2.png COPYONLY)
-configure_file(src/images/sign-check2.png ${PROJECT_BINARY_DIR}/images/48-sign-check2.png COPYONLY)
+
+configure_file(README.html ${PROJECT_BINARY_DIR}/html/help.html.part COPYONLY)
+configure_file(third_party/small-n-flat/png/24/notepad.png ${PROJECT_BINARY_DIR}/html/images/24-notepad.png COPYONLY)
+configure_file(third_party/small-n-flat/png/24/wrench-screwdriver.png ${PROJECT_BINARY_DIR}/html/images/24-wrench-screwdriver.png COPYONLY)
+configure_file(third_party/small-n-flat/png/24/folder.png ${PROJECT_BINARY_DIR}/html/images/24-folder.png COPYONLY)
+configure_file(third_party/small-n-flat/png/48/money.png ${PROJECT_BINARY_DIR}/html/images/48-money.png COPYONLY)
+configure_file(third_party/small-n-flat/png/48/file-text.png ${PROJECT_BINARY_DIR}/html/images/48-file-text.png COPYONLY) 
+configure_file(third_party/small-n-flat/png/48/sign-check.png ${PROJECT_BINARY_DIR}/html/images/48-sign-check.png COPYONLY)
+configure_file(third_party/small-n-flat/png/48/sign-delete.png ${PROJECT_BINARY_DIR}/html/images/48-sign-delete.png COPYONLY)
+configure_file(third_party/small-n-flat/png/48/sign-warning.png ${PROJECT_BINARY_DIR}/html/images/48-sign-warning.png COPYONLY)
+configure_file(third_party/small-n-flat/png/48/sign-error.png ${PROJECT_BINARY_DIR}/html/images/48-sign-error.png COPYONLY)  
+configure_file(third_party/small-n-flat/png/48/sign-sync.png ${PROJECT_BINARY_DIR}/html/images/48-sign-sync.png COPYONLY)    
+configure_file(third_party/small-n-flat/png/48/sign-question.png ${PROJECT_BINARY_DIR}/html/images/48-sign-question.png COPYONLY) 
+configure_file(third_party/small-n-flat/png/48/file-excel.png ${PROJECT_BINARY_DIR}/html/images/48-file-excel.png COPYONLY)   
+configure_file(third_party/small-n-flat/png/48/file-exe.png ${PROJECT_BINARY_DIR}/html/images/48-file-exe.png COPYONLY)   
+configure_file(third_party/small-n-flat/png/48/cogs.png ${PROJECT_BINARY_DIR}/html/images/48-cogs.png COPYONLY)    
+configure_file(third_party/small-n-flat/png/48/search.png ${PROJECT_BINARY_DIR}/html/images/48-search.png COPYONLY) 
+configure_file(third_party/small-n-flat/png/48/box-full.png ${PROJECT_BINARY_DIR}/html/images/48-box-full.png COPYONLY)
+configure_file(third_party/small-n-flat/png/48/box-in.png ${PROJECT_BINARY_DIR}/html/images/48-box-in.png COPYONLY)  
+configure_file(third_party/small-n-flat/png/48/envelope-letter.png ${PROJECT_BINARY_DIR}/html/images/48-envelope-letter.png COPYONLY)  
+configure_file(third_party/small-n-flat/png/96/box.png ${PROJECT_BINARY_DIR}/html/images/96-box.png COPYONLY)
+configure_file(third_party/small-n-flat/png/96/sign-ban.png ${PROJECT_BINARY_DIR}/html/images/96-sign-ban.png COPYONLY)
+configure_file(src/images/sign-delete2.png ${PROJECT_BINARY_DIR}/html/images/48-sign-delete2.png COPYONLY)
+configure_file(src/images/sign-warning2.png ${PROJECT_BINARY_DIR}/html/images/48-sign-warning2.png COPYONLY)
+configure_file(src/images/sign-check2.png ${PROJECT_BINARY_DIR}/html/images/48-sign-check2.png COPYONLY)
 
 # Execuables
 add_executable(hokee src/hokee.cpp ${PROJECT_SOURCE_FILES})
@@ -163,8 +165,8 @@ if(CMAKE_EXPORT_COMPILE_COMMANDS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     install(FILES ${PROJECT_BINARY_DIR}/compile_commands.json DESTINATION .)
 endif()
 
-install(DIRECTORY ${PROJECT_BINARY_DIR}/images DESTINATION .)
-install(DIRECTORY favicon DESTINATION ./images)
+install(DIRECTORY ${PROJECT_BINARY_DIR}/html DESTINATION .)
+install(DIRECTORY favicon DESTINATION ./html)
 
 enable_testing()
 add_test(NAME rules_match_test COMMAND rules_match_test)

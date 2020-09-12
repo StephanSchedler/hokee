@@ -29,7 +29,7 @@ std::string GetParam(const httplib::Params& params, const std::string& param, co
 
 std::string GetImageContent(const std::string& name)
 {
-    for (const auto& entry : fs::recursive_directory_iterator(fs::current_path() / ".." / "images"))
+    for (const auto& entry : fs::recursive_directory_iterator(fs::current_path() / ".." / "html" / "images"))
     {
         if (fs::is_regular_file(entry.path()) && entry.path().filename().string() == name)
         {
@@ -40,7 +40,7 @@ std::string GetImageContent(const std::string& name)
         }
     }
     throw UserException(fmt::format("Could not find '{}'", fs::path(name).filename().string()),
-                        fs::absolute(fs::current_path() / ".." / "images"));
+                        fs::absolute(fs::current_path() / ".." / "html" /"images"));
 }
 
 std::string GetUrl(const httplib::Request& req)
