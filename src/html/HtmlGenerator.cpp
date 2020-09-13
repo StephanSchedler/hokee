@@ -210,7 +210,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
     }
 
     auto table = main->AddTable();
-    table->SetAttribute("id", "t01");
+    table->SetAttribute("class", "t01");
 
     for (int year = minYear; year <= maxYear; ++year)
     {
@@ -302,7 +302,7 @@ std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::
     main->AddHeading(2, title);
 
     auto table = main->AddTable();
-    table->SetAttribute("id", "t01");
+    table->SetAttribute("class", "t01");
     AddItemTableHeader(table);
     for (const auto& row : data)
     {
@@ -554,7 +554,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     AddEditorHyperlink(h2, item->File);
 
     auto table = main->AddDivision()->AddTable();
-    table->SetAttribute("id", "t01");
+    table->SetAttribute("class", "t01");
     AddItemTableHeader(table);
     AddItemTableRow(table, item.get());
 
@@ -584,7 +584,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     }
 
     table = main->AddDivision()->AddTable();
-    table->SetAttribute("id", "t01");
+    table->SetAttribute("class", "t01");
     AddItemTableHeader(table);
 
     for (auto& ref : item->References)
