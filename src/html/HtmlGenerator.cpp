@@ -126,47 +126,10 @@ HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
     link->SetAttribute("href", "/safari-pinned-tab.svg");
     link->SetAttribute("color", "#5bbad5");
 
-    head->AddStyle("#left {width: 10%; display: inline-block; text-align:left;}\n"
-                   "#middle {width: 80%; display: inline-block; text-align:center;}\n"
-                   "#right {width: 10%; display: inline-block; text-align:right;}\n"
-                   "a:link {\n"
-                   "    text-decoration: none;\n"
-                   "    color: inherit;\n"
-                   "}\n"
-                   "a:visited {\n"
-                   "    text-decoration: none;\n"
-                   "    color: inherit;\n"
-                   "}\n"
-                   "a:hover {\n"
-                   "    text-decoration: underline;\n"
-                   "    color: inherit;\n"
-                   "}\n"
-                   "a:active {\n"
-                   "    text-decoration: none;\n"
-                   "    color: inherit;\n"
-                   "}\n"
-                   "table {\n"
-                   "  width:100%;\n"
-                   "  box-shadow: 5px 5px 5px rgba(0,0,0, .2);\n"
-                   "}\n"
-                   "table, th, td {\n"
-                   "  border: 1px solid #333;\n"
-                   "  border-collapse: collapse;\n"
-                   "}\n"
-                   "th, td {\n"
-                   "  padding: 5px;\n"
-                   "  text-align: left;\n"
-                   "}\n"
-                   "table#t01 tr:nth-child(even) {\n"
-                   "  background-color: #E0E0E0;\n"
-                   "}\n"
-                   "table#t01 tr:nth-child(odd) {\n"
-                   "  background-color: #F7F7F7;\n"
-                   "}\n"
-                   "table#t01 th {\n"
-                   "  background-color: #333;\n"
-                   "  color: white;\n"
-                   "}\n");
+    link = head->AddLink();
+    link->SetAttribute("rel", "stylesheet");
+    link->SetAttribute("href", "/stylesheet.css");
+    
     return head;
 }
 

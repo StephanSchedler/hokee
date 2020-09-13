@@ -19,6 +19,7 @@ namespace hokee
 class HttpServer
 {
     static constexpr const char* CONTENT_TYPE_HTML = "text/html";
+    static constexpr const char* CONTENT_TYPE_CSS = "text/css";
     static constexpr const char* CONTENT_TYPE_PNG = "image/png";
     static constexpr const char* CONTENT_TYPE_ICO = "image/x-icon";
 

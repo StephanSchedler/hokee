@@ -105,6 +105,7 @@ set(PROJECT_SOURCE_FILES
 # Images
 
 configure_file(README.html ${PROJECT_BINARY_DIR}/html/help.html.part COPYONLY)
+configure_file(src/html/stylesheet.css ${PROJECT_BINARY_DIR}/html/stylesheet.css COPYONLY)
 configure_file(third_party/small-n-flat/png/24/notepad.png ${PROJECT_BINARY_DIR}/html/images/24-notepad.png COPYONLY)
 configure_file(third_party/small-n-flat/png/24/wrench-screwdriver.png ${PROJECT_BINARY_DIR}/html/images/24-wrench-screwdriver.png COPYONLY)
 configure_file(third_party/small-n-flat/png/24/folder.png ${PROJECT_BINARY_DIR}/html/images/24-folder.png COPYONLY)
