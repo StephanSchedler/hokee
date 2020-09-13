@@ -51,7 +51,6 @@ main.pad-50 {
 table.item {
   box-shadow: 5px 5px 5px rgba(0,0,0, .2);
   background-color: #DDD;
-  text-align:center;
 }
 table.item tr:nth-child(even) {
   background-color: #DDD;
@@ -62,7 +61,6 @@ table.item tr:nth-child(odd) {
 table.item th {
   background-color: #333;
   color: white;
-  text-align: center;
 }
 table.item td.item {
   text-align: center;
