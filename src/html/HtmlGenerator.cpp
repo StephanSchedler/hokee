@@ -28,12 +28,12 @@ void HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& link, co
 void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& database)
 {
     auto div = body->AddDivision();
-    div->SetAttribute("style", "border-bottom: 1px solid black; position: fixed; "
+    div->SetAttribute("style", "position: fixed; "
                                "background: #E0E0E0;"
-                               "border: 1px solid #DDD;"
+                               "border: 1px solid #333;"
                                "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
     auto table = div->AddTable();
-    table->SetAttribute("style", "border-collapse: collapse; border: hidden; box-shadow: none;");
+    table->SetAttribute("style", "border-collapse: collapse; border: hidden");
     auto row = table->AddTableRow();
 
     AddButton(row, INDEX_HTML, "Show Summary", "48-file-excel.png", "Summary &nbsp;");
@@ -210,7 +210,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
     }
 
     auto table = main->AddTable();
-    table->SetAttribute("class", "t01");
+    table->SetAttribute("class", "item-table");
 
     for (int year = minYear; year <= maxYear; ++year)
     {
@@ -302,7 +302,7 @@ std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::
     main->AddHeading(2, title);
 
     auto table = main->AddTable();
-    table->SetAttribute("class", "t01");
+    table->SetAttribute("class", "item-table");
     AddItemTableHeader(table);
     for (const auto& row : data)
     {
@@ -330,7 +330,7 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
                                "width: 80%;\n"
                                "padding: 20px;\n"
                                "background: #F0F0F0;\n"
-                               "border: 1px solid #DDD;\n"
+                               "border: 1px solid #333;\n"
                                "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
 
     auto p = div->AddDivision();
@@ -343,7 +343,7 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     div->AddParagraph("&nbsp;");
     div->AddParagraph("What next?")->SetAttribute("style", "color: #000000;");
     auto table = div->AddDivision()->AddTable();
-    table->SetAttribute("style", "border-collapse: collapse; border: hidden; box-shadow: none;");
+    table->SetAttribute("style", "border-collapse: collapse; border: hidden");
 
     auto row = table->AddTableRow();
 
@@ -398,7 +398,7 @@ std::string HtmlGenerator::GetEmptyInputPage()
                                "width: 80%;\n"
                                "padding: 20px;\n"
                                "background: #F0F0F0;\n"
-                               "border: 1px solid #DDD;\n"
+                               "border: 1px solid #333;\n"
                                "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
 
     auto p = div->AddParagraph();
@@ -410,7 +410,7 @@ std::string HtmlGenerator::GetEmptyInputPage()
     div->AddParagraph("&nbsp;");
     div->AddParagraph("What next?")->SetAttribute("style", "color: #000000;");
     auto table = div->AddDivision()->AddTable();
-    table->SetAttribute("style", "border-collapse: collapse; border: hidden; box-shadow: none;");
+    table->SetAttribute("style", "border-collapse: collapse; border: hidden");
 
     auto row = table->AddTableRow();
 
@@ -456,7 +456,7 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
                                "width: 80%;\n"
                                "padding: 20px;\n"
                                "background: #F0F0F0;\n"
-                               "border: 1px solid #DDD;\n"
+                               "border: 1px solid #333;\n"
                                "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
     div->AddParagraph("&nbsp;");
     div->AddDivision(m7)->SetAttribute("style", "color: #E0E0E0;");
@@ -554,7 +554,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     AddEditorHyperlink(h2, item->File);
 
     auto table = main->AddDivision()->AddTable();
-    table->SetAttribute("class", "t01");
+    table->SetAttribute("class", "item-table");
     AddItemTableHeader(table);
     AddItemTableRow(table, item.get());
 
@@ -584,7 +584,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     }
 
     table = main->AddDivision()->AddTable();
-    table->SetAttribute("class", "t01");
+    table->SetAttribute("class", "item-table");
     AddItemTableHeader(table);
 
     for (auto& ref : item->References)
