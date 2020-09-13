@@ -19,7 +19,7 @@ void HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& link, co
                               const std::string& image, const std::string& text)
 {
     auto cell = tableRow->AddTableCell();
-    cell->SetAttribute("style", "border: hidden; text-align:center;");
+    cell->SetAttribute("class", "nav link");
     auto hyperlink = cell->AddHyperlink(link, tooltip);
     hyperlink->AddImage(image, tooltip, 42);
     hyperlink->AddText(text);
@@ -28,12 +28,10 @@ void HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& link, co
 void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& database)
 {
     auto div = body->AddDivision();
-    div->SetAttribute("style", "position: fixed; "
-                               "background: #E0E0E0;"
-                               "border: 1px solid #333;"
-                               "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
+    div->SetAttribute("class", "box nav");
+
     auto table = div->AddTable();
-    table->SetAttribute("style", "border-collapse: collapse; border: hidden");
+    table->SetAttribute("class", "nav");
     auto row = table->AddTableRow();
 
     AddButton(row, INDEX_HTML, "Show Summary", "48-file-excel.png", "Summary &nbsp;");
@@ -75,15 +73,15 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     }
 
     auto cell = row->AddTableCell("&nbsp;");
-    cell->SetAttribute("style", "border: hidden; width:30%;");
+    cell->SetAttribute("class", "nav fill");
 
     cell = row->AddTableCell();
-    cell->SetAttribute("style", "border: hidden; text-align:center;");
+    cell->SetAttribute("class", "nav");
     cell->AddBold("hookee");
     cell->AddText(PROJECT_VERSION_SHORT);
 
     cell = row->AddTableCell("&nbsp;");
-    cell->SetAttribute("style", "border: hidden; width:30%;");
+    cell->SetAttribute("class", "nav fill");
 
     AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, SEARCH_HTML, "Open Search Page", "48-search.png", "Search");
@@ -129,7 +127,7 @@ HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
     link = head->AddLink();
     link->SetAttribute("rel", "stylesheet");
     link->SetAttribute("href", "/stylesheet.css");
-    
+
     return head;
 }
 
@@ -173,7 +171,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
     AddNavigationHeader(body, database);
 
     auto main = body->AddMain();
-    main->SetAttribute("style", "padding-top: 100px;");
+    main->SetAttribute("class", "pad-100");
     main->AddHeading(2, "Summary");
 
     // Determine (used) Categories
@@ -210,7 +208,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
     }
 
     auto table = main->AddTable();
-    table->SetAttribute("class", "item-table");
+    table->SetAttribute("class", "item");
 
     for (int year = minYear; year <= maxYear; ++year)
     {
@@ -218,17 +216,16 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
 
         for (int month = 0; month <= 12; ++month)
         {
-            std::string rowStyle = "";
+            auto row = table->AddTableRow();
             std::string name = fmt::format("{}.{}", month, year);
             if (month == 0)
             {
+                row->SetAttribute("class", "year");
                 name = fmt::format("{}", year);
-                rowStyle = "background-color:#999; font-weight: bold";
             }
 
-            auto row = table->AddTableRow();
-            row->SetAttribute("style", rowStyle);
-            row->AddTableCell(name);
+            auto cell = row->AddTableCell(name);
+            cell->SetAttribute("class", "item");
             for (auto& cat : categories)
             {
                 double sum = 0;
@@ -251,36 +248,21 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
                     }
                 }
 
-                std::string cellStyle = "";
+                std::string cellStyle = "link item";
                 if (sum > 0)
                 {
-                    cellStyle = "color: #007F00;";
-                    if (month == 0)
-                    {
-                        cellStyle += " background-color:#9C9; font-weight: bold;";
-                    }
-                    else
-                    {
-                        cellStyle += " background-color:#CFC;";
-                    }
+                    cellStyle += " pos";
                 }
                 if (sum < 0)
                 {
-                    cellStyle = "color: #BF0000;";
-                    if (month == 0)
-                    {
-                        cellStyle += " background-color:#C99; font-weight: bold;";
-                    }
-                    else
-                    {
-                        cellStyle += " background-color:#FCC;";
-                    }
+                    cellStyle += " neg";
                 }
 
-                auto cell = row->AddTableCell();
-                cellStyle += " cursor: pointer;";
-                cell->SetAttribute("style", cellStyle);
-                cell->SetAttribute("onclick", fmt::format("window.location='{}?year={}&amp;month={}&amp;category={}';", ITEMS_HTML, year, month, cat));
+                cell = row->AddTableCell();
+                cell->SetAttribute("class", cellStyle);
+                cell->SetAttribute("onclick",
+                                   fmt::format("window.location='{}?year={}&amp;month={}&amp;category={}';",
+                                               ITEMS_HTML, year, month, cat));
                 cell->AddText(fmt::format("{:.2f}&euro;", sum));
             }
         }
@@ -298,11 +280,11 @@ std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::
     AddNavigationHeader(body, database);
 
     auto main = body->AddMain();
-    main->SetAttribute("style", "padding-top: 100px;");
+    main->SetAttribute("class", "pad-100");
     main->AddHeading(2, title);
 
     auto table = main->AddTable();
-    table->SetAttribute("class", "item-table");
+    table->SetAttribute("class", "item");
     AddItemTableHeader(table);
     for (const auto& row : data)
     {
@@ -321,17 +303,10 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
 
     auto body = html.AddBody();
     auto main = body->AddMain();
-    main->SetAttribute("style", "padding: 50px 0;");
+    main->SetAttribute("class", "pad-50");
 
     auto div = main->AddDivision();
-    div->SetAttribute("style", "text-align:center;\n"
-                               "color: red;\n"
-                               "margin: auto;\n"
-                               "width: 80%;\n"
-                               "padding: 20px;\n"
-                               "background: #F0F0F0;\n"
-                               "border: 1px solid #333;\n"
-                               "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
+    div->SetAttribute("class", "msg box red");
 
     auto p = div->AddDivision();
     p->AddHyperlinkImage(EXIT_CMD, "Stop hokee", "96-sign-ban.png", 96);
@@ -341,14 +316,15 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
 
     div->AddParagraph("&nbsp;");
     div->AddParagraph("&nbsp;");
-    div->AddParagraph("What next?")->SetAttribute("style", "color: #000000;");
+    div->AddParagraph("What next?")->SetAttribute("class", "black");
+
     auto table = div->AddDivision()->AddTable();
-    table->SetAttribute("style", "border-collapse: collapse; border: hidden");
+    table->SetAttribute("class", "nav");
 
     auto row = table->AddTableRow();
 
     auto cell = row->AddTableCell("&nbsp;");
-    cell->SetAttribute("style", "border: hidden; width:50%;");
+    cell->SetAttribute("class", "nav fill");
 
     AddButton(row, RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
@@ -357,7 +333,7 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
 
     cell = row->AddTableCell("&nbsp;");
-    cell->SetAttribute("style", "border: hidden; width:50%;");
+    cell->SetAttribute("class", "nav fill");
 
     return html.ToString();
 }
@@ -371,7 +347,7 @@ std::string HtmlGenerator::GetHelpPage(const CsvDatabase& database)
     AddNavigationHeader(body, database);
 
     auto main = body->AddMain();
-    main->SetAttribute("style", "padding-top: 100px;");
+    main->SetAttribute("class", "pad-100");
 
     fs::path htmlPart = fs::current_path() / ".." / "html" / "help.html.part";
 
@@ -390,16 +366,10 @@ std::string HtmlGenerator::GetEmptyInputPage()
 
     auto body = html.AddBody();
     auto main = body->AddMain();
-    main->SetAttribute("style", "padding: 50px 0;");
+    main->SetAttribute("class", "pad-50");
 
     auto div = main->AddDivision();
-    div->SetAttribute("style", "text-align:center;\n"
-                               "margin: auto;\n"
-                               "width: 80%;\n"
-                               "padding: 20px;\n"
-                               "background: #F0F0F0;\n"
-                               "border: 1px solid #333;\n"
-                               "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
+    div->SetAttribute("class", "msg box");
 
     auto p = div->AddParagraph();
     p->AddHyperlinkImage(INPUT_CMD, "Open Input Folder", "96-box.png", 96);
@@ -408,14 +378,14 @@ std::string HtmlGenerator::GetEmptyInputPage()
 
     div->AddParagraph("&nbsp;");
     div->AddParagraph("&nbsp;");
-    div->AddParagraph("What next?")->SetAttribute("style", "color: #000000;");
+    div->AddParagraph("What next?")->SetAttribute("class", "black");
     auto table = div->AddDivision()->AddTable();
-    table->SetAttribute("style", "border-collapse: collapse; border: hidden");
+    table->SetAttribute("class", "nav");
 
     auto row = table->AddTableRow();
 
     auto cell = row->AddTableCell("&nbsp;");
-    cell->SetAttribute("style", "border: hidden; width:50%;");
+    cell->SetAttribute("class", "nav fill");
 
     AddButton(row, COPY_SAMPLES_CMD, "Copy Samples", "48-box-in.png", "Copy&nbsp;Samples");
     AddButton(row, RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
@@ -423,7 +393,7 @@ std::string HtmlGenerator::GetEmptyInputPage()
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
 
     cell = row->AddTableCell("&nbsp;");
-    cell->SetAttribute("style", "border: hidden; width:50%;");
+    cell->SetAttribute("class", "nav fill");
 
     return html.ToString();
 }
@@ -448,24 +418,18 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
 
     auto body = html.AddBody();
     auto main = body->AddMain();
-    main->SetAttribute("style", "padding: 50px 0;");
+    main->SetAttribute("class", "pad-50");
 
     auto div = main->AddDivision();
-    div->SetAttribute("style", "text-align:center;\n"
-                               "margin: auto;\n"
-                               "width: 80%;\n"
-                               "padding: 20px;\n"
-                               "background: #F0F0F0;\n"
-                               "border: 1px solid #333;\n"
-                               "box-shadow: 5px 5px 5px rgba(0,0,0, .2);");
+    div->SetAttribute("class", "msg box");
     div->AddParagraph("&nbsp;");
-    div->AddDivision(m7)->SetAttribute("style", "color: #E0E0E0;");
-    div->AddDivision(m6)->SetAttribute("style", "color: #C0C0C0;");
-    div->AddDivision(m5)->SetAttribute("style", "color: #A0A0A0;");
-    div->AddDivision(m4)->SetAttribute("style", "color: #808080;");
-    div->AddDivision(m3)->SetAttribute("style", "color: #404040;");
-    div->AddDivision(m2)->SetAttribute("style", "color: #202020;");
-    div->AddDivision(m1)->SetAttribute("style", "color: #000000;");
+    div->AddDivision(m7)->SetAttribute("style", "opacity:0.1;");
+    div->AddDivision(m6)->SetAttribute("style", "opacity:0.2;");
+    div->AddDivision(m5)->SetAttribute("style", "opacity:0.3;");
+    div->AddDivision(m4)->SetAttribute("style", "opacity:0.4;");
+    div->AddDivision(m3)->SetAttribute("style", "opacity:0.6;");
+    div->AddDivision(m2)->SetAttribute("style", "opacity:0.8;");
+    div->AddDivision(m1)->SetAttribute("style", "opacity:1;");
     div->AddParagraph("&nbsp;");
     div->AddDivision()->AddProgress(value, max);
     return html.ToString();
@@ -549,12 +513,12 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     AddNavigationHeader(body, database);
 
     auto main = body->AddMain();
-    main->SetAttribute("style", "padding-top: 100px;");
+    main->SetAttribute("class", "pad-100");
     auto h2 = main->AddHeading(2, title);
     AddEditorHyperlink(h2, item->File);
 
     auto table = main->AddDivision()->AddTable();
-    table->SetAttribute("class", "item-table");
+    table->SetAttribute("class", "item");
     AddItemTableHeader(table);
     AddItemTableRow(table, item.get());
 
@@ -584,7 +548,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     }
 
     table = main->AddDivision()->AddTable();
-    table->SetAttribute("class", "item-table");
+    table->SetAttribute("class", "item");
     AddItemTableHeader(table);
 
     for (auto& ref : item->References)
