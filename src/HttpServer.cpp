@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <cstdio>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -290,6 +291,19 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             _errorStatus = 500;
             _errorMessage = fmt::format("Could not generate html page {}", GetUrl(req));
+        }
+    });
+
+    // Get CSS stylesheet
+    _server->Get("/(.*\\.css)", [&](const httplib::Request& req, httplib::Response& res) {
+        if (!SetCacheContent(req, res))
+        {
+            fs::path path = fs::current_path() / ".." / "html" / std::string(req.matches[1]);
+            std::ifstream ifstream(path, std::ios::binary);
+            std::stringstream sstream{};
+            sstream << ifstream.rdbuf();
+
+            SetContent(req, res, sstream.str(), CONTENT_TYPE_CSS);
         }
     });
 
