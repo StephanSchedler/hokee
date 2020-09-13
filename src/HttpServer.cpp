@@ -41,7 +41,7 @@ std::string GetImageContent(const std::string& name)
         }
     }
     throw UserException(fmt::format("Could not find '{}'", fs::path(name).filename().string()),
-                        fs::absolute(fs::current_path() / ".." / "html" /"images"));
+                        fs::absolute(fs::current_path() / ".." / "html" / "images"));
 }
 
 std::string GetUrl(const httplib::Request& req)
@@ -86,6 +86,7 @@ void PrintRequest(const httplib::Request& req, const httplib::Response& res)
 
 bool HttpServer::SetCacheContent(const httplib::Request& req, httplib::Response& res)
 {
+    std::scoped_lock lock(_cacheMutex);
     const std::string url = GetUrl(req);
     auto i = _cache.find(url);
     if (i != _cache.end())
@@ -103,6 +104,7 @@ bool HttpServer::SetCacheContent(const httplib::Request& req, httplib::Response&
 void HttpServer::SetContent(const httplib::Request& req, httplib::Response& res, const std::string& content,
                             const char* content_type)
 {
+    std::scoped_lock lock(_cacheMutex);
     const std::string url = GetUrl(req);
     _cache[url] = std::pair<std::string, std::string>(content, content_type);
     if (std::string(content_type) == CONTENT_TYPE_HTML)
@@ -296,148 +298,291 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
 
     // Get CSS stylesheet
     _server->Get("/(.*\\.css)", [&](const httplib::Request& req, httplib::Response& res) {
-        if (!SetCacheContent(req, res))
+        try
         {
-            fs::path path = fs::current_path() / ".." / "html" / std::string(req.matches[1]);
-            std::ifstream ifstream(path, std::ios::binary);
-            std::stringstream sstream{};
-            sstream << ifstream.rdbuf();
+            if (!SetCacheContent(req, res))
+            {
+                fs::path path = fs::current_path() / ".." / "html" / std::string(req.matches[1]);
+                std::ifstream ifstream(path, std::ios::binary);
+                std::stringstream sstream{};
+                sstream << ifstream.rdbuf();
 
-            SetContent(req, res, sstream.str(), CONTENT_TYPE_CSS);
+                SetContent(req, res, sstream.str(), CONTENT_TYPE_CSS);
+            }
+        }
+        catch (const std::exception& e)
+        {
+            _errorStatus = 500;
+            _errorMessage = e.what();
+        }
+        catch (...)
+        {
+            _errorStatus = 500;
+            _errorMessage = fmt::format("Could not get stylesheet {}", GetUrl(req));
         }
     });
 
     // Get Images
     _server->Get("/(.*\\.png)", [&](const httplib::Request& req, httplib::Response& res) {
-        if (!SetCacheContent(req, res))
+        try
         {
-            std::string name = req.matches[1];
-            SetContent(req, res, GetImageContent(name), CONTENT_TYPE_PNG);
+            if (!SetCacheContent(req, res))
+            {
+                std::string name = req.matches[1];
+                SetContent(req, res, GetImageContent(name), CONTENT_TYPE_PNG);
+            }
+        }
+        catch (const std::exception& e)
+        {
+            _errorStatus = 500;
+            _errorMessage = e.what();
+        }
+        catch (...)
+        {
+            _errorStatus = 500;
+            _errorMessage = fmt::format("Could not get image {}", GetUrl(req));
         }
     });
     _server->Get("/(.*\\.ico)", [&](const httplib::Request& req, httplib::Response& res) {
-        if (!SetCacheContent(req, res))
+        try
         {
-            std::string name = req.matches[1];
-            SetContent(req, res, GetImageContent(name), CONTENT_TYPE_ICO);
+            if (!SetCacheContent(req, res))
+            {
+                std::string name = req.matches[1];
+                SetContent(req, res, GetImageContent(name), CONTENT_TYPE_ICO);
+            }
+        }
+        catch (const std::exception& e)
+        {
+            _errorStatus = 500;
+            _errorMessage = e.what();
+        }
+        catch (...)
+        {
+            _errorStatus = 500;
+            _errorMessage = fmt::format("Could not get icon {}", GetUrl(req));
         }
     });
 
     // Exit
     _server->Get((std::string("/") + HtmlGenerator::EXIT_CMD).c_str(),
                  [&](const httplib::Request& /*req*/, httplib::Response& /*res*/) {
-                     Utils::PrintTrace("Received exit request. Shutdown application...");
-                     _exitCode = 0;
-                     _server->stop();
-                     if (_loadThread)
+                     try
                      {
-                         _loadThread->join();
+                         Utils::PrintTrace("Received exit request. Shutdown application...");
+                         _exitCode = 0;
+                         _server->stop();
+                         if (_loadThread)
+                         {
+                             _loadThread->join();
+                         }
+                     }
+                     catch (const std::exception& e)
+                     {
+                         _errorStatus = 500;
+                         _errorMessage = e.what();
+                     }
+                     catch (...)
+                     {
+                         _errorStatus = 500;
+                         _errorMessage = "Could not exit";
                      }
                  });
 
     // Clear cache, reload
     _server->Get((std::string("/") + HtmlGenerator::RELOAD_CMD).c_str(),
                  [&](const httplib::Request& /*req*/, httplib::Response& /*res*/) {
-                     Utils::PrintTrace("Received reload request. Restart...");
-                     Utils::ResetIdGenerator();
-                     _exitCode = 1;
-                     _server->stop();
-                     if (_loadThread)
+                     try
                      {
-                         _loadThread->join();
+                         Utils::PrintTrace("Received reload request. Restart...");
+                         Utils::ResetIdGenerator();
+                         _exitCode = 1;
+                         _server->stop();
+                         if (_loadThread)
+                         {
+                             _loadThread->join();
+                         }
+                     }
+                     catch (const std::exception& e)
+                     {
+                         _errorStatus = 500;
+                         _errorMessage = e.what();
+                     }
+                     catch (...)
+                     {
+                         _errorStatus = 500;
+                         _errorMessage = "Could not restart";
                      }
                  });
 
     // Copy Samples
     _server->Get((std::string("/") + HtmlGenerator::COPY_SAMPLES_CMD).c_str(),
                  [&](const httplib::Request& /*req*/, httplib::Response& res) {
-                     Utils::PrintTrace("Received copy samples request. Copy and reload...");
-                     std::error_code ec;
-                     fs::path src = fs::absolute("../test_data/rules_match_test/input/ABC");
-                     fs::path dest = _inputDirectory / "ABC";
-                     fs::copy(src, dest, fs::copy_options::recursive, ec);
-                     if (ec.value() != 0)
+                     try
                      {
-                         res.status = 500;
-                         _errorMessage = fmt::format("Could not copy folder '{}' to '{}' ({})", src.string(),
-                                                     dest.string(), ec.message());
-                         return;
-                     }
+                         Utils::PrintTrace("Received copy samples request. Copy and reload...");
+                         std::error_code ec;
+                         fs::path src = fs::absolute("../test_data/rules_match_test/input/ABC");
+                         fs::path dest = _inputDirectory / "ABC";
+                         fs::copy(src, dest, fs::copy_options::recursive, ec);
+                         if (ec.value() != 0)
+                         {
+                             res.status = 500;
+                             _errorMessage = fmt::format("Could not copy folder '{}' to '{}' ({})", src.string(),
+                                                         dest.string(), ec.message());
+                             return;
+                         }
 
-                     ec.clear();
-                     src = fs::absolute("../test_data/rules_match_test/rules_match_test.csv");
-                     dest = _ruleSetFile;
-                     fs::copy_file(src, dest, fs::copy_options::overwrite_existing, ec);
-                     if (ec.value() != 0)
+                         ec.clear();
+                         src = fs::absolute("../test_data/rules_match_test/rules_match_test.csv");
+                         dest = _ruleSetFile;
+                         fs::copy_file(src, dest, fs::copy_options::overwrite_existing, ec);
+                         if (ec.value() != 0)
+                         {
+                             res.status = 500;
+                             _errorMessage = fmt::format("Could not copy file '{}' to '{}' ({})", src.string(),
+                                                         dest.string(), ec.message());
+                             return;
+                         }
+
+                         res.set_redirect(HtmlGenerator::RELOAD_CMD);
+                     }
+                     catch (const std::exception& e)
                      {
-                         res.status = 500;
-                         _errorMessage = fmt::format("Could not copy file '{}' to '{}' ({})", src.string(),
-                                                     dest.string(), ec.message());
-                         return;
+                         _errorStatus = 500;
+                         _errorMessage = e.what();
                      }
-
-                     res.set_redirect(HtmlGenerator::RELOAD_CMD);
+                     catch (...)
+                     {
+                         _errorStatus = 500;
+                         _errorMessage = "Could not copy samples";
+                     }
                  });
 
     // open folder
     _server->Get((std::string("/") + HtmlGenerator::OPEN_CMD).c_str(), [&](const httplib::Request& req,
                                                                            httplib::Response& res) {
-        Utils::PrintTrace("Received open folder request. Open folder...");
-        const std::string folder = GetParam(req.params, "folder", HtmlGenerator::OPEN_CMD);
-        if (folder.empty())
+        try
         {
-            res.status = 404;
-            std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
-                                                   HtmlGenerator::OPEN_CMD, "folder");
-            res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
-            return;
+            Utils::PrintTrace("Received open folder request. Open folder...");
+            const std::string folder = GetParam(req.params, "folder", HtmlGenerator::OPEN_CMD);
+            if (folder.empty())
+            {
+                res.status = 404;
+                std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
+                                                       HtmlGenerator::OPEN_CMD, "folder");
+                res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
+                return;
+            }
+            Utils::OpenFolder(folder, _explorer);
+            res.set_redirect(_lastUrl.c_str());
         }
-        Utils::OpenFolder(folder, _explorer);
-        res.set_redirect(_lastUrl.c_str());
+        catch (const std::exception& e)
+        {
+            _errorStatus = 500;
+            _errorMessage = e.what();
+        }
+        catch (...)
+        {
+            _errorStatus = 500;
+            _errorMessage = fmt::format("Could not open folder {}", GetUrl(req));
+        }
     });
 
     // input folder
     _server->Get((std::string("/") + HtmlGenerator::INPUT_CMD).c_str(),
                  [&](const httplib::Request& /*req*/, httplib::Response& res) {
-                     Utils::PrintTrace("Received open input folder request. Open input folder...");
-                     Utils::OpenFolder(_inputDirectory, _explorer);
-                     res.set_redirect(_lastUrl.c_str());
+                     try
+                     {
+                         Utils::PrintTrace("Received open input folder request. Open input folder...");
+                         Utils::OpenFolder(_inputDirectory, _explorer);
+                         res.set_redirect(_lastUrl.c_str());
+                     }
+                     catch (const std::exception& e)
+                     {
+                         _errorStatus = 500;
+                         _errorMessage = e.what();
+                     }
+                     catch (...)
+                     {
+                         _errorStatus = 500;
+                         _errorMessage = "Could not open input folder";
+                     }
                  });
 
     // Generate support infos
     _server->Get((std::string("/") + HtmlGenerator::SUPPORT_CMD).c_str(),
                  [&](const httplib::Request& /*req*/, httplib::Response& res) {
-                     Utils::PrintTrace("Received support request. Generate mail...");
-                     fs::path supportFilename = Utils::GetTempDir() / "support.txt";
-                     Utils::GenerateSupportMail(supportFilename, _ruleSetFile, _inputDirectory);
-                     Utils::EditFile(supportFilename, _editor);
-                     res.set_redirect(_lastUrl.c_str());
+                     try
+                     {
+                         Utils::PrintTrace("Received support request. Generate mail...");
+                         fs::path supportFilename = Utils::GetTempDir() / "support.txt";
+                         Utils::GenerateSupportMail(supportFilename, _ruleSetFile, _inputDirectory);
+                         Utils::EditFile(supportFilename, _editor);
+                         res.set_redirect(_lastUrl.c_str());
+                     }
+                     catch (const std::exception& e)
+                     {
+                         _errorStatus = 500;
+                         _errorMessage = e.what();
+                     }
+                     catch (...)
+                     {
+                         _errorStatus = 500;
+                         _errorMessage = "Could not generate support infos";
+                     }
                  });
 
     // edit file
     _server->Get((std::string("/") + HtmlGenerator::EDIT_CMD).c_str(), [&](const httplib::Request& req,
                                                                            httplib::Response& res) {
-        Utils::PrintTrace("Received edit file request. Open file...");
-        const std::string file = GetParam(req.params, "file", HtmlGenerator::EDIT_CMD);
-        if (file.empty())
+        try
         {
-            res.status = 404;
-            std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
-                                                   HtmlGenerator::EDIT_CMD, "file");
-            res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
-            return;
+            Utils::PrintTrace("Received edit file request. Open file...");
+            const std::string file = GetParam(req.params, "file", HtmlGenerator::EDIT_CMD);
+            if (file.empty())
+            {
+                res.status = 404;
+                std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
+                                                       HtmlGenerator::EDIT_CMD, "file");
+                res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
+                return;
+            }
+            Utils::EditFile(file, _editor);
+            res.set_redirect(_lastUrl.c_str());
         }
-        Utils::EditFile(file, _editor);
-        res.set_redirect(_lastUrl.c_str());
+        catch (const std::exception& e)
+        {
+            _errorStatus = 500;
+            _errorMessage = e.what();
+        }
+        catch (...)
+        {
+            _errorStatus = 500;
+            _errorMessage = fmt::format("Could not edit file {}", GetUrl(req));
+        }
     });
 
     // settings
     _server->Get((std::string("/") + HtmlGenerator::SETTINGS_CMD).c_str(),
                  [&](const httplib::Request& req, httplib::Response& res) {
-                     Utils::PrintTrace("Received settings request. Open file...");
-                     const std::string file = GetParam(req.params, "file", HtmlGenerator::SETTINGS_CMD);
-                     Utils::EditFile(_configFile, _editor);
-                     res.set_redirect(HtmlGenerator::RELOAD_CMD);
+                     try
+                     {
+                         Utils::PrintTrace("Received settings request. Open file...");
+                         const std::string file = GetParam(req.params, "file", HtmlGenerator::SETTINGS_CMD);
+                         Utils::EditFile(_configFile, _editor);
+                         res.set_redirect(HtmlGenerator::RELOAD_CMD);
+                     }
+                     catch (const std::exception& e)
+                     {
+                         _errorStatus = 500;
+                         _errorMessage = e.what();
+                     }
+                     catch (...)
+                     {
+                         _errorStatus = 500;
+                         _errorMessage = fmt::format("Could not edit file {}", GetUrl(req));
+                     }
                  });
 
     // Set Error Handler
