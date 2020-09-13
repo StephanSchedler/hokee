@@ -72,13 +72,13 @@ td.link:hover {
 }
 
 td.pos {
-  color: #080;
-  background-color:#CFC;
+  color: #0A0;
+  background-color:#DFD;
 }
 
 td.neg {
-  color: #C00;
-  background-color:#FCC;
+  color: #D00;
+  background-color:#FDD;
 }
 
 tr.year {
