@@ -31,17 +31,86 @@ th, td {
   padding: 5px;
   text-align: left;
 }
-table.item-table {
+
+table.nav, th.nav, td.nav {
+  border: hidden;
+  text-align:center;
+}
+th.fill, td.fill {
+  width: 50%;
+}
+
+main.pad-100 {
+  padding-top: 100px;
+}
+
+main.pad-50 {
+  padding-top: 50px;
+}
+
+table.item {
   box-shadow: 5px 5px 5px rgba(0,0,0, .2);
-  background-color: #E0E0E0;
+  background-color: #DDD;
+  text-align:center;
 }
-table.item-table tr:nth-child(even) {
-  background-color: #E0E0E0;
+table.item tr:nth-child(even) {
+  background-color: #DDD;
 }
-table.item-table tr:nth-child(odd) {
-  background-color: #F7F7F7;
+table.item tr:nth-child(odd) {
+  background-color: #BBB;
 }
-table.item-table th {
+table.item th {
   background-color: #333;
   color: white;
+  text-align: center;
+}
+table.item td.item {
+  text-align: center;
+}
+
+td.link {
+  cursor: pointer;
+}
+td.link:hover {
+  background-color:#FFF;
+  opacity: 0.75;
+}
+
+td.pos {
+  color: #080;
+  background-color:#CFC;
+}
+
+td.neg {
+  color: #C00;
+  background-color:#FCC;
+}
+
+tr.year {
+  font-weight: bold;
+}
+
+div.nav {
+  position: fixed;
+}
+
+div.msg {
+  text-align: center;
+  margin: auto;
+  width: 80%;
+  padding: 20px;
+}
+
+div.box {
+  background: #EEE;
+  border: 1px solid #777;
+  box-shadow: 5px 5px 5px rgba(0,0,0, .2);
+}
+
+div.red {
+  color: red;
+}
+
+p.black {
+  color: #333;
 }
