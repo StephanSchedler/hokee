@@ -5,7 +5,7 @@
 #include <mutex>
 #include <thread>
 #include <unordered_map>
-
+#include <mutex>
 
 namespace httplib
 {
@@ -26,6 +26,7 @@ class HttpServer
     std::unique_ptr<httplib::Server> _server;
     CsvDatabase _database{};
     std::unordered_map<std::string, std::pair<std::string, std::string>> _cache{};
+    std::mutex _cacheMutex{};
     std::string _lastUrl{"/"};
     fs::path _inputDirectory{};
     fs::path _ruleSetFile{};
