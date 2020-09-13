@@ -55,7 +55,7 @@ class HtmlGenerator
     static void AddItemHyperlink(HtmlElement* cell, int id);
 
     static void AddButton(HtmlElement* tableRow, const std::string& link, const std::string& tooltip, const std::string& image,
-                                 const std::string& text);
+                                 const std::string& text, bool blink = false);
     static void AddEditorHyperlink(HtmlElement* element, const fs::path& file);
 };
 

@@ -165,18 +165,22 @@ void HtmlElement::AddHyperlinkImage(const std::string& link, const std::string& 
     AddHyperlink(link, title)->AddImage(src, title, size);
 }
 
-void HtmlElement::AddImage(const std::string& src, const std::string& title, int width, int height)
+void HtmlElement::AddImage(const std::string& src, const std::string& title, int width, int height, bool blink)
 {
     auto element = AddElement("img");
     element->SetAttribute("src", src);
     element->SetAttribute("title", title);
     element->SetAttribute("width", fmt::format("{}", width));
     element->SetAttribute("height", fmt::format("{}", height));
+    if (blink)
+    {
+        element->SetAttribute("class", "blink");
+    }
 }
 
-void HtmlElement::AddImage(const std::string& src, const std::string& title, int size)
+void HtmlElement::AddImage(const std::string& src, const std::string& title, int size, bool blink)
 {
-    AddImage(src, title, size, size);
+    AddImage(src, title, size, size, blink);
 }
 
 HtmlElement* HtmlElement::AddLink(const std::string& text)

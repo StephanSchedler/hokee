@@ -16,12 +16,12 @@
 namespace hokee
 {
 void HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& link, const std::string& tooltip,
-                              const std::string& image, const std::string& text)
+                              const std::string& image, const std::string& text, bool blink)
 {
     auto cell = tableRow->AddTableCell();
     cell->SetAttribute("class", "nav link");
     auto hyperlink = cell->AddHyperlink(link, tooltip);
-    hyperlink->AddImage(image, tooltip, 42);
+    hyperlink->AddImage(image, tooltip, 42, blink);
     hyperlink->AddText(text);
 }
 
@@ -58,7 +58,7 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     else
     {
         AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-delete.png",
-                  fmt::format("Unassigned ({})", database.Unassigned.size()));
+                  fmt::format("Unassigned ({})", database.Unassigned.size()), true);
     }
 
     if (database.Issues.size() == 0)
@@ -69,7 +69,7 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     else
     {
         AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-warning.png",
-                  fmt::format("Issues ({})", database.Issues.size()));
+                  fmt::format("Issues ({})", database.Issues.size()), true);
     }
 
     auto cell = row->AddTableCell("&nbsp;");
@@ -248,7 +248,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
                     }
                 }
 
-                std::string cellStyle = "link item";
+                std::string cellStyle = "link";
                 if (sum > 0)
                 {
                     cellStyle += " pos";
