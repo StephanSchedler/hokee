@@ -29,13 +29,13 @@ th, td {
   padding: 5px;
   text-align: left;
 }
-table#t01 tr:nth-child(even) {
+table.t01 tr:nth-child(even) {
   background-color: #E0E0E0;
 }
-table#t01 tr:nth-child(odd) {
+table.t01 tr:nth-child(odd) {
   background-color: #F7F7F7;
 }
-table#t01 th {
+table.t01 th {
   background-color: #333;
   color: white;
 }

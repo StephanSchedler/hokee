@@ -167,7 +167,7 @@ if(CMAKE_EXPORT_COMPILE_COMMANDS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 install(DIRECTORY ${PROJECT_BINARY_DIR}/html DESTINATION .)
-install(DIRECTORY favicon DESTINATION ./html)
+install(DIRECTORY src/images/favicon DESTINATION ./html/images)
 
 enable_testing()
 add_test(NAME rules_match_test COMMAND rules_match_test)
