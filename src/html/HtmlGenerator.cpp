@@ -53,23 +53,23 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     if (database.Unassigned.size() == 0)
     {
         AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-warning2.png",
-                  fmt::format("Unassigned ({})", database.Unassigned.size()));
+                  fmt::format("Warnings ({})", database.Unassigned.size()));
     }
     else
     {
         AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-warning.png",
-                  fmt::format("Unassigned ({})", database.Unassigned.size()), true);
+                  fmt::format("Warnings ({})", database.Unassigned.size()), true);
     }
 
     if (database.Issues.size() == 0)
     {
         AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-delete2.png",
-                  fmt::format("Issues ({})", database.Issues.size()));
+                  fmt::format("Errors ({})", database.Issues.size()));
     }
     else
     {
         AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-delete.png",
-                  fmt::format("Issues ({})", database.Issues.size()), true);
+                  fmt::format("Errors ({})", database.Issues.size()), true);
     }
 
     auto cell = row->AddTableCell("&nbsp;");
@@ -530,7 +530,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         main->AddHeading(3, "Issues:");
         for (auto& issue : item->Issues)
         {
-            main->AddParagraph(issue)->SetAttribute("class", "err");
+            main->AddText(issue);
         }
     }
 
