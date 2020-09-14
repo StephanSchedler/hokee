@@ -77,13 +77,13 @@ void CsvDatabase::CheckRules()
                 {
                     Issues.push_back(rule1);
                 }
-                HtmlElement div("div", "ERROR: Redefinition of rule ");
-
-                HtmlGenerator::AddItemHyperlink(&div, rule2->Id);
-                div.AddText("(");
-                HtmlGenerator::AddEditorHyperlink(&div, rule2->File);
-                div.AddText("(");
-                rule1->Issues.push_back(div.ToString());
+                HtmlElement par("p", "ERROR: Redefinition of rule ");
+                par.SetAttribute("class", "err");
+                auto link = par.AddHyperlink(fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, rule2->Id), "Open item",
+                                 fmt::format("{:#04}", rule2->Id));
+                link->SetAttribute("class", "link");
+                HtmlGenerator::AddEditorHyperlink(&par, rule2->File);
+                rule1->Issues.push_back(par.ToString());
             }
         }
     }
