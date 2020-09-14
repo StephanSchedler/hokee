@@ -87,6 +87,7 @@ tr.year {
 
 div.nav {
   position: fixed;
+  width: 98%;
 }
 
 div.msg {
@@ -111,7 +112,7 @@ p.black {
 }
 
 img.blink {
-  animation: blink normal 5s infinite ease-in-out;
+  animation: blink normal 1s infinite ease-in-out;
 }
 
 @keyframes blink {
