@@ -52,23 +52,23 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
 
     if (database.Unassigned.size() == 0)
     {
-        AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-delete2.png",
+        AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-warning2.png",
                   fmt::format("Unassigned ({})", database.Unassigned.size()));
     }
     else
     {
-        AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-delete.png",
+        AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-warning.png",
                   fmt::format("Unassigned ({})", database.Unassigned.size()), true);
     }
 
     if (database.Issues.size() == 0)
     {
-        AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-warning2.png",
+        AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-delete2.png",
                   fmt::format("Issues ({})", database.Issues.size()));
     }
     else
     {
-        AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-warning.png",
+        AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-delete.png",
                   fmt::format("Issues ({})", database.Issues.size()), true);
     }
 
@@ -210,12 +210,14 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
     auto table = main->AddTable();
     table->SetAttribute("class", "item");
 
+    int rowCount = 0;
     for (int year = minYear; year <= maxYear; ++year)
     {
         AddSummaryTableHeader(table, categories);
 
         for (int month = 0; month <= 12; ++month)
         {
+            rowCount++;
             auto row = table->AddTableRow();
             std::string name = fmt::format("{}.{}", month, year);
             if (month == 0)
@@ -251,11 +253,11 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
                 std::string cellStyle = "link";
                 if (sum > 0)
                 {
-                    cellStyle += " pos";
+                    cellStyle += fmt::format(" pos pos-bg{}", rowCount % 2);
                 }
                 if (sum < 0)
                 {
-                    cellStyle += " neg";
+                    cellStyle += fmt::format(" neg neg-bg{}", rowCount % 2);
                 }
 
                 cell = row->AddTableCell();
@@ -435,12 +437,6 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
     return html.ToString();
 }
 
-void HtmlGenerator::AddItemHyperlink(HtmlElement* cell, int id)
-{
-    cell->AddHyperlink(fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, id), "Open item",
-                       fmt::format("{:#04}", id));
-}
-
 void HtmlGenerator::AddEditorHyperlink(HtmlElement* element, const fs::path& file)
 {
     if (fs::is_directory(file))
@@ -534,7 +530,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         main->AddHeading(3, "Issues:");
         for (auto& issue : item->Issues)
         {
-            main->AddParagraph(issue)->SetAttribute("style", "color:red;");
+            main->AddParagraph(issue)->SetAttribute("class", "err");
         }
     }
 
@@ -561,14 +557,14 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
 
 void HtmlGenerator::AddItemTableRow(HtmlElement* table, CsvItem* row)
 {
-    std::string backgroundColorStyle = "";
+    std::string rowStyle = "link";
     if (row->References.size() == 0)
     {
-        backgroundColorStyle = "background-color:#ffc;";
+        rowStyle += " unassigned";
     }
     if (row->Issues.size() > 0)
     {
-        backgroundColorStyle = "background-color:#fcc;";
+        rowStyle += " issue";
     }
 
     double value;
@@ -578,11 +574,11 @@ void HtmlGenerator::AddItemTableRow(HtmlElement* table, CsvItem* row)
         value = std::stod(row->Value);
         if (value < 0)
         {
-            colorStyle = "color: #FF0000;";
+            colorStyle = "neg";
         }
-        else
+        else if (value > 0)
         {
-            colorStyle = "color: #007F00;";
+            colorStyle = "pos";
         }
     }
     catch (const std::exception&)
@@ -591,10 +587,10 @@ void HtmlGenerator::AddItemTableRow(HtmlElement* table, CsvItem* row)
     }
 
     auto htmlRow = table->AddTableRow();
-    htmlRow->SetAttribute("style", backgroundColorStyle);
-    auto cell = htmlRow->AddTableCell();
-    AddItemHyperlink(cell, row->Id);
+    htmlRow->SetAttribute("class", rowStyle);
+    htmlRow->SetAttribute("onclick", fmt::format("window.location='{}?id={}';", ITEM_HTML, row->Id));
 
+    auto cell = htmlRow->AddTableCell(fmt::format("{}", row->Id));
     htmlRow->AddTableCell(row->Category.empty() ? "&nbsp;" : row->Category);
     htmlRow->AddTableCell(row->PayerPayee.empty() ? "&nbsp;" : row->PayerPayee);
     htmlRow->AddTableCell(row->Description.empty() ? "&nbsp;" : row->Description);
@@ -602,7 +598,7 @@ void HtmlGenerator::AddItemTableRow(HtmlElement* table, CsvItem* row)
     htmlRow->AddTableCell(row->Date.ToString().empty() ? "&nbsp;" : row->Date.ToString());
     htmlRow->AddTableCell(row->Account.empty() ? "&nbsp;" : row->Account);
     cell = htmlRow->AddTableCell(row->Value.empty() ? "&nbsp;" : row->Value);
-    cell->SetAttribute("style", colorStyle);
+    cell->SetAttribute("class", colorStyle);
 }
 
 } // namespace hokee
