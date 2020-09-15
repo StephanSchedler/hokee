@@ -42,12 +42,16 @@ th.fill, td.fill {
   width: 100000px;
 }
 
-main.pad-100 {
+.pad-100 {
   padding-top: 100px;
 }
 
-main.pad-50 {
+.pad-50 {
   padding-top: 50px;
+}
+
+.pad-5 {
+  padding-top: 5px;
 }
 
 table.item {
@@ -94,6 +98,24 @@ table.item th {
   background: linear-gradient(180deg, #55A 0%, #337 65%, #448 100%); 
   background-color: #337;
   color: white;
+}
+
+table.err {
+  border: hidden;
+  background: none;
+}
+
+table.err td {
+  border: hidden;
+  font-weight: bold;
+}
+
+table.err td.err {
+  color: #F00;
+}
+
+table.err td.warn {
+  color: #DB0;
 }
 
 td.link, tr.link {
@@ -156,11 +178,6 @@ div.red {
 
 p.black {
   color: #333;
-}
-
-p.err {
-  color: #F00;
-  font-weight: bold;
 }
 
 img.blink {

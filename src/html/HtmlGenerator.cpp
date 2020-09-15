@@ -523,14 +523,39 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     {
         divText += fmt::format(":{}", item->Line);
     }
-    main->AddDivision(divText);
-
-    if (!item->Issues.empty())
+    auto div = main->AddDivision(divText);
+    div->SetAttribute("class", "pad-5");
+    
+    if (!item->Issues.empty() || item->References.empty())
     {
         main->AddHeading(3, "Issues:");
+        table = main->AddTable();
+        table->SetAttribute("class", "err");
+
+        if (item->References.empty())
+        {
+            auto row = table->AddTableRow();
+            auto cell = row->AddTableCell();
+            cell->AddImage("48-sign-warning.png", "warning", 20);
+
+            if (isItem)
+            {
+                cell = row->AddTableCell("WARNING: Item has no matching rule");
+            }
+            else
+            {
+                cell = row->AddTableCell("WARNING: Rule has no matching item(s)");
+            }
+            cell->SetAttribute("class", "warn fill");
+        }
+
         for (auto& issue : item->Issues)
         {
-            main->AddText(issue);
+            auto row = table->AddTableRow();
+            auto cell = row->AddTableCell();
+            cell->AddImage("48-sign-delete.png", "error", 20);
+            cell = row->AddTableCell(issue);
+            cell->SetAttribute("class", "err fill");
         }
     }
 
