@@ -23,7 +23,7 @@ a:active {
 }
 
 table {
-  width:100%;
+  width: 100%;
 }
 table, th, td {
   border: 1px solid #333;
@@ -39,7 +39,7 @@ table.nav, th.nav, td.nav {
   text-align:center;
 }
 th.fill, td.fill {
-  width: 50%;
+  width: 100000px;
 }
 
 main.pad-100 {
@@ -91,6 +91,7 @@ table.item tr.neg:nth-child(odd) {
 }
 
 table.item th {
+  background: linear-gradient(180deg, #55A 0%, #337 65%, #448 100%); 
   background-color: #337;
   color: white;
 }
@@ -99,8 +100,8 @@ td.link, tr.link {
   cursor: pointer;
 }
 td.link:hover, tr.link:hover {
-  background-color:#FFF;
-  opacity: 0.75;
+  background: linear-gradient(180deg, #FFF 0%, #FFB 65%, #FFC 100%); 
+  opacity: 0.5;
 }
 
 td.pos {
@@ -132,8 +133,8 @@ tr.year {
 }
 
 div.nav {
+  width: calc(100% - 18px);
   position: fixed;
-  width: 98%;
 }
 
 div.msg {
@@ -144,7 +145,7 @@ div.msg {
 }
 
 div.box {
-  background: #DDF;
+  background: linear-gradient(180deg, #EEF 0%, #CCF 65%, #DDF 100%); 
   border: 1px solid #777;
   box-shadow: 5px 5px 5px rgba(0,0,0, .2);
 }
