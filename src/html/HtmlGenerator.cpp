@@ -518,7 +518,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     AddItemTableHeader(table);
     AddItemTableRow(table, item.get());
 
-    std::string divText = item->File.filename().string();
+    std::string divText = item->File.string();
     if (item->Line >= 0)
     {
         divText += fmt::format(":{}", item->Line);
@@ -561,11 +561,11 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
 
     if (isItem)
     {
-        main->AddHeading(3, "Rules:");
+        main->AddHeading(3, "Rule(s):");
     }
     else
     {
-        main->AddHeading(3, "Items:");
+        main->AddHeading(3, "Item(s):");
     }
 
     table = main->AddDivision()->AddTable();
