@@ -77,6 +77,8 @@ void CsvDatabase::CheckRules()
                 {
                     Issues.push_back(rule1);
                 }
+
+                //TODO vereinheitlichen & unassigned as warnings
                 HtmlElement par("p", "");
                 par.SetAttribute("class", "err");
                 par.AddImage("48-sign-delete.png", "warning", 24);
