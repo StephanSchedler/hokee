@@ -77,16 +77,7 @@ void CsvDatabase::CheckRules()
                 {
                     Issues.push_back(rule1);
                 }
-
-                //TODO vereinheitlichen & unassigned as warnings
-                HtmlElement par("p", "");
-                par.SetAttribute("class", "err");
-                par.AddImage("48-sign-delete.png", "warning", 24);
-                par.AddText("ERROR: Redefinition of rule ");
-                auto link = par.AddHyperlink(fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, rule2->Id), "Open item",
-                                 fmt::format("{:#04}", rule2->Id));
-                link->SetAttribute("class", "link");
-                rule1->Issues.push_back(par.ToString());
+                rule1->Issues.push_back(fmt::format("ERROR: Redefinition of rule {}", rule2->Id));
             }
         }
     }
