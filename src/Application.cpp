@@ -1,5 +1,4 @@
 #include "Application.h"
-#include "html/HtmlGenerator.h"
 #include "HttpServer.h"
 #include "InternalException.h"
 #include "Utils.h"
@@ -8,6 +7,8 @@
 #include "csv/CsvParser.h"
 #include "csv/CsvWriter.h"
 #include "hokee.h"
+#include "html/HtmlGenerator.h"
+
 
 #include <chrono>
 #include <fmt/format.h>
@@ -110,7 +111,7 @@ Application::Application(int argc, const char* argv[])
         ReadSettings();
         fs::path supportFilename = Utils::GetTempDir() / "support.txt";
         Utils::GenerateSupportMail(supportFilename, _ruleSetFile, _inputDirectory);
-        Utils::EditFile(supportFilename, _config.GetEditor());
+        Utils::RunSync(_config.GetEditor(), {fs::absolute(supportFilename).string()});
         std::exit(EXIT_SUCCESS);
     }
 }
@@ -193,7 +194,7 @@ std::unique_ptr<CsvDatabase> Application::RunInteractive()
         if (_editRules || (!_batchMode && Utils::AskYesNoQuestion("Edit rules & categories?")))
         {
             std::string editor = _config.GetEditor();
-            Utils::EditFile(_ruleSetFile, editor);
+            Utils::RunSync(editor, {fs::absolute(_ruleSetFile).string()});
             restart = true;
             continue;
         }

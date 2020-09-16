@@ -120,10 +120,7 @@ void CsvDatabase::AddRules(const fs::path& ruleSetFile, const std::string& edito
     Utils::PrintInfo(fmt::format("Open {}", unassignedCsv.string()));
 
     std::string cmd = fmt::format("{} \"{}\"", editor, fs::absolute(unassignedCsv).string());
-    if (Utils::RunSync(cmd.c_str()) < 0)
-    {
-        throw UserException(fmt::format("Could not open editor: {}", cmd));
-    }
+    Utils::RunSync(cmd.c_str());
 
     Utils::PrintInfo(fmt::format("Reload {}", unassignedCsv.string()));
     CsvParser csvParser(unassignedCsv, CsvRules::GetFormat());

@@ -474,7 +474,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                 res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
                 return;
             }
-            Utils::OpenFolder(folder, _explorer);
+            Utils::RunSync(_explorer, {fs::absolute(folder).string()});
             res.set_redirect(_lastUrl.c_str());
         }
         catch (const std::exception& e)
@@ -495,7 +495,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      try
                      {
                          Utils::PrintTrace("Received open input folder request. Open input folder...");
-                         Utils::OpenFolder(_inputDirectory, _explorer);
+                         Utils::RunSync(_explorer, {fs::absolute(_inputDirectory).string()});
                          res.set_redirect(_lastUrl.c_str());
                      }
                      catch (const std::exception& e)
@@ -518,7 +518,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                          Utils::PrintTrace("Received support request. Generate mail...");
                          fs::path supportFilename = Utils::GetTempDir() / "support.txt";
                          Utils::GenerateSupportMail(supportFilename, _ruleSetFile, _inputDirectory);
-                         Utils::EditFile(supportFilename, _editor);
+                         Utils::RunSync(_editor, {fs::absolute(supportFilename).string()});
                          res.set_redirect(_lastUrl.c_str());
                      }
                      catch (const std::exception& e)
@@ -548,7 +548,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                 res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
                 return;
             }
-            Utils::EditFile(file, _editor);
+            Utils::RunSync(_editor, {fs::absolute(file).string()});
             res.set_redirect(_lastUrl.c_str());
         }
         catch (const std::exception& e)
@@ -570,7 +570,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          Utils::PrintTrace("Received settings request. Open file...");
                          const std::string file = GetParam(req.params, "file", HtmlGenerator::SETTINGS_CMD);
-                         Utils::EditFile(_configFile, _editor);
+                         Utils::RunSync(_editor, {fs::absolute(_configFile).string()});
                          res.set_redirect(HtmlGenerator::RELOAD_CMD);
                      }
                      catch (const std::exception& e)
