@@ -159,29 +159,6 @@ bool ExtractMissingString(std::string& extracted, const std::string& original, c
     return !extracted.empty();
 }
 
-void EditFile(const fs::path& file, const std::string& editor)
-{
-    std::string cmd = fmt::format("{} \"{}\"", editor, fs::absolute(file).string());
-    if (Utils::RunSync(cmd.c_str()) != 0)
-    {
-        throw UserException(fmt::format("Could not open editor: {}", cmd));
-    }
-}
-
-void OpenFolder(const fs::path& folder, const std::string& explorer)
-{
-    std::string cmd = fmt::format("{} \"{}\"", explorer, fs::absolute(folder).string());
-    int result = Utils::RunSync(cmd.c_str());
-#ifdef _MSC_VER
-    if (result < 0)
-#else
-    if (result != 0)
-#endif
-    {
-        throw UserException(fmt::format("Could not open folder: {}", cmd));
-    }
-}
-
 void ResetIdGenerator()
 {
     _uniqueId = 0;
@@ -256,15 +233,12 @@ bool AskYesNoQuestion(const std::string& question)
     return answer == 'Y' || answer == 'y';
 }
 
-void RunAsync(const std::string& cmd)
+void RunAsync(const std::string& cmd, const std::vector<std::string>& args)
 {
     std::thread browserThread([=] {
         try
         {
-            if (Utils::RunSync(cmd.c_str()) != 0)
-            {
-                throw UserException(fmt::format("Could run async: {}", cmd));
-            }
+            Utils::RunSync(cmd.c_str(), args);
         }
         catch (const UserException& e)
         {
@@ -282,10 +256,20 @@ void RunAsync(const std::string& cmd)
     browserThread.detach();
 }
 
-int RunSync(const std::string& cmd)
+void RunSync(const std::string& cmd, const std::vector<std::string>& args)
 {
-    Utils::PrintInfo(fmt::format("Run: {}", cmd));
-    return std::system(cmd.c_str());
+    std::string command = cmd;
+    for (const auto& arg : args)
+    {
+        command.append(fmt::format(" \"{}\"", arg));
+    }
+
+    Utils::PrintInfo(fmt::format("Run command '{}'", command));
+    int exitCode = std::system(command.c_str());
+    if (exitCode != 0)
+    {
+        Utils::PrintWarning(fmt::format("Command '{}' returned non-zero exit code {}", command, exitCode));
+    }
 }
 
 std::string GetEnv(const std::string& name)
@@ -425,8 +409,8 @@ bool CompareFiles(const fs::path& file1, const fs::path& file2)
         }
         if (c1 != c2)
         {
-            Utils::PrintError(
-                fmt::format("Files {}, {} differ in line {}:{}. (expected: '{}', found: '{}')", file1.string(), file2.string(), line, col, c1, c2));
+            Utils::PrintError(fmt::format("Files {}, {} differ in line {}:{}. (expected: '{}', found: '{}')",
+                                          file1.string(), file2.string(), line, col, c1, c2));
             return false;
         }
     }
