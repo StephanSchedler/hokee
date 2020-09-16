@@ -184,6 +184,14 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
         return;
     }
 
+    // support.html
+    if (req.path == std::string("/") + HtmlGenerator::SUPPORT_HTML)
+    {
+        SetContent(req, res, HtmlGenerator::GetSupportPage(_database, _ruleSetFile, _inputDirectory),
+                   CONTENT_TYPE_HTML);
+        return;
+    }
+
     // rules.html
     if (req.path == std::string("/") + HtmlGenerator::RULES_HTML)
     {
@@ -507,29 +515,6 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          _errorStatus = 500;
                          _errorMessage = "Could not open input folder";
-                     }
-                 });
-
-    // Generate support infos
-    _server->Get((std::string("/") + HtmlGenerator::SUPPORT_CMD).c_str(),
-                 [&](const httplib::Request& /*req*/, httplib::Response& res) {
-                     try
-                     {
-                         Utils::PrintTrace("Received support request. Generate mail...");
-                         fs::path supportFilename = Utils::GetTempDir() / "support.txt";
-                         Utils::GenerateSupportMail(supportFilename, _ruleSetFile, _inputDirectory);
-                         Utils::RunSync(_editor, {fs::absolute(supportFilename).string()});
-                         res.set_redirect(_lastUrl.c_str());
-                     }
-                     catch (const std::exception& e)
-                     {
-                         _errorStatus = 500;
-                         _errorMessage = e.what();
-                     }
-                     catch (...)
-                     {
-                         _errorStatus = 500;
-                         _errorMessage = "Could not generate support infos";
                      }
                  });
 

@@ -345,51 +345,76 @@ void TerminationHandler(const UserException& e)
     std::abort();
 }
 
-void GenerateSupportMail(const fs::path& outputFile, const fs::path& ruleSetFile, const fs::path& inputDir)
+std::string EscapeHtml(std::string text)
 {
-    Utils::PrintInfo(fmt::format("Write support mail {}", outputFile.string()));
-    std::ofstream outputFileStream;
-    outputFileStream.open(outputFile, std::ios::binary);
+    std::stringstream buffer{};
+    for (auto& character : text)
+    {
+        switch (character)
+        {
+            case '&':
+                buffer << "&amp;";
+                break;
+            case '\"':
+                buffer << "&quot;";
+                break;
+            case '\'':
+                buffer << "&apos;";
+                break;
+            case '<':
+                buffer << "&lt;";
+                break;
+            case '>':
+                buffer << "&gt;";
+                break;
+            default:
+                buffer << character;
+                break;
+        }
+    }
+    return buffer.str();
+}
 
-    outputFileStream << "Fill the section below and send it to: ";
-    outputFileStream << std::string("schedler").append("@").append("paderborn").append(".com") << std::endl;
-    outputFileStream << std::endl;
-    outputFileStream << "=============================================" << std::endl;
-    outputFileStream << fmt::format("Problem report for hokee {}", PROJECT_VERSION) << std::endl;
-    outputFileStream << "=============================================" << std::endl;
-    outputFileStream << std::endl;
-    outputFileStream << "Problem Description:" << std::endl;
-    outputFileStream << std::endl;
-    outputFileStream << "  >>> ADD SHORT PROBLEM DESCRIPTION <<<" << std::endl;
-    outputFileStream << std::endl;
-    outputFileStream << "Further Infos:" << std::endl;
-    outputFileStream << std::endl;
+std::string GenerateSupportMail(const fs::path& ruleSetFile, const fs::path& inputDir)
+{
+    std::stringstream mail{};
+    mail << std::endl;
+    mail << "=============================================" << std::endl;
+    mail << fmt::format("Problem report for hokee {}", PROJECT_VERSION) << std::endl;
+    mail << "=============================================" << std::endl;
+    mail << std::endl;
+    mail << "Problem Description:" << std::endl;
+    mail << std::endl;
+    mail << "  >>> ADD SHORT PROBLEM DESCRIPTION <<<" << std::endl;
+    mail << std::endl;
+    mail << "Further Infos:" << std::endl;
+    mail << std::endl;
 #ifdef _MSC_VER
-    outputFileStream << "  Windows >>> ADD OS VERSION <<<" << std::endl;
+    mail << "  Windows >>> ADD OS VERSION <<<" << std::endl;
 #elif __APPLE__
     outputFileStream << "  MacOS >>> ADD OS VERSION <<<" << std::endl;
 #else
     outputFileStream << "  Linux >>> ADD DISTRO & VERSION <<<" << std::endl;
 #endif
-    outputFileStream << std::endl;
+    mail << std::endl;
 
-    outputFileStream << "=============================================" << std::endl;
-    outputFileStream << ruleSetFile << std::endl;
-    outputFileStream << "=============================================" << std::endl;
-    outputFileStream << ReadFileObfuscated(ruleSetFile, true) << std::endl;
+    mail << "=============================================" << std::endl;
+    mail << ruleSetFile << std::endl;
+    mail << "=============================================" << std::endl;
+    mail << ReadFileObfuscated(ruleSetFile, true) << std::endl;
 
     for (const auto& file : fs::recursive_directory_iterator(inputDir))
     {
         if (fs::is_regular_file(file.path()))
         {
-            outputFileStream << "=============================================" << std::endl;
-            outputFileStream << file.path() << std::endl;
-            outputFileStream << "=============================================" << std::endl;
-            outputFileStream << ReadFileObfuscated(file.path(), file.path().extension() != ".ini") << std::endl;
+            mail << "=============================================" << std::endl;
+            mail << file.path() << std::endl;
+            mail << "=============================================" << std::endl;
+            mail << ReadFileObfuscated(file.path(), file.path().extension() != ".ini") << std::endl;
         }
     }
 
-    outputFileStream.close();
+    return mail.str();
 }
 
 bool CompareFiles(const fs::path& file1, const fs::path& file2)
