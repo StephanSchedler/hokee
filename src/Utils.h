@@ -34,7 +34,8 @@ std::string GetEnv(const std::string& name);
 fs::path GetHomeDir();
 fs::path GetTempDir();
 
-void GenerateSupportMail(const fs::path& filename, const fs::path& ruleSetFile, const fs::path& inputDir);
+std::string EscapeHtml(std::string text);
+std::string GenerateSupportMail(const fs::path& ruleSetFile, const fs::path& inputDir);
 
 void TerminationHandler();
 void TerminationHandler(const std::exception& e);

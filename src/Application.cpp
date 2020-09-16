@@ -109,9 +109,11 @@ Application::Application(int argc, const char* argv[])
     if (_supportMode)
     {
         ReadSettings();
-        fs::path supportFilename = Utils::GetTempDir() / "support.txt";
-        Utils::GenerateSupportMail(supportFilename, _ruleSetFile, _inputDirectory);
-        Utils::RunSync(_config.GetEditor(), {fs::absolute(supportFilename).string()});
+        std::string mail = Utils::GenerateSupportMail(_ruleSetFile, _inputDirectory);
+        
+        Utils::PrintInfo(fmt::format("Fill the section below and send it to schedler@paderborn.com"));
+        std::cout << mail << std::endl;
+        
         std::exit(EXIT_SUCCESS);
     }
 }

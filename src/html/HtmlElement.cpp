@@ -125,6 +125,11 @@ HtmlElement* HtmlElement::AddDivision(const std::string& text)
     return AddElement("div", text);
 }
 
+HtmlElement* HtmlElement::AddForm(const std::string& text)
+{
+    return AddElement("form", text);
+}
+
 HtmlElement* HtmlElement::AddFooter(const std::string& text)
 {
     return AddElement("footer", text);
@@ -188,6 +193,11 @@ HtmlElement* HtmlElement::AddLink(const std::string& text)
     return AddElement("link", text);
 }
 
+HtmlElement* HtmlElement::AddInput(const std::string& text)
+{
+    return AddElement("input", text);
+}
+
 HtmlElement* HtmlElement::AddMain(const std::string& text)
 {
     return AddElement("main", text);
@@ -226,6 +236,11 @@ HtmlElement* HtmlElement::AddTableHeaderCell(const std::string& text)
 HtmlElement* HtmlElement::AddTableRow(const std::string& text)
 {
     return AddElement("tr", text);
+}
+
+HtmlElement* HtmlElement::AddTextarea(const std::string& text)
+{
+    return AddElement("textarea", text);
 }
 
 HtmlElement* HtmlElement::AddTitle(const std::string& text)

@@ -87,7 +87,7 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     AddButton(row, SEARCH_HTML, "Open Search Page", "48-search.png", "Search");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
     AddButton(row, SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
-    AddButton(row, SUPPORT_CMD, "Generate Support Mail", "48-envelope-letter.png", "Support");
+    AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Support");
     AddButton(row, HELP_HTML, "Open Online Help", "48-sign-question.png", "Help");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
 }
@@ -330,7 +330,7 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
 
     AddButton(row, RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
-    AddButton(row, SUPPORT_CMD, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Support");
+    AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Support");
     AddButton(row, SETTINGS_CMD, "Open Settings File", "48-cogs.png", "Settings");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
 
@@ -357,6 +357,40 @@ std::string HtmlGenerator::GetHelpPage(const CsvDatabase& database)
     std::stringstream sstream{};
     sstream << ifstream.rdbuf();
     main->AddText(sstream.str());
+
+    return html.ToString();
+}
+
+std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs::path& ruleSetFile, const fs::path& inputDir)
+{
+    HtmlElement html;
+    AddHtmlHead(&html);
+
+    auto body = html.AddBody();
+    AddNavigationHeader(body, database);
+
+    auto main = body->AddMain();
+    main->SetAttribute("class", "pad-100");
+
+    main->AddHeading(2, "Generate Support Mail");
+    main->AddParagraph("Fill the section below and send it to schedler@paderborn.com");
+
+    auto form = main->AddForm();
+    form->SetAttribute("action", "mailto:schedler@paderborn.com");
+    form->SetAttribute("method", "post");
+    form->SetAttribute("enctype", "text/plain");
+
+    auto p = form->AddParagraph();
+    auto textarea = p->AddTextarea();
+    textarea->SetAttribute("name", "body");
+    textarea->SetAttribute("rows", "20");
+    std::string mail = Utils::GenerateSupportMail(ruleSetFile, inputDir);
+    textarea->AddText(Utils::EscapeHtml(mail));
+
+    p = form->AddParagraph();
+    auto input = p->AddInput();
+    input->SetAttribute("type", "submit");
+    input->SetAttribute("value", "Submit");
 
     return html.ToString();
 }

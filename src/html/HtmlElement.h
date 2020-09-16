@@ -41,10 +41,12 @@ class HtmlElement : public IPrintable
     HtmlElement* AddBold(const std::string& text = "");
     HtmlElement* AddDivision(const std::string& text = "");
     HtmlElement* AddFooter(const std::string& text = "");
+    HtmlElement* AddForm(const std::string& text = "");
     HtmlElement* AddHead(const std::string& text = "");
     HtmlElement* AddHeader(const std::string& text = "");
     HtmlElement* AddHeading(int size, const std::string& text = "");
     HtmlElement* AddHyperlink(const std::string& link, const std::string& title, const std::string& text = "");
+    HtmlElement* AddInput(const std::string& text = "");
     HtmlElement* AddLink(const std::string& text = "");
     HtmlElement* AddMain(const std::string& text = "");
     HtmlElement* AddMeta(const std::string& text = "");
@@ -53,6 +55,7 @@ class HtmlElement : public IPrintable
     HtmlElement* AddTable(const std::string& text = "");
     HtmlElement* AddTableCell(const std::string& text = "");
     HtmlElement* AddTableHeaderCell(const std::string& text = "");
+    HtmlElement* AddTextarea(const std::string& text = "");
     HtmlElement* AddTableRow(const std::string& text = "");
     HtmlElement* AddTitle(const std::string& text = "");
 
