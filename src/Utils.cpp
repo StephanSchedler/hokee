@@ -392,9 +392,9 @@ std::string GenerateSupportMail(const fs::path& ruleSetFile, const fs::path& inp
 #ifdef _MSC_VER
     mail << "  Windows >>> ADD OS VERSION <<<" << std::endl;
 #elif __APPLE__
-    outputFileStream << "  MacOS >>> ADD OS VERSION <<<" << std::endl;
+    mail << "  MacOS >>> ADD OS VERSION <<<" << std::endl;
 #else
-    outputFileStream << "  Linux >>> ADD DISTRO & VERSION <<<" << std::endl;
+    mail << "  Linux >>> ADD DISTRO & VERSION <<<" << std::endl;
 #endif
     mail << std::endl;
 
