@@ -373,24 +373,36 @@ std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs:
     main->SetAttribute("class", "pad-100");
 
     main->AddHeading(2, "Generate Support Mail");
-    main->AddParagraph("Fill the section below and send it to schedler@paderborn.com");
 
     auto form = main->AddForm();
     form->SetAttribute("action", "mailto:schedler@paderborn.com");
     form->SetAttribute("method", "post");
     form->SetAttribute("enctype", "text/plain");
 
-    auto p = form->AddParagraph();
-    auto textarea = p->AddTextarea();
+    auto table = form->AddTable();
+    table->SetAttribute("class", "form");
+    auto row = table->AddTableRow();
+    row->SetAttribute("class", "form");
+
+    auto cell = table->AddTableCell("Fill the section below and send it to schedler@paderborn.com");
+    cell->SetAttribute("class", "form fill");
+
+    cell = table->AddTableCell();
+    cell->SetAttribute("class", "form");
+    
+    auto input = cell->AddInput();
+    input->SetAttribute("type", "submit");
+    input->SetAttribute("value", "Submit");
+
+    row = table->AddTableRow();
+    row->SetAttribute("class", "form");
+
+    auto textarea = form->AddTextarea();
     textarea->SetAttribute("name", "body");
     textarea->SetAttribute("rows", "20");
     std::string mail = Utils::GenerateSupportMail(ruleSetFile, inputDir);
     textarea->AddText(Utils::EscapeHtml(mail));
 
-    p = form->AddParagraph();
-    auto input = p->AddInput();
-    input->SetAttribute("type", "submit");
-    input->SetAttribute("value", "Submit");
 
     return html.ToString();
 }
