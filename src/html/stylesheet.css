@@ -36,8 +36,15 @@ th, td {
 
 table.nav, th.nav, td.nav {
   border: hidden;
-  text-align:center;
+  text-align: center;
 }
+
+table.form, th.form, td.form, tr.form {
+  border: hidden;
+  text-align: left;
+  vertical-align: bottom;
+}
+
 th.fill, td.fill {
   width: 100000px;
 }
@@ -181,13 +188,13 @@ p.black {
 }
 
 input[type=text], textarea {
-  width: 100%;
+  width: calc(100% - 10px);
   padding: 12px;
   border: 1px solid #333;
   border-radius: 4px;
   box-sizing: border-box;
-  margin-top: 6px;
-  margin-bottom: 16px;
+  margin-top: 0px;
+  margin-left: 5px;
   resize: vertical;
 }
 
