@@ -361,7 +361,8 @@ std::string HtmlGenerator::GetHelpPage(const CsvDatabase& database)
     return html.ToString();
 }
 
-std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs::path& ruleSetFile, const fs::path& inputDir)
+std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs::path& ruleSetFile,
+                                          const fs::path& inputDir)
 {
     HtmlElement html;
     AddHtmlHead(&html);
@@ -389,7 +390,7 @@ std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs:
 
     cell = table->AddTableCell();
     cell->SetAttribute("class", "form");
-    
+
     auto input = cell->AddInput();
     input->SetAttribute("type", "submit");
     input->SetAttribute("value", "Submit");
@@ -402,7 +403,6 @@ std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs:
     textarea->SetAttribute("rows", "20");
     std::string mail = Utils::GenerateSupportMail(ruleSetFile, inputDir);
     textarea->AddText(Utils::EscapeHtml(mail));
-
 
     return html.ToString();
 }
@@ -525,7 +525,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         if (i->Id == id)
         {
             item = i;
-            title = fmt::format("Item {}", id);
+            title = fmt::format("Item&nbsp;{}", id);
             isItem = true;
             break;
         }
@@ -537,7 +537,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
             if (r->Id == id)
             {
                 item = r;
-                title = fmt::format("Rule {}", id);
+                title = fmt::format("Rule&nbsp;{}", id);
                 break;
             }
         }
@@ -556,10 +556,39 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
 
     auto main = body->AddMain();
     main->SetAttribute("class", "pad-100");
-    auto h2 = main->AddHeading(2, title);
-    AddEditorHyperlink(h2, item->File);
 
-    auto table = main->AddDivision()->AddTable();
+    auto table = main->AddTable();
+    table->SetAttribute("class", "form");
+    auto row = table->AddTableRow();
+    row->SetAttribute("class", "form");
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+
+    auto h = cell->AddHeading(2, title);
+    h->SetAttribute("style", "margin-bottom: 0px;");
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form fill");
+
+    if (database.HasItem(id-1))
+    {
+        cell = row->AddTableCell();
+        cell->SetAttribute("class", "form");
+        auto button = cell->AddDivision("Prev");
+        button->SetAttribute("class", "button");
+        button->SetAttribute("onclick", fmt::format("window.location='{}?id={}';", ITEM_HTML, id - 1));
+    }
+
+    if (database.HasItem(id+1))
+    {
+        cell = row->AddTableCell();
+        cell->SetAttribute("class", "form");
+        auto button = cell->AddDivision("Next");
+        button->SetAttribute("class", "button");
+        button->SetAttribute("onclick", fmt::format("window.location='{}?id={}';", ITEM_HTML, id + 1));
+    }
+
+    table = main->AddDivision()->AddTable();
     table->SetAttribute("class", "item");
     AddItemTableHeader(table);
     AddItemTableRow(table, item.get());
@@ -571,7 +600,8 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     }
     auto div = main->AddDivision(divText);
     div->SetAttribute("class", "pad-5");
-    
+    AddEditorHyperlink(div, item->File);
+
     if (!item->Issues.empty() || item->References.empty())
     {
         main->AddHeading(3, "Issues:");
@@ -580,8 +610,8 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
 
         if (item->References.empty())
         {
-            auto row = table->AddTableRow();
-            auto cell = row->AddTableCell();
+            row = table->AddTableRow();
+            cell = row->AddTableCell();
             cell->AddImage("48-sign-warning.png", "warning", 20);
 
             if (isItem)
@@ -597,8 +627,8 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
 
         for (auto& issue : item->Issues)
         {
-            auto row = table->AddTableRow();
-            auto cell = row->AddTableCell();
+            row = table->AddTableRow();
+            cell = row->AddTableCell();
             cell->AddImage("48-sign-delete.png", "error", 20);
             cell = row->AddTableCell(issue);
             cell->SetAttribute("class", "err fill");
