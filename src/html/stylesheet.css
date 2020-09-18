@@ -13,7 +13,7 @@ a:visited {
 }
 a:hover {
   cursor: pointer;
-  opacity: 0.75;
+  opacity: 0.5;
   text-decoration: none;
   color: inherit;
 }
@@ -103,7 +103,6 @@ table.item tr.neg:nth-child(odd) {
 
 table.item th {
   background: linear-gradient(180deg, #55A 0%, #337 65%, #448 100%); 
-  background-color: #337;
   color: white;
 }
 
@@ -176,6 +175,7 @@ div.msg {
 div.box {
   background: linear-gradient(180deg, #EEF 0%, #CCF 65%, #DDF 100%); 
   border: 1px solid #777;
+  border-radius: 5px;
   box-shadow: 5px 5px 5px rgba(0,0,0, .2);
 }
 
@@ -191,24 +191,28 @@ input[type=text], textarea {
   width: calc(100% - 10px);
   padding: 12px;
   border: 1px solid #333;
-  border-radius: 4px;
+  border-radius: 5px;
   box-sizing: border-box;
   margin-top: 0px;
   margin-left: 5px;
   resize: vertical;
+  box-shadow: 5px 5px 5px rgba(0,0,0, .2);
 }
 
-input[type=submit] {
-  background-color: #33F;
+input[type=submit], div.button {
+  background: linear-gradient(180deg, #55A 0%, #337 65%, #448 100%); 
   color: white;
-  padding: 12px 20px;
+  text-align: center;
+  padding: 10px 0px;
+  width: 100px;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
+  box-shadow: 5px 5px 5px rgba(0,0,0, .2);
 }
 
-input[type=submit]:hover {
-  background-color: #55F;
+input[type=submit]:hover, div.button:hover {
+  opacity: 0.5;
 }
 
 img.blink {
