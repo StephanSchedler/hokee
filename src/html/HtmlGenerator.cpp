@@ -352,11 +352,7 @@ std::string HtmlGenerator::GetHelpPage(const CsvDatabase& database)
     main->SetAttribute("class", "pad-100");
 
     fs::path htmlPart = fs::current_path() / ".." / "html" / "help.html.part";
-
-    std::ifstream ifstream(htmlPart, std::ios::binary);
-    std::stringstream sstream{};
-    sstream << ifstream.rdbuf();
-    main->AddText(sstream.str());
+    main->AddText(Utils::ReadFileContent(htmlPart));
 
     return html.ToString();
 }
@@ -398,12 +394,58 @@ std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs:
     row = table->AddTableRow();
     row->SetAttribute("class", "form");
 
-    auto textarea = form->AddTextarea();
+    std::string mail = Utils::GenerateSupportMail(ruleSetFile, inputDir);
+    auto textarea = form->AddTextarea(Utils::EscapeHtml(mail));
     textarea->SetAttribute("name", "body");
     textarea->SetAttribute("rows", "20");
-    std::string mail = Utils::GenerateSupportMail(ruleSetFile, inputDir);
-    textarea->AddText(Utils::EscapeHtml(mail));
+    
+    return html.ToString();
+}
 
+std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::path& file)
+{
+    HtmlElement html;
+    AddHtmlHead(&html);
+
+    auto body = html.AddBody();
+    AddNavigationHeader(body, database);
+
+    auto main = body->AddMain();
+    main->SetAttribute("class", "pad-100");
+
+    main->AddHeading(2, "Edit File");
+
+    auto form = main->AddForm();
+    std::string filename = file.string(); 
+    replace(filename.begin(), filename.end(), '\\', '/');
+    form->SetAttribute("action", fmt::format("{}?file={}", HtmlGenerator::SAVE_CMD, filename));
+    form->SetAttribute("method", "post");
+    form->SetAttribute("enctype", "text/plain");
+
+    auto table = form->AddTable();
+    table->SetAttribute("class", "form");
+    auto row = table->AddTableRow();
+    row->SetAttribute("class", "form");
+
+    auto cell = table->AddTableCell(file.string());
+    AddEditorHyperlink(cell, file);
+    cell->SetAttribute("class", "form fill");
+
+    cell = table->AddTableCell();
+    cell->SetAttribute("class", "form");
+
+    auto input = cell->AddInput();
+    input->SetAttribute("type", "submit");
+    input->SetAttribute("value", "Save");
+
+    row = table->AddTableRow();
+    row->SetAttribute("class", "form");
+
+    std::string content = Utils::ReadFileContent(file);
+    auto textarea = form->AddTextarea(Utils::EscapeHtml(content));
+    textarea->SetAttribute("name", "content");
+    textarea->SetAttribute("rows", "20");
+    
     return html.ToString();
 }
 
@@ -496,7 +538,7 @@ void HtmlGenerator::AddEditorHyperlink(HtmlElement* element, const fs::path& fil
     {
         std::string ref = file.string();
         replace(ref.begin(), ref.end(), '\\', '/');
-        std::string link = fmt::format("{}?file={}", HtmlGenerator::EDIT_CMD, ref);
+        std::string link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, ref);
         element->AddHyperlinkImage(link, "Open in editor", "24-notepad.png", 24);
 
         ref = file.parent_path().string();
@@ -509,7 +551,7 @@ void HtmlGenerator::AddEditorHyperlink(HtmlElement* element, const fs::path& fil
         {
             ref = formatFile.string();
             replace(ref.begin(), ref.end(), '\\', '/');
-            link = fmt::format("{}?file={}", HtmlGenerator::EDIT_CMD, ref);
+            link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, ref);
             element->AddHyperlinkImage(link, "Open corresponding format file", "24-wrench-screwdriver.png", 24);
         }
     }

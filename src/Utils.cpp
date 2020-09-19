@@ -378,7 +378,6 @@ std::string EscapeHtml(std::string text)
 std::string GenerateSupportMail(const fs::path& ruleSetFile, const fs::path& inputDir)
 {
     std::stringstream mail{};
-    mail << std::endl;
     mail << "=============================================" << std::endl;
     mail << fmt::format("Problem report for hokee {}", PROJECT_VERSION) << std::endl;
     mail << "=============================================" << std::endl;
@@ -415,6 +414,20 @@ std::string GenerateSupportMail(const fs::path& ruleSetFile, const fs::path& inp
     }
 
     return mail.str();
+}
+
+std::string ReadFileContent(const fs::path& file)
+{
+    std::ifstream ifstream(file, std::ios::binary);
+    std::stringstream sstream{};
+    sstream << ifstream.rdbuf();
+    return sstream.str();
+}
+
+void WriteFileContent(const fs::path& file, const std::string& content)
+{
+    std::ofstream ofstream(file, std::ios::binary);
+    ofstream << content;
 }
 
 bool CompareFiles(const fs::path& file1, const fs::path& file2)

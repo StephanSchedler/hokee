@@ -28,6 +28,8 @@ int GenerateId();
 void ResetIdGenerator();
 bool ExtractMissingString(std::string& extracted, const std::string& original, const std::string& missing);
 
+std::string ReadFileContent(const fs::path& file);
+void WriteFileContent(const fs::path& file, const std::string& content);
 bool CompareFiles(const fs::path& file1, const fs::path& file2);
 
 std::string GetEnv(const std::string& name);
