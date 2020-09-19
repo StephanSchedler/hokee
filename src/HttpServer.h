@@ -5,7 +5,6 @@
 #include <mutex>
 #include <thread>
 #include <unordered_map>
-#include <mutex>
 
 namespace httplib
 {
@@ -40,9 +39,11 @@ class HttpServer
     int _exitCode{0};
 
     void Load();
-    bool SetCacheContent(const httplib::Request& req, httplib::Response& res);
     void SetContent(const httplib::Request& req, httplib::Response& res, const std::string& content,
                     const char* content_type);
+    bool TrySetContentFromCache(const httplib::Request& req, httplib::Response& res);
+    void SetContentAndSetCache(const httplib::Request& req, httplib::Response& res, const std::string& content,
+                               const char* content_type);
     void HandleHtmlRequest(const httplib::Request& req, httplib::Response& res);
 
   public:

@@ -34,10 +34,7 @@ std::string GetImageContent(const std::string& name)
     {
         if (fs::is_regular_file(entry.path()) && entry.path().filename().string() == name)
         {
-            std::ifstream ifstream(entry.path(), std::ios::binary);
-            std::stringstream sstream{};
-            sstream << ifstream.rdbuf();
-            return sstream.str();
+            return Utils::ReadFileContent(entry.path());
         }
     }
     throw UserException(fmt::format("Could not find '{}'", fs::path(name).filename().string()),
@@ -84,7 +81,7 @@ void PrintRequest(const httplib::Request& req, const httplib::Response& res)
 
 } // namespace
 
-bool HttpServer::SetCacheContent(const httplib::Request& req, httplib::Response& res)
+bool HttpServer::TrySetContentFromCache(const httplib::Request& req, httplib::Response& res)
 {
     std::scoped_lock lock(_cacheMutex);
     const std::string url = GetUrl(req);
@@ -103,6 +100,16 @@ bool HttpServer::SetCacheContent(const httplib::Request& req, httplib::Response&
 
 void HttpServer::SetContent(const httplib::Request& req, httplib::Response& res, const std::string& content,
                             const char* content_type)
+{
+    if (std::string(content_type) == CONTENT_TYPE_HTML)
+    {
+        _lastUrl = GetUrl(req);
+    }
+    res.set_content(content, content_type);
+}
+
+void HttpServer::SetContentAndSetCache(const httplib::Request& req, httplib::Response& res,
+                                       const std::string& content, const char* content_type)
 {
     std::scoped_lock lock(_cacheMutex);
     const std::string url = GetUrl(req);
@@ -132,7 +139,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     }
 
     // Check Cache
-    if (SetCacheContent(req, res))
+    if (TrySetContentFromCache(req, res))
     {
         return;
     }
@@ -180,7 +187,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     // help.html
     if (req.path == std::string("/") + HtmlGenerator::HELP_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetHelpPage(_database), CONTENT_TYPE_HTML);
+        SetContentAndSetCache(req, res, HtmlGenerator::GetHelpPage(_database), CONTENT_TYPE_HTML);
         return;
     }
 
@@ -221,6 +228,22 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
         }
         const int id = std::stoi(idStr);
         SetContent(req, res, HtmlGenerator::GetItemPage(_database, id), CONTENT_TYPE_HTML);
+        return;
+    }
+
+    // edit.html
+    if (req.path == std::string("/") + HtmlGenerator::EDIT_HTML)
+    {
+        const std::string filename = GetParam(req.params, "file", HtmlGenerator::EDIT_HTML);
+        if (filename.empty())
+        {
+            _errorStatus = 500;
+            _errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
+                                        HtmlGenerator::EDIT_HTML, "file");
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
+            return;
+        }
+        SetContent(req, res, HtmlGenerator::GetEditPage(_database, filename), CONTENT_TYPE_HTML);
         return;
     }
 
@@ -308,14 +331,12 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
     _server->Get("/(.*\\.css)", [&](const httplib::Request& req, httplib::Response& res) {
         try
         {
-            if (!SetCacheContent(req, res))
+            if (!TrySetContentFromCache(req, res))
             {
                 fs::path path = fs::current_path() / ".." / "html" / std::string(req.matches[1]);
-                std::ifstream ifstream(path, std::ios::binary);
-                std::stringstream sstream{};
-                sstream << ifstream.rdbuf();
+                std::string css = Utils::ReadFileContent(path);
 
-                SetContent(req, res, sstream.str(), CONTENT_TYPE_CSS);
+                SetContentAndSetCache(req, res, css, CONTENT_TYPE_CSS);
             }
         }
         catch (const std::exception& e)
@@ -334,10 +355,10 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
     _server->Get("/(.*\\.png)", [&](const httplib::Request& req, httplib::Response& res) {
         try
         {
-            if (!SetCacheContent(req, res))
+            if (!TrySetContentFromCache(req, res))
             {
                 std::string name = req.matches[1];
-                SetContent(req, res, GetImageContent(name), CONTENT_TYPE_PNG);
+                SetContentAndSetCache(req, res, GetImageContent(name), CONTENT_TYPE_PNG);
             }
         }
         catch (const std::exception& e)
@@ -354,10 +375,10 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
     _server->Get("/(.*\\.ico)", [&](const httplib::Request& req, httplib::Response& res) {
         try
         {
-            if (!SetCacheContent(req, res))
+            if (!TrySetContentFromCache(req, res))
             {
                 std::string name = req.matches[1];
-                SetContent(req, res, GetImageContent(name), CONTENT_TYPE_ICO);
+                SetContentAndSetCache(req, res, GetImageContent(name), CONTENT_TYPE_ICO);
             }
         }
         catch (const std::exception& e)
@@ -369,6 +390,38 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             _errorStatus = 500;
             _errorMessage = fmt::format("Could not get icon {}", GetUrl(req));
+        }
+    });
+
+    // Save File
+    _server->Post((std::string("/") + HtmlGenerator::SAVE_CMD).c_str(), [&](const httplib::Request& req,
+                                                                           httplib::Response& res) {
+        try
+        {
+            Utils::PrintTrace("Received save file request");
+            const std::string file = GetParam(req.params, "file", HtmlGenerator::SAVE_CMD);
+            if (file.empty())
+            {
+                res.status = 404;
+                std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
+                                                       HtmlGenerator::SAVE_CMD, "file");
+                res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
+                return;
+            }
+
+            std::string content = req.body.substr(8, std::string::npos);
+            Utils::WriteFileContent(file, content);
+            res.set_redirect(_lastUrl.c_str());
+        }
+        catch (const std::exception& e)
+        {
+            _errorStatus = 500;
+            _errorMessage = e.what();
+        }
+        catch (...)
+        {
+            _errorStatus = 500;
+            _errorMessage = "Could not exit";
         }
     });
 
@@ -479,6 +532,8 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                 res.status = 404;
                 std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
                                                        HtmlGenerator::OPEN_CMD, "folder");
+
+                Utils::PrintInfo(fmt::format("Last request: {}", GetUrl(req)));
                 res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
                 return;
             }
@@ -518,36 +573,6 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      }
                  });
 
-    // edit file
-    _server->Get((std::string("/") + HtmlGenerator::EDIT_CMD).c_str(), [&](const httplib::Request& req,
-                                                                           httplib::Response& res) {
-        try
-        {
-            Utils::PrintTrace("Received edit file request. Open file...");
-            const std::string file = GetParam(req.params, "file", HtmlGenerator::EDIT_CMD);
-            if (file.empty())
-            {
-                res.status = 404;
-                std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
-                                                       HtmlGenerator::EDIT_CMD, "file");
-                res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
-                return;
-            }
-            Utils::RunSync(_editor, {fs::absolute(file).string()});
-            res.set_redirect(_lastUrl.c_str());
-        }
-        catch (const std::exception& e)
-        {
-            _errorStatus = 500;
-            _errorMessage = e.what();
-        }
-        catch (...)
-        {
-            _errorStatus = 500;
-            _errorMessage = fmt::format("Could not edit file {}", GetUrl(req));
-        }
-    });
-
     // settings
     _server->Get((std::string("/") + HtmlGenerator::SETTINGS_CMD).c_str(),
                  [&](const httplib::Request& req, httplib::Response& res) {
@@ -571,7 +596,8 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                  });
 
     // Set Error Handler
-    _server->set_error_handler([&](const httplib::Request& /*req*/, httplib::Response& res) {
+    _server->set_error_handler([&](const httplib::Request& req, httplib::Response& res) {
+        Utils::PrintInfo(fmt::format("Last request: {}", GetUrl(req)));
         std::string errorMessage
             = _errorMessage.empty() ? httplib::detail::status_message(res.status) : _errorMessage;
         res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);

@@ -209,6 +209,7 @@ input[type=submit], div.button {
   border-radius: 5px;
   cursor: pointer;
   box-shadow: 5px 5px 5px rgba(0,0,0, .2);
+  transition-duration: 0.4s;
 }
 
 input[type=submit]:hover, div.button:hover {
@@ -222,14 +223,11 @@ img.blink {
 @keyframes blink {
   10% {
     filter: grayscale(0);
-    opacity: 1;
   }
   50% {
-    filter: grayscale(1);
-    opacity: 0.66;
+    filter: grayscale(1) brightness(1.5);
   }
   90% {
     filter: grayscale(0);
-    opacity: 1;
   }
-} 
+}
