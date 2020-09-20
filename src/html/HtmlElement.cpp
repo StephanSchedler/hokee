@@ -243,6 +243,11 @@ HtmlElement* HtmlElement::AddTextarea(const std::string& text)
     return AddElement("textarea", text);
 }
 
+HtmlElement* HtmlElement::AddLabel(const std::string& text)
+{
+    return AddElement("label", text);
+}
+
 HtmlElement* HtmlElement::AddTitle(const std::string& text)
 {
     return AddElement("title", text);

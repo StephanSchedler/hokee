@@ -56,6 +56,7 @@ class HtmlElement : public IPrintable
     HtmlElement* AddTableCell(const std::string& text = "");
     HtmlElement* AddTableHeaderCell(const std::string& text = "");
     HtmlElement* AddTextarea(const std::string& text = "");
+    HtmlElement* AddLabel(const std::string& text = "");
     HtmlElement* AddTableRow(const std::string& text = "");
     HtmlElement* AddTitle(const std::string& text = "");
 

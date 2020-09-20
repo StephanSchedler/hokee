@@ -1,6 +1,7 @@
 #include "HttpServer.h"
 #include "Filesystem.h"
 #include "InternalException.h"
+#include "Settings.h"
 #include "Utils.h"
 
 #include <chrono>
@@ -195,6 +196,22 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     if (req.path == std::string("/") + HtmlGenerator::SUPPORT_HTML)
     {
         SetContent(req, res, HtmlGenerator::GetSupportPage(_database, _ruleSetFile, _inputDirectory),
+                   CONTENT_TYPE_HTML);
+        return;
+    }
+
+    // settings.html
+    if (req.path == std::string("/") + HtmlGenerator::SETTINGS_HTML)
+    {
+        const std::string inputDirectory = GetParam(req.params, "InputDirectory", HtmlGenerator::SETTINGS_HTML);
+        if (!inputDirectory.empty())
+        {
+            Settings config(fs::absolute(_configFile));
+            config.SetInputDirectory(inputDirectory);
+            config.Save(fs::absolute(_configFile));
+        }
+
+        SetContent(req, res, HtmlGenerator::GetSettingsPage(_database, fs::absolute(_configFile)),
                    CONTENT_TYPE_HTML);
         return;
     }
@@ -570,28 +587,6 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          _errorStatus = 500;
                          _errorMessage = "Could not open input folder";
-                     }
-                 });
-
-    // settings
-    _server->Get((std::string("/") + HtmlGenerator::SETTINGS_CMD).c_str(),
-                 [&](const httplib::Request& req, httplib::Response& res) {
-                     try
-                     {
-                         Utils::PrintTrace("Received settings request. Open file...");
-                         const std::string file = GetParam(req.params, "file", HtmlGenerator::SETTINGS_CMD);
-                         Utils::RunSync(_editor, {fs::absolute(_configFile).string()});
-                         res.set_redirect(HtmlGenerator::RELOAD_CMD);
-                     }
-                     catch (const std::exception& e)
-                     {
-                         _errorStatus = 500;
-                         _errorMessage = e.what();
-                     }
-                     catch (...)
-                     {
-                         _errorStatus = 500;
-                         _errorMessage = fmt::format("Could not edit file {}", GetUrl(req));
                      }
                  });
 

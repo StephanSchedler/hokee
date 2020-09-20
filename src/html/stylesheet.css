@@ -29,14 +29,19 @@ table, th, td {
   border: 1px solid #333;
   border-collapse: collapse;
 }
-th, td {
+
+table.item td, table.item th {
   padding: 5px;
   text-align: left;
 }
 
+table.nav td, table.nav th {
+  padding: 5px;
+  text-align: center;
+}
+
 table.nav, th.nav, td.nav {
   border: hidden;
-  text-align: center;
 }
 
 table.form, th.form, td.form, tr.form {
@@ -45,8 +50,8 @@ table.form, th.form, td.form, tr.form {
   vertical-align: bottom;
 }
 
-th.fill, td.fill {
-  width: 100000px;
+.fill, .fill {
+  width: 10000px;
 }
 
 .pad-100 {
@@ -167,12 +172,12 @@ div.nav {
 
 div.msg {
   text-align: center;
-  margin: auto;
   width: 80%;
   padding: 20px;
 }
 
 div.box {
+  margin: auto;
   background: linear-gradient(180deg, #EEF 0%, #CCF 65%, #DDF 100%); 
   border: 1px solid #777;
   border-radius: 5px;
@@ -187,24 +192,33 @@ p.black {
   color: #333;
 }
 
+textarea {
+  padding: 5px;
+}
+
 input[type=text], textarea {
-  width: calc(100% - 10px);
-  padding: 12px;
+  width: 100%;
   border: 1px solid #333;
   border-radius: 5px;
   box-sizing: border-box;
-  margin-top: 0px;
-  margin-left: 5px;
   resize: vertical;
   box-shadow: 5px 5px 5px rgba(0,0,0, .2);
+}
+
+input[type=text] {
+  height: 40px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 input[type=submit], div.button {
   background: linear-gradient(180deg, #55A 0%, #337 65%, #448 100%); 
   color: white;
   text-align: center;
-  padding: 10px 0px;
-  width: 100px;
+  width: 120px;
+  line-height: 40px;
+  white-space: nowrap;
+  height: 40px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -215,6 +229,10 @@ input[type=submit], div.button {
 input[type=submit]:hover, div.button:hover {
   opacity: 0.5;
 }
+
+label { 
+  display: block;
+};
 
 img.blink {
   animation: blink normal 1s infinite ease-in-out;
