@@ -47,7 +47,8 @@ class HtmlGenerator
 
     static std::string GetHelpPage(const CsvDatabase& database);
     static std::string GetProgressPage(size_t value, size_t max);
-    static std::string GetSupportPage(const CsvDatabase& database, const fs::path& ruleSetFile, const fs::path& inputDir);
+    static std::string GetSupportPage(const CsvDatabase& database, const fs::path& ruleSetFile,
+                                      const fs::path& inputDir);
     static std::string GetErrorPage(int errorCode, const std::string& errorMessage);
     static std::string GetSummaryPage(const CsvDatabase& database);
     static std::string GetItemPage(const CsvDatabase& database, int id);
@@ -57,8 +58,10 @@ class HtmlGenerator
 
     static std::string GetEmptyInputPage();
 
-    static void AddButton(HtmlElement* tableRow, const std::string& link, const std::string& tooltip, const std::string& image,
-                                 const std::string& text, bool blink = false);
+    static void AddInputForm(HtmlElement* table, const std::string& name, const std::string& value,
+                             const std::string& description);
+    static void AddButton(HtmlElement* tableRow, const std::string& link, const std::string& tooltip,
+                          const std::string& image, const std::string& text, bool blink = false);
     static void AddEditorHyperlink(HtmlElement* element, const fs::path& file);
 };
 

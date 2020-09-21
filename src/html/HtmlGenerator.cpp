@@ -1,7 +1,7 @@
 #include "HtmlGenerator.h"
 #include "InternalException.h"
-#include "Utils.h"
 #include "Settings.h"
+#include "Utils.h"
 #include "hokee.h"
 
 #include <fmt/core.h>
@@ -84,9 +84,9 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
 
-    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
+    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Restart");
     AddButton(row, SEARCH_HTML, "Open Search Page", "48-search.png", "Search");
-    AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
+    AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input Folder");
     AddButton(row, SETTINGS_HTML, "Open Settings File", "48-cogs.png", "Settings");
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Support");
     AddButton(row, HELP_HTML, "Open Online Help", "48-sign-question.png", "Help");
@@ -329,8 +329,8 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     auto cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
 
-    AddButton(row, RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
-    AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input");
+    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Restart");
+    AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input Folder");
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Support");
     AddButton(row, SETTINGS_HTML, "Open Settings File", "48-cogs.png", "Settings");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
@@ -370,35 +370,30 @@ std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs:
     auto main = body->AddMain();
     main->SetAttribute("class", "pad-100");
 
-    main->AddHeading(2, "Generate Support Mail");
-
     auto form = main->AddForm();
     form->SetAttribute("action", "mailto:schedler@paderborn.com");
     form->SetAttribute("method", "post");
     form->SetAttribute("enctype", "text/plain");
-
     auto table = form->AddTable();
     table->SetAttribute("class", "form");
     auto row = table->AddTableRow();
     row->SetAttribute("class", "form");
-
-    auto cell = row->AddTableCell("Fill the section below and send it to schedler@paderborn.com");
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    cell->AddHeading(2, "Generate&nbsp;Support&nbsp;Mail");
+    cell = row->AddTableCell();
     cell->SetAttribute("class", "form fill");
-
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
-
     auto input = cell->AddInput();
     input->SetAttribute("type", "submit");
     input->SetAttribute("value", "Submit");
 
-    row = table->AddTableRow();
-    row->SetAttribute("class", "form");
-
     std::string mail = Utils::GenerateSupportMail(ruleSetFile, inputDir);
-    auto textarea = form->AddTextarea(Utils::EscapeHtml(mail));
+    auto label = form->AddLabel("Fill the section below and send it to schedler@paderborn.com");
+    auto textarea = label->AddTextarea(Utils::EscapeHtml(mail));
     textarea->SetAttribute("name", "body");
-    textarea->SetAttribute("rows", "30");
+    textarea->SetAttribute("rows", "20");
 
     return html.ToString();
 }
@@ -414,40 +409,56 @@ std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::pa
     auto main = body->AddMain();
     main->SetAttribute("class", "pad-100");
 
-    main->AddHeading(2, "Edit File");
-
     auto form = main->AddForm();
     std::string filename = file.string();
-    replace(filename.begin(), filename.end(), '\\', '/');
     form->SetAttribute("action", fmt::format("{}?file={}", HtmlGenerator::SAVE_CMD, filename));
     form->SetAttribute("method", "post");
     form->SetAttribute("enctype", "text/plain");
-
     auto table = form->AddTable();
     table->SetAttribute("class", "form");
     auto row = table->AddTableRow();
     row->SetAttribute("class", "form");
-
-    auto cell = row->AddTableCell(file.string());
-    AddEditorHyperlink(cell, file);
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    cell->AddHeading(2, "Edit&nbsp;File");
+    cell = row->AddTableCell("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+    cell->SetAttribute("class", "form");
+    cell = row->AddTableCell();
+    auto p = cell->AddParagraph(file.string());
     cell->SetAttribute("class", "form fill");
-
+    AddEditorHyperlink(p, file);
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
-
     auto input = cell->AddInput();
     input->SetAttribute("type", "submit");
     input->SetAttribute("value", "Save");
 
+    table = form->AddTable();
+    table->SetAttribute("class", "form");
     row = table->AddTableRow();
     row->SetAttribute("class", "form");
 
     std::string content = Utils::ReadFileContent(file);
-    auto textarea = form->AddTextarea(Utils::EscapeHtml(content));
+    auto label = form->AddLabel("&nbsp;");
+    auto textarea = label->AddTextarea(Utils::EscapeHtml(content));
     textarea->SetAttribute("name", "content");
-    textarea->SetAttribute("rows", "30");
+    textarea->SetAttribute("rows", "20");
 
     return html.ToString();
+}
+
+void HtmlGenerator::AddInputForm(HtmlElement* table, const std::string& name, const std::string& value,
+                                 const std::string& description)
+{
+    auto row = table->AddTableRow();
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    cell->SetAttribute("class", "form fill");
+    auto label = cell->AddLabel(description);
+    auto input = label->AddInput();
+    input->SetAttribute("type", "text");
+    input->SetAttribute("name", name);
+    input->SetAttribute("value", value);
 }
 
 std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs::path& file)
@@ -461,12 +472,6 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     auto main = body->AddMain();
     main->SetAttribute("class", "pad-100");
 
-    main->AddHeading(2, "Settings");
-
-    auto p = main->AddParagraph(file.string());
-    AddEditorHyperlink(p, file);
-    Settings config(file);
-
     auto form = main->AddForm();
     form->SetAttribute("action", HtmlGenerator::SETTINGS_HTML);
     form->SetAttribute("method", "get");
@@ -476,17 +481,31 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     auto row = table->AddTableRow();
     row->SetAttribute("class", "form");
     auto cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    cell->AddHeading(2, "Settings");
+    cell = row->AddTableCell("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+    cell->SetAttribute("class", "form");
+    cell = row->AddTableCell();
+    auto p = cell->AddParagraph(file.string());
     cell->SetAttribute("class", "form fill");
-    auto label = cell->AddLabel("Input directory:");
-    auto input = label->AddInput();
-    input->SetAttribute("type", "text");
-    input->SetAttribute("name", "InputDirectory");
-    input->SetAttribute("value", config.GetInputDirectory().string());
+    AddEditorHyperlink(p, file);
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
-    input = cell->AddInput();
+    auto input = cell->AddInput();
     input->SetAttribute("type", "submit");
     input->SetAttribute("value", "Save");
+
+    table = form->AddTable();
+    table->SetAttribute("class", "form");
+
+    Settings config(file);
+    AddInputForm(table, "InputDirectory", config.GetInputDirectory().string(), "Input directory*:");
+    AddInputForm(table, "RuleSetFile", config.GetRuleSetFile().string(), "Rule definition file*:");
+    AddInputForm(table, "Browser", config.GetBrowser(), "Webbrowser start command:");
+    AddInputForm(table, "Explorer", config.GetExplorer(), "Fileexplorer start command:");
+    AddInputForm(table, "Editor", config.GetEditor(), "Editor start command:");
+
+    main->AddParagraph(fmt::format("*Paths can be absolute or relative to \"{}\"", file.parent_path().string()));
 
     return html.ToString();
 }
@@ -520,7 +539,7 @@ std::string HtmlGenerator::GetEmptyInputPage()
     cell->SetAttribute("class", "nav fill");
 
     AddButton(row, COPY_SAMPLES_CMD, "Copy Samples", "48-box-in.png", "Copy&nbsp;Samples");
-    AddButton(row, RELOAD_CMD, "Reload", "48-sign-sync.png", "Reload");
+    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Restart");
     AddButton(row, SETTINGS_HTML, "Open Settings", "48-cogs.png", "Open&nbsp;Settings");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
 
@@ -572,19 +591,16 @@ void HtmlGenerator::AddEditorHyperlink(HtmlElement* element, const fs::path& fil
     if (fs::is_directory(file))
     {
         std::string ref = file.string();
-        replace(ref.begin(), ref.end(), '\\', '/');
         std::string link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, ref);
         element->AddHyperlinkImage(link, "Open folder", "24-folder.png", 24);
     }
     else
     {
         std::string ref = file.string();
-        replace(ref.begin(), ref.end(), '\\', '/');
         std::string link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, ref);
         element->AddHyperlinkImage(link, "Open in editor", "24-notepad.png", 24);
 
         ref = file.parent_path().string();
-        replace(ref.begin(), ref.end(), '\\', '/');
         link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, ref);
         element->AddHyperlinkImage(link, "Open parent folder", "24-folder.png", 24);
 
@@ -592,7 +608,6 @@ void HtmlGenerator::AddEditorHyperlink(HtmlElement* element, const fs::path& fil
         if (Utils::ToLower(file.extension().string()) == ".csv" && fs::exists(formatFile))
         {
             ref = formatFile.string();
-            replace(ref.begin(), ref.end(), '\\', '/');
             link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, ref);
             element->AddHyperlinkImage(link, "Open corresponding format file", "24-wrench-screwdriver.png", 24);
         }
