@@ -62,7 +62,6 @@ class HtmlGenerator
                              const std::string& description);
     static void AddButton(HtmlElement* tableRow, const std::string& link, const std::string& tooltip,
                           const std::string& image, const std::string& text, bool blink = false);
-    static void AddEditorHyperlink(HtmlElement* element, const fs::path& file);
 };
 
 } // namespace hokee

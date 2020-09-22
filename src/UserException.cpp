@@ -16,12 +16,7 @@ std::string GenerateMessage(const std::string& msg, const fs::path& file, int li
     {
         div.AddText(" ");
         div.AddBreak();
-        div.AddText(file.string());
-        if (line > 0)
-        {
-            div.AddText(fmt::format(":{}", line));
-        }
-        HtmlGenerator::AddEditorHyperlink(&div, file);
+        div.AddText(fmt::format("{}:{}", file.string(), line));
     }
     return div.ToString();
 }
