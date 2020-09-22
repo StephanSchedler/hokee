@@ -58,16 +58,16 @@ table.form, th.form, td.form, tr.form {
   padding-top: 100px;
 }
 
-.pad-50 {
-  padding-top: 50px;
+.mar-50 {
+  margin-top: 50px;
 }
 
-.pad-20 {
-  padding-top: 20px;
+.mar-20 {
+  margin-top: 20px;
 }
 
-.pad-5 {
-  padding-top: 5px;
+.mar-5 {
+  margin-top: 5px;
 }
 
 table.item {
@@ -192,8 +192,16 @@ div.red {
   color: red;
 }
 
+td.center {
+  text-align: center;
+}
+
 p.black {
   color: #333;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 0px;
 }
 
 textarea {
@@ -202,13 +210,16 @@ textarea {
 
 input[type=text], textarea {
   width: 100%;
-  font-family: 'Courier New', Courier, monospace;
   font-size: medium;
   border: 1px solid #333;
   border-radius: 5px;
   box-sizing: border-box;
   resize: vertical;
   box-shadow: 5px 5px 5px rgba(0,0,0, .2);
+}
+
+input[type=text], textarea, div.mono, p.mono {
+  font-family: 'Courier New', Courier, monospace;
 }
 
 input[type=text] {

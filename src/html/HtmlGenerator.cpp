@@ -209,7 +209,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
     }
 
     auto table = main->AddTable();
-    table->SetAttribute("class", "item");
+    table->SetAttribute("class", "item mar-20");
 
     int rowCount = 0;
     for (int year = minYear; year <= maxYear; ++year)
@@ -287,7 +287,7 @@ std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::
     main->AddHeading(2, title);
 
     auto table = main->AddTable();
-    table->SetAttribute("class", "item");
+    table->SetAttribute("class", "item mar-20");
     AddItemTableHeader(table);
     for (const auto& row : data)
     {
@@ -306,7 +306,7 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
 
     auto body = html.AddBody();
     auto main = body->AddMain();
-    main->SetAttribute("class", "pad-50");
+    main->SetAttribute("class", "mar-50");
 
     auto div = main->AddDivision();
     div->SetAttribute("class", "msg box red");
@@ -319,7 +319,7 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
 
     div->AddParagraph("&nbsp;");
     div->AddParagraph("&nbsp;");
-    div->AddParagraph("What next?")->SetAttribute("class", "black");
+    div->AddParagraph("What next?");
 
     auto table = div->AddDivision()->AddTable();
     table->SetAttribute("class", "nav");
@@ -391,6 +391,7 @@ std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs:
 
     std::string mail = Utils::GenerateSupportMail(ruleSetFile, inputDir);
     auto label = form->AddLabel("Fill the section below and send it to schedler@paderborn.com");
+    label->SetAttribute("class", "mar-20");
     auto textarea = label->AddTextarea(Utils::EscapeHtml(mail));
     textarea->SetAttribute("name", "body");
     textarea->SetAttribute("rows", "20");
@@ -414,6 +415,7 @@ std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::pa
     form->SetAttribute("action", fmt::format("{}?file={}", HtmlGenerator::SAVE_CMD, filename));
     form->SetAttribute("method", "post");
     form->SetAttribute("enctype", "text/plain");
+
     auto table = form->AddTable();
     table->SetAttribute("class", "form");
     auto row = table->AddTableRow();
@@ -421,12 +423,19 @@ std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::pa
     auto cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
     cell->AddHeading(2, "Edit&nbsp;File");
-    cell = row->AddTableCell("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-    cell->SetAttribute("class", "form");
     cell = row->AddTableCell();
-    auto p = cell->AddParagraph(file.string());
-    cell->SetAttribute("class", "form fill");
-    AddEditorHyperlink(p, file);
+    cell->SetAttribute("class", "form fill center");
+    auto div = cell->AddDivision(file.string());
+    div->SetAttribute("class", "mono");
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    std::string link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, file.parent_path().string());
+    cell->AddHyperlinkImage(link, "Open folder", "48-folder.png", 38);
+
+    cell = row->AddTableCell("&nbsp;");
+    cell->SetAttribute("class", "form");
+
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
     auto input = cell->AddInput();
@@ -440,6 +449,7 @@ std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::pa
 
     std::string content = Utils::ReadFileContent(file);
     auto label = form->AddLabel("&nbsp;");
+    label->SetAttribute("class", "mar-20");
     auto textarea = label->AddTextarea(Utils::EscapeHtml(content));
     textarea->SetAttribute("name", "content");
     textarea->SetAttribute("rows", "20");
@@ -455,6 +465,7 @@ void HtmlGenerator::AddInputForm(HtmlElement* table, const std::string& name, co
     cell->SetAttribute("class", "form");
     cell->SetAttribute("class", "form fill");
     auto label = cell->AddLabel(description);
+    label->SetAttribute("class", "mar-20");
     auto input = label->AddInput();
     input->SetAttribute("type", "text");
     input->SetAttribute("name", name);
@@ -476,6 +487,7 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     form->SetAttribute("action", HtmlGenerator::SETTINGS_HTML);
     form->SetAttribute("method", "get");
     form->SetAttribute("enctype", "text/plain");
+
     auto table = form->AddTable();
     table->SetAttribute("class", "form");
     auto row = table->AddTableRow();
@@ -483,12 +495,24 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     auto cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
     cell->AddHeading(2, "Settings");
-    cell = row->AddTableCell("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-    cell->SetAttribute("class", "form");
     cell = row->AddTableCell();
-    auto p = cell->AddParagraph(file.string());
-    cell->SetAttribute("class", "form fill");
-    AddEditorHyperlink(p, file);
+    cell->SetAttribute("class", "form fill center");
+    auto div = cell->AddDivision(file.string());
+    div->SetAttribute("class", "mono");
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    std::string link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, file.string());
+    cell->AddHyperlinkImage(link, "Open folder", "48-notepad.png", 38);
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, file.parent_path().string());
+    cell->AddHyperlinkImage(link, "Open folder", "48-folder.png", 38);
+
+    cell = row->AddTableCell("&nbsp;");
+    cell->SetAttribute("class", "form");
+
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
     auto input = cell->AddInput();
@@ -517,7 +541,7 @@ std::string HtmlGenerator::GetEmptyInputPage()
 
     auto body = html.AddBody();
     auto main = body->AddMain();
-    main->SetAttribute("class", "pad-50");
+    main->SetAttribute("class", "mar-50");
 
     auto div = main->AddDivision();
     div->SetAttribute("class", "msg box");
@@ -529,7 +553,7 @@ std::string HtmlGenerator::GetEmptyInputPage()
 
     div->AddParagraph("&nbsp;");
     div->AddParagraph("&nbsp;");
-    div->AddParagraph("What next?")->SetAttribute("class", "black");
+    div->AddParagraph("What next?");
     auto table = div->AddDivision()->AddTable();
     table->SetAttribute("class", "nav");
 
@@ -569,7 +593,7 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
 
     auto body = html.AddBody();
     auto main = body->AddMain();
-    main->SetAttribute("class", "pad-50");
+    main->SetAttribute("class", "mar-50");
 
     auto div = main->AddDivision();
     div->SetAttribute("class", "msg box");
@@ -584,34 +608,6 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
     div->AddParagraph("&nbsp;");
     div->AddDivision()->AddProgress(value, max);
     return html.ToString();
-}
-
-void HtmlGenerator::AddEditorHyperlink(HtmlElement* element, const fs::path& file)
-{
-    if (fs::is_directory(file))
-    {
-        std::string ref = file.string();
-        std::string link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, ref);
-        element->AddHyperlinkImage(link, "Open folder", "24-folder.png", 24);
-    }
-    else
-    {
-        std::string ref = file.string();
-        std::string link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, ref);
-        element->AddHyperlinkImage(link, "Open in editor", "24-notepad.png", 24);
-
-        ref = file.parent_path().string();
-        link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, ref);
-        element->AddHyperlinkImage(link, "Open parent folder", "24-folder.png", 24);
-
-        fs::path formatFile = file.parent_path() / "format.ini";
-        if (Utils::ToLower(file.extension().string()) == ".csv" && fs::exists(formatFile))
-        {
-            ref = formatFile.string();
-            link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, ref);
-            element->AddHyperlinkImage(link, "Open corresponding format file", "24-wrench-screwdriver.png", 24);
-        }
-    }
 }
 
 std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
@@ -662,12 +658,33 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     row->SetAttribute("class", "form");
     auto cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
-
-    auto h = cell->AddHeading(2, title);
-    h->SetAttribute("style", "margin-bottom: 0px;");
+    cell->AddHeading(2, title);
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form fill center");
+    auto div = cell->AddDivision(fmt::format("{}:{}", item->File.string(), item->Line));
+    div->SetAttribute("class", "mono");
 
     cell = row->AddTableCell();
-    cell->SetAttribute("class", "form fill");
+    cell->SetAttribute("class", "form");
+    std::string link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, item->File.string());
+    cell->AddHyperlinkImage(link, "Open folder", "48-notepad.png", 38);
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, item->File.parent_path().string());
+    cell->AddHyperlinkImage(link, "Open folder", "48-folder.png", 38);
+
+    fs::path formatFile = item->File.parent_path() / "format.ini";
+    if (Utils::ToLower(item->File.extension().string()) == ".csv" && fs::exists(formatFile))
+    {
+        cell = row->AddTableCell();
+        cell->SetAttribute("class", "form");
+        link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, formatFile.string());
+        cell->AddHyperlinkImage(link, "Open corresponding format file", "48-wrench-screwdriver.png", 38);
+    }
+
+    cell = row->AddTableCell("&nbsp;");
+    cell->SetAttribute("class", "form");
 
     if (database.HasItem(id - 1))
     {
@@ -688,24 +705,15 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     }
 
     table = main->AddDivision()->AddTable();
-    table->SetAttribute("class", "item");
+    table->SetAttribute("class", "item mar-20");
     AddItemTableHeader(table);
     AddItemTableRow(table, item.get());
-
-    std::string divText = item->File.string();
-    if (item->Line >= 0)
-    {
-        divText += fmt::format(":{}", item->Line);
-    }
-    auto div = main->AddDivision(divText);
-    div->SetAttribute("class", "pad-5");
-    AddEditorHyperlink(div, item->File);
 
     if (!item->Issues.empty() || item->References.empty())
     {
         main->AddHeading(3, "Issues:");
         table = main->AddTable();
-        table->SetAttribute("class", "err");
+        table->SetAttribute("class", "err mar-20");
 
         if (item->References.empty())
         {
@@ -744,7 +752,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     }
 
     table = main->AddDivision()->AddTable();
-    table->SetAttribute("class", "item");
+    table->SetAttribute("class", "item mar-20");
     AddItemTableHeader(table);
 
     for (auto& ref : item->References)
