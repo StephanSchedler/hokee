@@ -421,19 +421,8 @@ std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::pa
     auto row = table->AddTableRow();
     row->SetAttribute("class", "form");
     auto cell = row->AddTableCell();
-    cell->SetAttribute("class", "form");
+    cell->SetAttribute("class", "form fill");
     cell->AddHeading(2, "Edit&nbsp;File");
-    cell = row->AddTableCell(file.string());
-    cell->SetAttribute("class", "form fill mono center");
-
-    cell = row->AddTableCell();
-    cell->SetAttribute("class", "form");
-    std::string link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, file.parent_path().string());
-    cell->AddHyperlinkImage(link, "Open folder", "48-folder.png", 38);
-
-    cell = row->AddTableCell("&nbsp;");
-    cell->SetAttribute("class", "form");
-
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
     auto input = cell->AddInput();
@@ -444,10 +433,21 @@ std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::pa
     table->SetAttribute("class", "form");
     row = table->AddTableRow();
     row->SetAttribute("class", "form");
+    cell = row->AddTableCell(file.string());
+    cell->SetAttribute("class", "form fill mono center");
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    std::string link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, file.parent_path().string());
+    cell->AddHyperlinkImage(link, "Open folder", "48-folder.png", 38);
+
+    table = form->AddTable();
+    table->SetAttribute("class", "form");
+    row = table->AddTableRow();
+    row->SetAttribute("class", "form");
 
     std::string content = Utils::ReadFileContent(file);
     auto label = form->AddLabel("&nbsp;");
-    label->SetAttribute("class", "mar-20");
     auto textarea = label->AddTextarea(Utils::EscapeHtml(content));
     textarea->SetAttribute("name", "content");
     textarea->SetAttribute("rows", "20");
@@ -463,7 +463,7 @@ void HtmlGenerator::AddInputForm(HtmlElement* table, const std::string& name, co
     cell->SetAttribute("class", "form");
     cell->SetAttribute("class", "form fill");
     auto label = cell->AddLabel(description);
-    label->SetAttribute("class", "mar-20");
+    label->SetAttribute("class", "marb-20");
     auto input = label->AddInput();
     input->SetAttribute("type", "text");
     input->SetAttribute("name", name);
@@ -491,8 +491,18 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     auto row = table->AddTableRow();
     row->SetAttribute("class", "form");
     auto cell = row->AddTableCell();
-    cell->SetAttribute("class", "form");
+    cell->SetAttribute("class", "form fill");
     cell->AddHeading(2, "Settings");
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    auto input = cell->AddInput();
+    input->SetAttribute("type", "submit");
+    input->SetAttribute("value", "Save");
+
+    table = form->AddTable();
+    table->SetAttribute("class", "form");
+    row = table->AddTableRow();
+    row->SetAttribute("class", "form");
     cell = row->AddTableCell(file.string());
     cell->SetAttribute("class", "form fill center mono");
 
@@ -505,15 +515,6 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     cell->SetAttribute("class", "form");
     link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, file.parent_path().string());
     cell->AddHyperlinkImage(link, "Open folder", "48-folder.png", 38);
-
-    cell = row->AddTableCell("&nbsp;");
-    cell->SetAttribute("class", "form");
-
-    cell = row->AddTableCell();
-    cell->SetAttribute("class", "form");
-    auto input = cell->AddInput();
-    input->SetAttribute("type", "submit");
-    input->SetAttribute("value", "Save");
 
     table = form->AddTable();
     table->SetAttribute("class", "form");
@@ -652,11 +653,10 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     table->SetAttribute("class", "form");
     auto row = table->AddTableRow();
     row->SetAttribute("class", "form");
-    auto cell = row->AddTableCell("&nbsp;");
+    auto cell = row->AddTableCell();
     cell->SetAttribute("class", "form fill");
+    cell->AddHeading(2, title);
 
-
-    
     if (database.Unassigned.HasItem(id))
     {
         int prevId = database.Unassigned.PrevItem(id);
@@ -701,8 +701,6 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     row = table->AddTableRow();
     row->SetAttribute("class", "form");
     cell = row->AddTableCell();
-    cell->SetAttribute("class", "form");
-    cell->AddHeading(2, title);
 
     cell = row->AddTableCell(fmt::format("{}:{}", item->File.string(), item->Line));
     cell->SetAttribute("class", "form mono fill center");
