@@ -83,25 +83,6 @@ void CsvDatabase::CheckRules()
     }
 }
 
-bool CsvDatabase::HasItem(int id) const
-{
-    for (auto& i : Data)
-    {
-        if (i->Id == id)
-        {
-            return true;
-        }
-    }
-    for (auto& r : Rules)
-    {
-        if (r->Id == id)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
 void CsvDatabase::AddRules(const fs::path& ruleSetFile, const std::string& editor)
 {
     std::vector<std::string> categories = Rules.GetCategories();

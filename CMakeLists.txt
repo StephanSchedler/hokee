@@ -112,6 +112,8 @@ configure_file(third_party/small-n-flat/png/48/folder.png ${PROJECT_BINARY_DIR}/
 configure_file(third_party/small-n-flat/png/48/money.png ${PROJECT_BINARY_DIR}/html/images/48-money.png COPYONLY)
 configure_file(third_party/small-n-flat/png/48/file-text.png ${PROJECT_BINARY_DIR}/html/images/48-file-text.png COPYONLY) 
 configure_file(third_party/small-n-flat/png/48/sign-check.png ${PROJECT_BINARY_DIR}/html/images/48-sign-check.png COPYONLY)
+configure_file(third_party/small-n-flat/png/48/sign-left.png ${PROJECT_BINARY_DIR}/html/images/48-sign-left.png COPYONLY)
+configure_file(third_party/small-n-flat/png/48/sign-right.png ${PROJECT_BINARY_DIR}/html/images/48-sign-right.png COPYONLY)
 configure_file(third_party/small-n-flat/png/48/sign-delete.png ${PROJECT_BINARY_DIR}/html/images/48-sign-delete.png COPYONLY)
 configure_file(third_party/small-n-flat/png/48/sign-warning.png ${PROJECT_BINARY_DIR}/html/images/48-sign-warning.png COPYONLY)
 configure_file(third_party/small-n-flat/png/48/sign-error.png ${PROJECT_BINARY_DIR}/html/images/48-sign-error.png COPYONLY)  

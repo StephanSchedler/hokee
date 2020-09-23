@@ -3,6 +3,14 @@ body {
   color: #303030;
 }
 
+.hue-180 {
+  filter: hue-rotate(180deg);
+}
+
+.hue-220 {
+  filter: hue-rotate(220deg);
+}
+
 a:link {
   text-decoration: none;
   color: inherit;
@@ -218,7 +226,7 @@ input[type=text], textarea {
   box-shadow: 5px 5px 5px rgba(0,0,0, .2);
 }
 
-input[type=text], textarea, div.mono, p.mono {
+.mono {
   font-family: 'Courier New', Courier, monospace;
 }
 

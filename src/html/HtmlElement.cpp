@@ -22,6 +22,12 @@ HtmlElement::HtmlElement(const std::string& name, const std::string& text)
     }
 }
 
+HtmlElement::HtmlElement(const std::string& name, const std::string& text, bool printInline)
+    : HtmlElement(name, text)
+{
+    _printInline = printInline;
+}
+
 void HtmlElement::SetIndent(int indent)
 {
     _indent = indent;
@@ -93,6 +99,15 @@ HtmlElement* HtmlElement::AddElement(const std::string& name, const std::string&
     return ptr;
 }
 
+HtmlElement* HtmlElement::AddElement(const std::string& name, const std::string& text, bool printInline)
+{
+    auto element = std::make_unique<HtmlElement>(name, text, printInline);
+    element->SetIndent(_indent + 2);
+    auto ptr = element.get();
+    _elements.push_back(std::move(element));
+    return ptr;
+}
+
 void HtmlElement::AddText(const std::string& text)
 {
     _elements.push_back(std::make_unique<HtmlText>(text));
@@ -152,7 +167,7 @@ HtmlElement* HtmlElement::AddHeading(int size, const std::string& text)
 
 HtmlElement* HtmlElement::AddHyperlink(const std::string& link, const std::string& title, const std::string& text)
 {
-    auto element = AddElement("a", text);
+    auto element = AddElement("a", text, true);
     element->SetAttribute("href", link);
     element->SetAttribute("title", title);
     return element;
