@@ -423,10 +423,8 @@ std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::pa
     auto cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
     cell->AddHeading(2, "Edit&nbsp;File");
-    cell = row->AddTableCell();
-    cell->SetAttribute("class", "form fill center");
-    auto div = cell->AddDivision(file.string());
-    div->SetAttribute("class", "mono");
+    cell = row->AddTableCell(file.string());
+    cell->SetAttribute("class", "form fill mono center");
 
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
@@ -495,10 +493,8 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     auto cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
     cell->AddHeading(2, "Settings");
-    cell = row->AddTableCell();
-    cell->SetAttribute("class", "form fill center");
-    auto div = cell->AddDivision(file.string());
-    div->SetAttribute("class", "mono");
+    cell = row->AddTableCell(file.string());
+    cell->SetAttribute("class", "form fill center mono");
 
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
@@ -656,14 +652,61 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     table->SetAttribute("class", "form");
     auto row = table->AddTableRow();
     row->SetAttribute("class", "form");
-    auto cell = row->AddTableCell();
+    auto cell = row->AddTableCell("&nbsp;");
+    cell->SetAttribute("class", "form fill");
+
+
+    
+    if (database.Unassigned.HasItem(id))
+    {
+        int prevId = database.Unassigned.PrevItem(id);
+        if (prevId >= 0)
+        {
+            cell = row->AddTableCell();
+            cell->SetAttribute("class", "form hue-220");
+            std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, prevId);
+            cell->AddHyperlinkImage(link, "Previous Warning", "48-sign-left.png", 38);
+        }
+        int nextId = database.Unassigned.NextItem(id);
+        if (nextId >= 0)
+        {
+            cell = row->AddTableCell();
+            cell->SetAttribute("class", "form hue-220");
+            std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
+            cell->AddHyperlinkImage(link, "Next Warning", "48-sign-right.png", 38);
+        }
+    }
+    if (database.Issues.HasItem(id))
+    {
+        int prevId = database.Issues.PrevItem(id);
+        if (prevId >= 0)
+        {
+            cell = row->AddTableCell();
+            cell->SetAttribute("class", "form hue-180");
+            std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, prevId);
+            cell->AddHyperlinkImage(link, "Previous Error", "48-sign-left.png", 38);
+        }
+        int nextId = database.Issues.NextItem(id);
+        if (nextId >= 0)
+        {
+            cell = row->AddTableCell();
+            cell->SetAttribute("class", "form hue-180");
+            std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
+            cell->AddHyperlinkImage(link, "Next Error", "48-sign-right.png", 38);
+        }
+    }
+
+    table = main->AddTable();
+    table->SetAttribute("class", "form");
+    row = table->AddTableRow();
+    row->SetAttribute("class", "form");
+    cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
     cell->AddHeading(2, title);
-    cell = row->AddTableCell();
-    cell->SetAttribute("class", "form fill center");
-    auto div = cell->AddDivision(fmt::format("{}:{}", item->File.string(), item->Line));
-    div->SetAttribute("class", "mono");
 
+    cell = row->AddTableCell(fmt::format("{}:{}", item->File.string(), item->Line));
+    cell->SetAttribute("class", "form mono fill center");
+    
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
     std::string link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, item->File.string());
@@ -681,27 +724,6 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         cell->SetAttribute("class", "form");
         link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, formatFile.string());
         cell->AddHyperlinkImage(link, "Open corresponding format file", "48-wrench-screwdriver.png", 38);
-    }
-
-    cell = row->AddTableCell("&nbsp;");
-    cell->SetAttribute("class", "form");
-
-    if (database.HasItem(id - 1))
-    {
-        cell = row->AddTableCell();
-        cell->SetAttribute("class", "form");
-        auto button = cell->AddDivision("Prev");
-        button->SetAttribute("class", "button");
-        button->SetAttribute("onclick", fmt::format("window.location='{}?id={}';", ITEM_HTML, id - 1));
-    }
-
-    if (database.HasItem(id + 1))
-    {
-        cell = row->AddTableCell();
-        cell->SetAttribute("class", "form");
-        auto button = cell->AddDivision("Next");
-        button->SetAttribute("class", "button");
-        button->SetAttribute("onclick", fmt::format("window.location='{}?id={}';", ITEM_HTML, id + 1));
     }
 
     table = main->AddDivision()->AddTable();

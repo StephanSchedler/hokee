@@ -22,10 +22,12 @@ class HtmlElement : public IPrintable
     void ToString(std::ostream& output) const final;
 
     HtmlElement* AddElement(const std::string& name, const std::string& text = "");
+    HtmlElement* AddElement(const std::string& name, const std::string& text, bool printInline);
 
   public:
     HtmlElement();
     HtmlElement(const std::string& name, const std::string& text);
+    HtmlElement(const std::string& name, const std::string& text, bool printInline);
     virtual ~HtmlElement() = default;
 
     void AddBreak();
