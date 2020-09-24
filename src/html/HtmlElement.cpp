@@ -208,6 +208,11 @@ HtmlElement* HtmlElement::AddLink(const std::string& text)
     return AddElement("link", text);
 }
 
+HtmlElement* HtmlElement::AddScript(const std::string& text)
+{
+    return AddElement("script", text);
+}
+
 HtmlElement* HtmlElement::AddInput(const std::string& text)
 {
     return AddElement("input", text);

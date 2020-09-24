@@ -203,43 +203,48 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     // settings.html
     if (req.path == std::string("/") + HtmlGenerator::SETTINGS_HTML)
     {
-        std::string value = GetParam(req.params, "InputDirectory", HtmlGenerator::SETTINGS_HTML);
-        if (!value.empty())
-        {
             Settings config(fs::absolute(_configFile));
-            config.SetInputDirectory(value);
-            config.Save(fs::absolute(_configFile));
+            bool save = false;
+            std::string value = GetParam(req.params, "InputDirectory", HtmlGenerator::SETTINGS_HTML);
+            if (!value.empty())
+            {
+                config.SetInputDirectory(value);
+                save = true;
         }
         value = GetParam(req.params, "Browser", HtmlGenerator::SETTINGS_HTML);
         if (!value.empty())
         {
-            Settings config(fs::absolute(_configFile));
             config.SetBrowser(value);
-            config.Save(fs::absolute(_configFile));
+            save = true;
         }
         value = GetParam(req.params, "RuleSetFile", HtmlGenerator::SETTINGS_HTML);
         if (!value.empty())
         {
-            Settings config(fs::absolute(_configFile));
             config.SetRuleSetFile(value);
-            config.Save(fs::absolute(_configFile));
+            save = true;
         }
         value = GetParam(req.params, "Explorer", HtmlGenerator::SETTINGS_HTML);
         if (!value.empty())
         {
-            Settings config(fs::absolute(_configFile));
             config.SetExplorer(value);
-            config.Save(fs::absolute(_configFile));
+            save = true;
         }
         value = GetParam(req.params, "Editor", HtmlGenerator::SETTINGS_HTML);
         if (!value.empty())
         {
-            Settings config(fs::absolute(_configFile));
             config.SetEditor(value);
-            config.Save(fs::absolute(_configFile));
+            save = true;
         }
-        SetContent(req, res, HtmlGenerator::GetSettingsPage(_database, fs::absolute(_configFile)),
-                   CONTENT_TYPE_HTML);
+        if (save)
+        {
+            config.Save(fs::absolute(_configFile));
+            res.set_redirect(HtmlGenerator::SETTINGS_HTML);
+        }
+        else
+        {
+            SetContent(req, res, HtmlGenerator::GetSettingsPage(_database, fs::absolute(_configFile)),
+                       CONTENT_TYPE_HTML);
+        }
         return;
     }
 
@@ -439,7 +444,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
 
     // Save File
     _server->Post((std::string("/") + HtmlGenerator::SAVE_CMD).c_str(), [&](const httplib::Request& req,
-                                                                           httplib::Response& res) {
+                                                                            httplib::Response& res) {
         try
         {
             Utils::PrintTrace("Received save file request");
@@ -455,7 +460,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
 
             std::string content = req.body.substr(8, std::string::npos);
             Utils::WriteFileContent(file, content);
-            res.set_redirect(_lastUrl.c_str());
+            res.set_redirect(fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, file).c_str());
         }
         catch (const std::exception& e)
         {
