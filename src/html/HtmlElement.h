@@ -33,8 +33,8 @@ class HtmlElement : public IPrintable
     void AddBreak();
     void AddText(const std::string& text);
     void AddProgress(size_t value, size_t max);
-    void AddImage(const std::string& src, const std::string& title, int width, int height, bool blink = false);
-    void AddImage(const std::string& src, const std::string& title, int size, bool blink = false);
+    void AddImage(const std::string& src, const std::string& title, int width, int height);
+    void AddImage(const std::string& src, const std::string& title, int size);
     void AddHyperlinkImage(const std::string& link, const std::string& title, const std::string& src, int width,
                            int height);
     void AddHyperlinkImage(const std::string& link, const std::string& title, const std::string& src, int size);

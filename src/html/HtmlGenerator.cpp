@@ -17,12 +17,12 @@
 namespace hokee
 {
 void HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& link, const std::string& tooltip,
-                              const std::string& image, const std::string& text, bool blink)
+                                      const std::string& image, const std::string& text, const std::string& style)
 {
     auto cell = tableRow->AddTableCell();
-    cell->SetAttribute("class", "nav link");
+    cell->SetAttribute("class", std::string("nav link ") + style);
     auto hyperlink = cell->AddHyperlink(link, tooltip);
-    hyperlink->AddImage(image, tooltip, 42, blink);
+    hyperlink->AddImage(image, tooltip, 42);
     hyperlink->AddText(text);
 }
 
@@ -47,30 +47,30 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     }
     else
     {
-        AddButton(row, ASSIGNED_HTML, "Show Assigned Items", "48-sign-check2.png",
-                  fmt::format("Assigned ({})", database.Assigned.size()));
+        AddButton(row, ASSIGNED_HTML, "Show Assigned Items", "48-sign-check.png",
+                  fmt::format("Assigned ({})", database.Assigned.size()), "gray");
     }
 
     if (database.Unassigned.size() == 0)
     {
-        AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-warning2.png",
-                  fmt::format("Warnings ({})", database.Unassigned.size()));
+        AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-warning.png",
+                  fmt::format("Warnings ({})", database.Unassigned.size()), "gray");
     }
     else
     {
         AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-warning.png",
-                  fmt::format("Warnings ({})", database.Unassigned.size()), true);
+                  fmt::format("Warnings ({})", database.Unassigned.size()));
     }
 
     if (database.Issues.size() == 0)
     {
-        AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-delete2.png",
-                  fmt::format("Errors ({})", database.Issues.size()));
+        AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-error.png",
+                  fmt::format("Errors ({})", database.Issues.size()), "gray");
     }
     else
     {
-        AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-delete.png",
-                  fmt::format("Errors ({})", database.Issues.size()), true);
+        AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-error.png",
+                  fmt::format("Errors ({})", database.Issues.size()));
     }
 
     auto cell = row->AddTableCell("&nbsp;");
@@ -84,13 +84,13 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
 
-    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Restart");
     AddButton(row, SEARCH_HTML, "Open Search Page", "48-search.png", "Search");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input Folder");
     AddButton(row, SETTINGS_HTML, "Open Settings File", "48-cogs.png", "Settings");
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Support");
     AddButton(row, HELP_HTML, "Open Online Help", "48-sign-question.png", "Help");
-    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
+    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Restart");
+    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
 }
 
 HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
@@ -329,11 +329,11 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     auto cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
 
-    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Restart");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input Folder");
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Support");
     AddButton(row, SETTINGS_HTML, "Open Settings File", "48-cogs.png", "Settings");
-    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
+    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Restart");
+    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
 
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
@@ -520,11 +520,12 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     cell->SetAttribute("class", "form link");
     cell->SetAttribute("onclick", "submitForm()");
     auto script = body->AddScript();
-    script->AddText("function submitForm() {"
-                    "if (confirm(\"Do you want to save settings? (You have to reload to apply new settings.)\") == true) {"
-                    "    document.getElementById(\"form\").submit();"
-                    "}"
-                    "}");
+    script->AddText(
+        "function submitForm() {"
+        "if (confirm(\"Do you want to save settings? (You have to reload to apply new settings.)\") == true) {"
+        "    document.getElementById(\"form\").submit();"
+        "}"
+        "}");
 
     table = form->AddTable();
     table->SetAttribute("class", "form");
@@ -587,9 +588,9 @@ std::string HtmlGenerator::GetEmptyInputPage()
     cell->SetAttribute("class", "nav fill");
 
     AddButton(row, COPY_SAMPLES_CMD, "Copy Samples", "48-box-in.png", "Copy&nbsp;Samples");
-    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Restart");
     AddButton(row, SETTINGS_HTML, "Open Settings", "48-cogs.png", "Open&nbsp;Settings");
-    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit");
+    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Restart");
+    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
 
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
@@ -783,7 +784,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         {
             row = table->AddTableRow();
             cell = row->AddTableCell();
-            cell->AddImage("48-sign-delete.png", "error", 20);
+            cell->AddImage("48-sign-error.png", "error", 20);
             cell = row->AddTableCell(issue);
             cell->SetAttribute("class", "err fill");
         }
