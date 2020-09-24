@@ -15,6 +15,10 @@ body {
   filter: hue-rotate(220deg);
 }
 
+.gray {
+  filter: grayscale(1);
+}
+
 a:link {
   text-decoration: none;
   color: inherit;
@@ -264,7 +268,3 @@ input[type=submit]:hover, div.button:hover {
 label { 
   display: block;
 };
-
-.gray {
-  filter: grayscale(1);
-}

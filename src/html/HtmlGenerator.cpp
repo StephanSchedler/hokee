@@ -85,9 +85,9 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     cell->SetAttribute("class", "nav fill");
 
     AddButton(row, SEARCH_HTML, "Open Search Page", "48-search.png", "Search");
-    AddButton(row, INPUT_CMD, "Open Input Folder", "48-folder.png", "Input Folder");
     AddButton(row, SETTINGS_HTML, "Open Settings File", "48-cogs.png", "Settings");
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Support");
+    AddButton(row, INPUT_CMD, "Open Input Folder", "48-folder.png", "Input");
     AddButton(row, HELP_HTML, "Open Online Help", "48-sign-question.png", "Help");
     AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Restart");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
