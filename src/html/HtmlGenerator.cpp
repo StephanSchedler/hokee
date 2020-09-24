@@ -17,7 +17,7 @@
 namespace hokee
 {
 void HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& link, const std::string& tooltip,
-                                      const std::string& image, const std::string& text, const std::string& style)
+                              const std::string& image, const std::string& text, const std::string& style)
 {
     auto cell = tableRow->AddTableCell();
     cell->SetAttribute("class", std::string("nav link ") + style);
@@ -723,6 +723,20 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
             cell->AddHyperlinkImage(link, "Next Error", "48-sign-right.png", 38);
         }
     }
+    
+    if (!isItem)
+    {
+        cell = row->AddTableCell();
+        cell->AddImage("48-sign-delete.png", "Delete this rule", 38);
+        cell->SetAttribute("class", "link");
+        cell->SetAttribute("onclick", "deleteRule()");
+        auto script = body->AddScript();
+        script->AddText("function deleteRule() {"
+                        "if (confirm(\"Do you want to delete this rule?\") == true) {"
+                        "    "
+                        "}"
+                        "}");
+    }
 
     table = main->AddTable();
     table->SetAttribute("class", "form");
@@ -752,7 +766,8 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         cell->AddHyperlinkImage(link, "Open corresponding format file", "48-wrench-screwdriver.png", 38);
     }
 
-    table = main->AddDivision()->AddTable();
+    auto div = main->AddDivision();
+    table = div->AddTable();
     table->SetAttribute("class", "item mar-20");
     AddItemTableHeader(table);
     AddItemTableRow(table, item.get());
@@ -790,13 +805,23 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         }
     }
 
+    table = main->AddTable();
+    table->SetAttribute("class", "form mar-20");
+    row = table->AddTableRow();
+    row->SetAttribute("class", "form");
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form fill");
     if (isItem)
     {
-        main->AddHeading(3, "Rule(s):");
+        cell->AddHeading(3, "Rule(s):");
+        cell = row->AddTableCell();
+        cell->AddImage("48-sign-add.png", "Add new rule", 38);
+        cell->SetAttribute("class", "link");
+        cell->SetAttribute("onclick", "");
     }
     else
     {
-        main->AddHeading(3, "Item(s):");
+        cell->AddHeading(3, "Item(s):");
     }
 
     table = main->AddDivision()->AddTable();
