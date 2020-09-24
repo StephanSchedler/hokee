@@ -48,6 +48,7 @@ class HtmlElement : public IPrintable
     HtmlElement* AddHeader(const std::string& text = "");
     HtmlElement* AddHeading(int size, const std::string& text = "");
     HtmlElement* AddHyperlink(const std::string& link, const std::string& title, const std::string& text = "");
+    HtmlElement* AddScript(const std::string& text = "");
     HtmlElement* AddInput(const std::string& text = "");
     HtmlElement* AddLink(const std::string& text = "");
     HtmlElement* AddMain(const std::string& text = "");

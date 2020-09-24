@@ -374,6 +374,7 @@ std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs:
     form->SetAttribute("action", "mailto:schedler@paderborn.com");
     form->SetAttribute("method", "post");
     form->SetAttribute("enctype", "text/plain");
+    form->SetAttribute("id", "form");
     auto table = form->AddTable();
     table->SetAttribute("class", "form");
     auto row = table->AddTableRow();
@@ -385,9 +386,17 @@ std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs:
     cell->SetAttribute("class", "form fill");
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
-    auto input = cell->AddInput();
-    input->SetAttribute("type", "submit");
-    input->SetAttribute("value", "Submit");
+
+    cell = row->AddTableCell();
+    cell->AddImage("48-envelope-letter.png", "Submit", 40);
+    cell->SetAttribute("class", "form link");
+    cell->SetAttribute("onclick", "submitForm()");
+    auto script = body->AddScript();
+    script->AddText("function submitForm() {"
+                    "if (confirm(\"Do you want to send an email?\") == true) {"
+                    "    document.getElementById(\"form\").submit();"
+                    "}"
+                    "}");
 
     std::string mail = Utils::GenerateSupportMail(ruleSetFile, inputDir);
     auto label = form->AddLabel("Fill the section below and send it to schedler@paderborn.com");
@@ -415,6 +424,7 @@ std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::pa
     form->SetAttribute("action", fmt::format("{}?file={}", HtmlGenerator::SAVE_CMD, filename));
     form->SetAttribute("method", "post");
     form->SetAttribute("enctype", "text/plain");
+    form->SetAttribute("id", "form");
 
     auto table = form->AddTable();
     table->SetAttribute("class", "form");
@@ -425,9 +435,17 @@ std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::pa
     cell->AddHeading(2, "Edit&nbsp;File");
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
-    auto input = cell->AddInput();
-    input->SetAttribute("type", "submit");
-    input->SetAttribute("value", "Save");
+
+    cell = row->AddTableCell();
+    cell->AddImage("48-floppy.png", "Save", 40);
+    cell->SetAttribute("class", "form link");
+    cell->SetAttribute("onclick", "submitForm()");
+    auto script = body->AddScript();
+    script->AddText("function submitForm() {"
+                    "if (confirm(\"Do you want to save changes?\") == true) {"
+                    "    document.getElementById(\"form\").submit();"
+                    "}"
+                    "}");
 
     table = form->AddTable();
     table->SetAttribute("class", "form");
@@ -485,6 +503,7 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     form->SetAttribute("action", HtmlGenerator::SETTINGS_HTML);
     form->SetAttribute("method", "get");
     form->SetAttribute("enctype", "text/plain");
+    form->SetAttribute("id", "form");
 
     auto table = form->AddTable();
     table->SetAttribute("class", "form");
@@ -495,9 +514,17 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     cell->AddHeading(2, "Settings");
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
-    auto input = cell->AddInput();
-    input->SetAttribute("type", "submit");
-    input->SetAttribute("value", "Save");
+
+    cell = row->AddTableCell();
+    cell->AddImage("48-floppy.png", "Save", 40);
+    cell->SetAttribute("class", "form link");
+    cell->SetAttribute("onclick", "submitForm()");
+    auto script = body->AddScript();
+    script->AddText("function submitForm() {"
+                    "if (confirm(\"Do you want to save settings? (You have to reload to apply new settings.)\") == true) {"
+                    "    document.getElementById(\"form\").submit();"
+                    "}"
+                    "}");
 
     table = form->AddTable();
     table->SetAttribute("class", "form");
@@ -509,7 +536,7 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
     std::string link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, file.string());
-    cell->AddHyperlinkImage(link, "Open folder", "48-notepad.png", 38);
+    cell->AddHyperlinkImage(link, "Edit Settings File", "48-notepad.png", 38);
 
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
@@ -704,7 +731,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
 
     cell = row->AddTableCell(fmt::format("{}:{}", item->File.string(), item->Line));
     cell->SetAttribute("class", "form mono fill center");
-    
+
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
     std::string link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, item->File.string());
