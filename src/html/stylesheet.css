@@ -7,6 +7,10 @@ body {
   filter: hue-rotate(180deg);
 }
 
+.hue-200 {
+  filter: hue-rotate(200deg);
+}
+
 .hue-220 {
   filter: hue-rotate(220deg);
 }
@@ -261,18 +265,6 @@ label {
   display: block;
 };
 
-img.blink {
-  animation: blink normal 1s infinite ease-in-out;
-}
-
-@keyframes blink {
-  10% {
-    filter: grayscale(0);
-  }
-  50% {
-    filter: grayscale(1) brightness(1.5);
-  }
-  90% {
-    filter: grayscale(0);
-  }
+.gray {
+  filter: grayscale(1);
 }

@@ -61,7 +61,7 @@ class HtmlGenerator
     static void AddInputForm(HtmlElement* table, const std::string& name, const std::string& value,
                              const std::string& description);
     static void AddButton(HtmlElement* tableRow, const std::string& link, const std::string& tooltip,
-                          const std::string& image, const std::string& text, bool blink = false);
+                          const std::string& image, const std::string& text, const std::string& style = "");
 };
 
 } // namespace hokee
