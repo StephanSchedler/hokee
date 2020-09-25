@@ -2,6 +2,7 @@
 #include "Filesystem.h"
 #include "InternalException.h"
 #include "Settings.h"
+#include "csv/CsvWriter.h"
 #include "Utils.h"
 
 #include <chrono>
@@ -461,6 +462,27 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             std::string content = req.body.substr(8, std::string::npos);
             Utils::WriteFileContent(file, content);
             res.set_redirect(fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, file).c_str());
+        }
+        catch (const std::exception& e)
+        {
+            _errorStatus = 500;
+            _errorMessage = e.what();
+        }
+        catch (...)
+        {
+            _errorStatus = 500;
+            _errorMessage = "Could not exit";
+        }
+    });
+
+    // Save Rules
+    _server->Get((std::string("/") + HtmlGenerator::SAVE_CMD).c_str(), [&](const httplib::Request& /*unused*/,
+                                                                            httplib::Response& res) {
+        try
+        {
+            Utils::PrintTrace("Received save rules request");
+            CsvWriter::Write(ruleSetFile, _database.Rules);
+            res.set_redirect(_lastUrl.c_str());
         }
         catch (const std::exception& e)
         {

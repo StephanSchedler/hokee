@@ -437,7 +437,7 @@ std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::pa
     cell->SetAttribute("class", "form");
 
     cell = row->AddTableCell();
-    cell->AddImage("48-floppy.png", "Save", 40);
+    cell->AddImage("48-floppy.png", "Save File", 40);
     cell->SetAttribute("class", "form link");
     cell->SetAttribute("onclick", "submitForm()");
     auto script = body->AddScript();
@@ -516,7 +516,7 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     cell->SetAttribute("class", "form");
 
     cell = row->AddTableCell();
-    cell->AddImage("48-floppy.png", "Save", 40);
+    cell->AddImage("48-floppy.png", "Save Settings", 40);
     cell->SetAttribute("class", "form link");
     cell->SetAttribute("onclick", "submitForm()");
     auto script = body->AddScript();
@@ -700,6 +700,19 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
 
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form fill");
+
+    if (!isItem)
+    {
+        cell = row->AddTableCell();
+        cell->AddImage("48-floppy.png", "Save Rules", 40);
+        cell->SetAttribute("class", "form link");
+        cell->SetAttribute("onclick", "saveRules()");
+        auto script = body->AddScript();
+        script->AddText(
+            std::string("function saveRules() {")
+            + "if (confirm(\"Do you want to save all rules? (You have to reload to apply new rules.)\") == true) {"
+            + fmt::format("   window.location='{}'", SAVE_CMD) + "}" + "}");
+    }
 
     if (database.Unassigned.HasItem(id))
     {
