@@ -220,6 +220,14 @@ p.black {
   color: #333;
 }
 
+h2 {
+  padding-bottom: 8px;
+}
+
+h3 {
+  padding-bottom: 12px;
+}
+
 h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0px;
 }

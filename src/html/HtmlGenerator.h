@@ -39,6 +39,7 @@ class HtmlGenerator
     static constexpr const char* EDIT_HTML = "edit.html";
     static constexpr const char* SETTINGS_HTML = "settings.html";
     static constexpr const char* EXIT_CMD = "exit";
+    static constexpr const char* DELETE_CMD = "delete";
     static constexpr const char* SAVE_CMD = "save";
     static constexpr const char* RELOAD_CMD = "reload";
     static constexpr const char* COPY_SAMPLES_CMD = "copy-samples";

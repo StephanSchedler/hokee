@@ -85,6 +85,7 @@ set(PROJECT_SOURCE_FILES
     src/csv/CsvParser.cpp
     src/csv/CsvConfig.cpp
     src/csv/CsvItem.cpp
+    src/csv/CsvTable.cpp
     src/csv/CsvWriter.cpp
     src/csv/CsvFormat.cpp
     src/csv/CsvDate.cpp

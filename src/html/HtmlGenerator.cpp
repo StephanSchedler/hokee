@@ -89,7 +89,7 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Support");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-folder.png", "Input");
     AddButton(row, HELP_HTML, "Open Online Help", "48-sign-question.png", "Help");
-    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Restart");
+    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
 }
 
@@ -332,7 +332,7 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input Folder");
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Support");
     AddButton(row, SETTINGS_HTML, "Open Settings File", "48-cogs.png", "Settings");
-    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Restart");
+    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
 
     cell = row->AddTableCell("&nbsp;");
@@ -589,7 +589,7 @@ std::string HtmlGenerator::GetEmptyInputPage()
 
     AddButton(row, COPY_SAMPLES_CMD, "Copy Samples", "48-box-in.png", "Copy&nbsp;Samples");
     AddButton(row, SETTINGS_HTML, "Open Settings", "48-cogs.png", "Open&nbsp;Settings");
-    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Restart");
+    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
 
     cell = row->AddTableCell("&nbsp;");
@@ -681,9 +681,25 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     table->SetAttribute("class", "form");
     auto row = table->AddTableRow();
     row->SetAttribute("class", "form");
+
+    if (!isItem)
+    {
+        auto cell = row->AddTableCell();
+        cell->AddImage("48-sign-delete.png", "Delete this rule", 38);
+        cell->SetAttribute("class", "form link");
+        cell->SetAttribute("onclick", "deleteRule()");
+        auto script = body->AddScript();
+        script->AddText(std::string("function deleteRule() {"
+                                    "if (confirm(\"Do you want to delete this rule?\") == true) {")
+                        + fmt::format("    window.location='{}?id={}';", DELETE_CMD, id) + "}" + "}");
+    }
+
     auto cell = row->AddTableCell();
-    cell->SetAttribute("class", "form fill");
+    cell->SetAttribute("class", "form");
     cell->AddHeading(2, title);
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form fill");
 
     if (database.Unassigned.HasItem(id))
     {
@@ -702,6 +718,13 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
             cell->SetAttribute("class", "form hue-220");
             std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
             cell->AddHyperlinkImage(link, "Next Warning", "48-sign-right.png", 38);
+        }
+        else
+        {
+            cell = row->AddTableCell();
+            cell->SetAttribute("class", "form");
+            auto div = cell->AddDivision();
+            div->SetAttribute("style", "width: 38px;");
         }
     }
     if (database.Issues.HasItem(id))
@@ -722,20 +745,13 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
             std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
             cell->AddHyperlinkImage(link, "Next Error", "48-sign-right.png", 38);
         }
-    }
-    
-    if (!isItem)
-    {
-        cell = row->AddTableCell();
-        cell->AddImage("48-sign-delete.png", "Delete this rule", 38);
-        cell->SetAttribute("class", "link");
-        cell->SetAttribute("onclick", "deleteRule()");
-        auto script = body->AddScript();
-        script->AddText("function deleteRule() {"
-                        "if (confirm(\"Do you want to delete this rule?\") == true) {"
-                        "    "
-                        "}"
-                        "}");
+        else
+        {
+            cell = row->AddTableCell();
+            cell->SetAttribute("class", "form");
+            auto div = cell->AddDivision();
+            div->SetAttribute("style", "width: 38px;");
+        }
     }
 
     table = main->AddTable();
@@ -810,17 +826,22 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     row = table->AddTableRow();
     row->SetAttribute("class", "form");
     cell = row->AddTableCell();
-    cell->SetAttribute("class", "form fill");
     if (isItem)
     {
-        cell->AddHeading(3, "Rule(s):");
-        cell = row->AddTableCell();
+        cell->SetAttribute("class", "form link");
         cell->AddImage("48-sign-add.png", "Add new rule", 38);
-        cell->SetAttribute("class", "link");
         cell->SetAttribute("onclick", "");
+
+        cell = row->AddTableCell();
+        cell->SetAttribute("class", "form");
+        cell->AddHeading(3, "Rule(s):");
+
+        cell = row->AddTableCell();
+        cell->SetAttribute("class", "form fill");
     }
     else
     {
+        cell->SetAttribute("class", "form fill");
         cell->AddHeading(3, "Item(s):");
     }
 

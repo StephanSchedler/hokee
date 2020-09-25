@@ -203,13 +203,13 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     // settings.html
     if (req.path == std::string("/") + HtmlGenerator::SETTINGS_HTML)
     {
-            Settings config(fs::absolute(_configFile));
-            bool save = false;
-            std::string value = GetParam(req.params, "InputDirectory", HtmlGenerator::SETTINGS_HTML);
-            if (!value.empty())
-            {
-                config.SetInputDirectory(value);
-                save = true;
+        Settings config(fs::absolute(_configFile));
+        bool save = false;
+        std::string value = GetParam(req.params, "InputDirectory", HtmlGenerator::SETTINGS_HTML);
+        if (!value.empty())
+        {
+            config.SetInputDirectory(value);
+            save = true;
         }
         value = GetParam(req.params, "Browser", HtmlGenerator::SETTINGS_HTML);
         if (!value.empty())
@@ -598,6 +598,58 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             _errorStatus = 500;
             _errorMessage = fmt::format("Could not open folder {}", GetUrl(req));
+        }
+    });
+
+    // delete rule
+    _server->Get((std::string("/") + HtmlGenerator::DELETE_CMD).c_str(), [&](const httplib::Request& req,
+                                                                             httplib::Response& res) {
+        try
+        {
+            Utils::PrintTrace("Received delete rule request...");
+            const std::string idStr = GetParam(req.params, "id", HtmlGenerator::DELETE_CMD);
+            if (idStr.empty())
+            {
+                res.status = 404;
+                std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
+                                                       HtmlGenerator::DELETE_CMD, "id");
+
+                Utils::PrintInfo(fmt::format("Last request: {}", GetUrl(req)));
+                res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
+                return;
+            }
+
+            int id = -1;
+            try
+            {
+                id = std::stoi(idStr);
+            }
+            catch (const std::exception& e)
+            {
+                throw InternalException(__FILE__, __LINE__,
+                                        fmt::format("Could not convert '{}' to 'int'. ({})", idStr, e.what()));
+            }
+            int nextId = _database.DeleteRule(id);
+            std::string url;
+            if (nextId >= 0)
+            {
+                url = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
+            }
+            else
+            {
+                url = HtmlGenerator::INDEX_HTML;
+            }
+            res.set_redirect(url.c_str());
+        }
+        catch (const std::exception& e)
+        {
+            _errorStatus = 500;
+            _errorMessage = e.what();
+        }
+        catch (...)
+        {
+            _errorStatus = 500;
+            _errorMessage = fmt::format("Could not delete rule {}", GetUrl(req));
         }
     });
 
