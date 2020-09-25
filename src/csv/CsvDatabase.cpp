@@ -1,11 +1,11 @@
 #include "csv/CsvDatabase.h"
-#include "html/HtmlGenerator.h"
 #include "InternalException.h"
 #include "Utils.h"
 #include "csv/CsvDate.h"
 #include "csv/CsvItem.h"
 #include "csv/CsvParser.h"
 #include "csv/CsvWriter.h"
+#include "html/HtmlGenerator.h"
 
 #include <fmt/format.h>
 
@@ -81,6 +81,12 @@ void CsvDatabase::CheckRules()
             }
         }
     }
+}
+
+int CsvDatabase::DeleteRule(int id)
+{
+    Issues.DeleteItem(id);    
+    return Rules.DeleteItem(id);
 }
 
 void CsvDatabase::AddRules(const fs::path& ruleSetFile, const std::string& editor)

@@ -35,6 +35,7 @@ class CsvDatabase
 
     void Load(const fs::path& inputDirectory, const fs::path& ruleSetFile);
     void AddRules(const fs::path& ruleSetFile, const std::string& editor);
+    int DeleteRule(int id);
     
     std::atomic<size_t> ProgressMax{100};
     std::atomic<size_t> ProgressValue{0};
