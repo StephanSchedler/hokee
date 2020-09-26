@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.10.2)
 project(hokee 
     VERSION 1.0.0
     DESCRIPTION "Automated Housekeeping Book"
-    HOMEPAGE_URL "https://github.com/StephanSchedler/hokee"
     LANGUAGES CXX
 )
+set(PROJECT_HOMEPAGE_URL "https://github.com/StephanSchedler/hokee")
 
 find_package (Git)
 if (GIT_FOUND)
