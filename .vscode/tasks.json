@@ -24,7 +24,12 @@
         {
             "label": "Run hokee",
             "type": "process",
-            "command": "hokee.exe",
+            "windows":{
+                "command": "hokee.exe",
+            },
+            "linux":{
+                "command": "hokee",
+            },
             "options": {
                 "cwd": "${workspaceFolder}/bin"
             },
@@ -50,9 +55,14 @@
             }
         },
         {
-            "label": "Build (cmake)",
+            "label": "Build (quick)",
             "type": "shell",
-            "command": "./cmake.bat ${input:Configuration}",
+            "linux" :{
+                "command": "./cmake.sh ${input:Configuration}",
+            },
+            "windows" : {
+                "command": "./cmake.bat ${input:Configuration}",
+            },
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -81,9 +91,14 @@
             }
         },
         {
-            "label": "Build (MSVC)",
+            "label": "Build (full)",
             "type": "shell",
-            "command": "./build.bat ${input:Configuration}",
+            "linux" :{
+                "command": "./build.sh ${input:Configuration}",
+            },
+            "windows" : {
+                "command": "./build.bat ${input:Configuration}",
+            },
             "options": {
                 "cwd": "${workspaceFolder}"
             },

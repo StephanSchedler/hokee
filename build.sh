@@ -15,7 +15,7 @@ pushd third_party/build/fmt/$1
 echo ==== Genereate libfmt build system ====
 cmake -DCMAKE_BUILD_TYPE=$1 -DFMT_TEST=FALSE -DCMAKE_INSTALL_PREFIX=. ../../../fmt 
 echo ==== Run libfmt build ====
-cmake --build . --config $1 --target install --parallel
+cmake --build . --config $1 --target install
 popd
 
 echo ==== Prepare build directory ====
@@ -26,6 +26,6 @@ echo ==== Generate default build system ====
 cmake -DCMAKE_BUILD_TYPE=$1 -DCMAKE_INSTALL_PREFIX=.. ..
 
 echo ==== Run build ====
-cmake --build . --config $1 --target install --parallel
+cmake --build . --config $1 --target install
 
 popd
