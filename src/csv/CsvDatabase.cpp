@@ -85,6 +85,9 @@ void CsvDatabase::CheckRules()
 
 int CsvDatabase::DeleteRule(int id)
 {
+    Data.DeleteItem(id);  
+    Assigned.DeleteItem(id);
+    Unassigned.DeleteItem(id);
     Issues.DeleteItem(id);    
     return Rules.DeleteItem(id);
 }

@@ -7,7 +7,26 @@ int CsvTable::DeleteItem(int id)
     auto it = this->begin();
     while (it != this->end())
     {
-        if ((*it) && (*it)->Id == id)
+        if (!(*it))
+        {
+            ++it;
+            continue;
+        }
+        auto ref = (*it)->References.begin();
+        while (ref != (*it)->References.end())
+        {
+            if ((*ref) && (*ref)->Id == id)
+            {
+                ref = (*it)->References.erase(ref);
+            }
+            else
+            {
+                ++ref;
+            }
+        }
+
+        // If Id matches
+        if ((*it)->Id == id)
         {
             it = this->erase(it);
             if (it != this->end() && (*it))
