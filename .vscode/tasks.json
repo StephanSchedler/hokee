@@ -58,10 +58,10 @@
             "label": "Build (quick)",
             "type": "shell",
             "linux" :{
-                "command": "./cmake.sh ${input:Configuration}",
+                "command": "./cmake.sh ${input:Configuration} --target hokee",
             },
             "windows" : {
-                "command": "./cmake.bat ${input:Configuration}",
+                "command": "./cmake.bat ${input:Configuration} --target hokee",
             },
             "options": {
                 "cwd": "${workspaceFolder}"
