@@ -16,7 +16,7 @@
 
 namespace hokee
 {
-void HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& link, const std::string& tooltip,
+HtmlElement* HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& link, const std::string& tooltip,
                               const std::string& image, const std::string& text, const std::string& style)
 {
     auto cell = tableRow->AddTableCell();
@@ -24,6 +24,7 @@ void HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& link, co
     auto hyperlink = cell->AddHyperlink(link, tooltip);
     hyperlink->AddImage(image, tooltip, 42);
     hyperlink->AddText(text);
+    return cell;
 }
 
 void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& database)
@@ -89,8 +90,14 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Support");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-folder.png", "Input");
     AddButton(row, HELP_HTML, "Open Online Help", "48-sign-question.png", "Help");
-    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
+    auto reload = AddButton(row, "#", "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
+
+    reload->SetAttribute("onclick", "reload()");
+    auto script = body->AddScript();
+    script->AddText(std::string("function reload() {")
+                    + "if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {"
+                    + fmt::format("    window.location='{}'", RELOAD_CMD) + "}" + "}");
 }
 
 HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
@@ -332,8 +339,14 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input Folder");
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Support");
     AddButton(row, SETTINGS_HTML, "Open Settings File", "48-cogs.png", "Settings");
-    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
+    auto reload = AddButton(row, "#", "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
+
+    reload->SetAttribute("onclick", "reload()");
+    auto script = body->AddScript();
+    script->AddText(std::string("function reload() {")
+                    + "if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {"
+                    + fmt::format("    window.location='{}'", RELOAD_CMD) + "}" + "}");
 
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
@@ -589,8 +602,14 @@ std::string HtmlGenerator::GetEmptyInputPage()
 
     AddButton(row, COPY_SAMPLES_CMD, "Copy Samples", "48-box-in.png", "Copy&nbsp;Samples");
     AddButton(row, SETTINGS_HTML, "Open Settings", "48-cogs.png", "Open&nbsp;Settings");
-    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
+    auto reload = AddButton(row, "#", "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
+    
+    reload->SetAttribute("onclick", "reload()");
+    auto script = body->AddScript();
+    script->AddText(std::string("function reload() {")
+                    + "if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {"
+                    + fmt::format("    window.location='{}'", RELOAD_CMD) + "}" + "}");
 
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
