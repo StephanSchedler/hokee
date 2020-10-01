@@ -17,7 +17,7 @@
 namespace hokee
 {
 HtmlElement* HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& link, const std::string& tooltip,
-                              const std::string& image, const std::string& text, const std::string& style)
+                                      const std::string& image, const std::string& text, const std::string& style)
 {
     auto cell = tableRow->AddTableCell();
     cell->SetAttribute("class", std::string("nav link ") + style);
@@ -94,10 +94,9 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
 
     reload->SetAttribute("onclick", "reload()");
-    auto script = body->AddScript();
-    script->AddText(std::string("function reload() {")
-                    + "if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {"
-                    + fmt::format("    window.location='{}'", RELOAD_CMD) + "}" + "}");
+    body->AddScript(std::string("function reload() {\n")
+                    + "  if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {\n"
+                    + fmt::format("    window.location='{}'\n", RELOAD_CMD) + "  }\n" + "}");
 }
 
 HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
@@ -291,17 +290,66 @@ std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::
 
     auto main = body->AddMain();
     main->SetAttribute("class", "pad-100");
-    main->AddHeading(2, title);
 
     auto table = main->AddTable();
+    table->SetAttribute("class", "form");
+    auto row = table->AddTableRow();
+    row->SetAttribute("class", "form");
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    cell->SetAttribute("style", "width: 50%;");
+    cell->AddHeading(2, title);
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    auto input = cell->AddInput();
+    input->SetAttribute("id", "filter");
+    input->SetAttribute("type", "text");
+    input->SetAttribute("placeholder", "Filter...");
+    input->SetAttribute("title", "Type in a string");
+    input->SetAttribute("oninput", "filterFunction()");
+
+    table = main->AddTable();
+    table->SetAttribute("id", "table");
     table->SetAttribute("class", "item mar-20");
     AddItemTableHeader(table);
-    for (const auto& row : data)
+    for (const auto& r : data)
     {
-        AddItemTableRow(table, row.get());
+        AddItemTableRow(table, r.get());
     }
+    body->AddScript("function filterFunction()\n"
+                    "{\n"
+                    "    var input, filter, table, tr, match, td, i, j, txtValue;\n"
+                    "    input = document.getElementById(\"filter\");\n"
+                    "    filter = input.value.toUpperCase();\n"
+                    "    table = document.getElementById(\"table\");\n"
+                    "    tr = table.getElementsByTagName(\"tr\");\n"
+                    "    for (i = 0; i < tr.length; i++)\n"
+                    "    {\n"
+                    "        match = null;\n"
+                    "        for (j = 0; j < table.rows[0].cells.length; j++)\n"
+                    "        {\n"
+                    "            td = tr[i].getElementsByTagName(\"td\")[j];\n"
+                    "            if (td)\n"
+                    "            {\n"
+                    "                txtValue = td.textContent || td.innerText;\n"
+                    "                if (txtValue.toUpperCase().indexOf(filter) > -1)\n"
+                    "                {\n"
+                    "                    match = \"true\";\n"
+                    "                }\n"
+                    "            }\n"
+                    "        }\n"
+                    "        if (match)\n"
+                    "        {\n"
+                    "            tr[i].style.display = \"\";\n"
+                    "        }\n"
+                    "        else\n"
+                    "        {\n"
+                    "            tr[i].style.display = \"none\";\n"
+                    "        }\n"
+                    "    }\n"
+                    "}");
 
-    return html.ToString();
+        return html.ToString();
 }
 
 std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorMessage)
@@ -343,10 +391,9 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
 
     reload->SetAttribute("onclick", "reload()");
-    auto script = body->AddScript();
-    script->AddText(std::string("function reload() {")
-                    + "if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {"
-                    + fmt::format("    window.location='{}'", RELOAD_CMD) + "}" + "}");
+    body->AddScript(std::string("function reload() {\n")
+                    + "if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {\n"
+                    + fmt::format("    window.location='{}'\n", RELOAD_CMD) + "}\n" + "}");
 
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
@@ -404,11 +451,10 @@ std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs:
     cell->AddImage("48-envelope-letter.png", "Submit", 40);
     cell->SetAttribute("class", "form link");
     cell->SetAttribute("onclick", "submitForm()");
-    auto script = body->AddScript();
-    script->AddText("function submitForm() {"
-                    "if (confirm(\"Do you want to send an email?\") == true) {"
-                    "    document.getElementById(\"form\").submit();"
-                    "}"
+    body->AddScript("function submitForm() {\n"
+                    "  if (confirm(\"Do you want to send an email?\") == true) {\n"
+                    "    document.getElementById(\"form\").submit();\n"
+                    "  }\n"
                     "}");
 
     std::string mail = Utils::GenerateSupportMail(ruleSetFile, inputDir);
@@ -453,11 +499,10 @@ std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::pa
     cell->AddImage("48-floppy.png", "Save File", 40);
     cell->SetAttribute("class", "form link");
     cell->SetAttribute("onclick", "submitForm()");
-    auto script = body->AddScript();
-    script->AddText("function submitForm() {"
-                    "if (confirm(\"Do you want to save changes?\") == true) {"
-                    "    document.getElementById(\"form\").submit();"
-                    "}"
+    body->AddScript("function submitForm() {\n"
+                    "  if (confirm(\"Do you want to save changes?\") == true) {\n"
+                    "    document.getElementById(\"form\").submit();\n"
+                    "  }\n"
                     "}");
 
     table = form->AddTable();
@@ -532,12 +577,11 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     cell->AddImage("48-floppy.png", "Save Settings", 40);
     cell->SetAttribute("class", "form link");
     cell->SetAttribute("onclick", "submitForm()");
-    auto script = body->AddScript();
-    script->AddText(
-        "function submitForm() {"
-        "if (confirm(\"Do you want to save settings? (You have to reload to apply new settings.)\") == true) {"
-        "    document.getElementById(\"form\").submit();"
-        "}"
+    body->AddScript(
+        "function submitForm() {\n"
+        "  if (confirm(\"Do you want to save settings? (You have to reload to apply new settings.)\") == true) {\n"
+        "    document.getElementById(\"form\").submit();\n"
+        "  }\n"
         "}");
 
     table = form->AddTable();
@@ -604,12 +648,11 @@ std::string HtmlGenerator::GetEmptyInputPage()
     AddButton(row, SETTINGS_HTML, "Open Settings", "48-cogs.png", "Open&nbsp;Settings");
     auto reload = AddButton(row, "#", "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
-    
+
     reload->SetAttribute("onclick", "reload()");
-    auto script = body->AddScript();
-    script->AddText(std::string("function reload() {")
-                    + "if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {"
-                    + fmt::format("    window.location='{}'", RELOAD_CMD) + "}" + "}");
+    body->AddScript(std::string("function reload() {\n")
+                    + "  if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {\n"
+                    + fmt::format("    window.location='{}'\n", RELOAD_CMD) + "  }\n" + "}");
 
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
@@ -707,10 +750,9 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         cell->AddImage("48-sign-delete.png", "Delete this rule", 38);
         cell->SetAttribute("class", "form link");
         cell->SetAttribute("onclick", "deleteRule()");
-        auto script = body->AddScript();
-        script->AddText(std::string("function deleteRule() {"
-                                    "if (confirm(\"Do you want to delete this rule?\") == true) {")
-                        + fmt::format("    window.location='{}?id={}';", DELETE_CMD, id) + "}" + "}");
+        body->AddScript(std::string("function deleteRule() {\n"
+                                    "  if (confirm(\"Do you want to delete this rule?\") == true) {\n")
+                        + fmt::format("    window.location='{}?id={}';\n", DELETE_CMD, id) + "  }\n" + "}");
     }
 
     auto cell = row->AddTableCell();
@@ -726,11 +768,10 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         cell->AddImage("48-floppy.png", "Save Rules", 40);
         cell->SetAttribute("class", "form link");
         cell->SetAttribute("onclick", "saveRules()");
-        auto script = body->AddScript();
-        script->AddText(
-            std::string("function saveRules() {")
-            + "if (confirm(\"Do you want to save all rules? (You have to reload to apply new rules.)\") == true) {"
-            + fmt::format("   window.location='{}'", SAVE_CMD) + "}" + "}");
+        body->AddScript(
+            std::string("function saveRules() {\n")
+            + "  if (confirm(\"Do you want to save all rules? (You have to reload to apply new rules.)\") == true) {\n"
+            + fmt::format("   window.location='{}'\n", SAVE_CMD) + "  }\n" + "}");
     }
 
     if (database.Unassigned.HasItem(id))
