@@ -92,11 +92,8 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     auto reload = AddButton(row, "#", "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
 
-    reload->SetAttribute("onclick", "reload()");
-    body->AddScript(
-        std::string("function reload() {\n")
-        + "  if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {\n"
-        + fmt::format("    window.location='{}'\n", RELOAD_CMD) + "  }\n" + "}");
+    reload->SetAttribute("onclick", fmt::format("reload('{}')", RELOAD_CMD));
+    body->AddScript("reload.js");
 }
 
 HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
@@ -306,7 +303,7 @@ std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::
     input->SetAttribute("type", "text");
     input->SetAttribute("placeholder", "Filter...");
     input->SetAttribute("title", "Type in a string");
-    input->SetAttribute("oninput", "filterFunction()");
+    input->SetAttribute("oninput", "filterTable('table', 'filter')");
     input->SetAttribute("class", "filter");
 
     table = main->AddTable();
@@ -317,42 +314,7 @@ std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::
     {
         AddItemTableRow(table, r.get());
     }
-    body->AddScript("function filterFunction()\n"
-                    "{\n"
-                    "    var input, filter, table, tr, match, td, i, j, k, txtValue;\n"
-                    "    input = document.getElementById(\"filter\");\n"
-                    "    filter = input.value.toUpperCase().split(\" \");\n"
-                    "    table = document.getElementById(\"table\");\n"
-                    "    tr = table.getElementsByTagName(\"tr\");\n"
-                    "    for (i = 1; i < tr.length; i++)\n"
-                    "    {\n"
-                    "        match = 0;\n"
-                    "        for (k = 0; k < filter.length; k++)\n"
-                    "        {\n"
-                    "            for (j = 0; j < table.rows[0].cells.length; j++)\n"
-                    "            {\n"
-                    "                td = tr[i].getElementsByTagName(\"td\")[j];\n"
-                    "                if (td)\n"
-                    "                {\n"
-                    "                    txtValue = td.textContent || td.innerText;\n"
-                    "                    if (txtValue.toUpperCase().indexOf(filter[k]) > -1)\n"
-                    "                    {\n"
-                    "                        match++;\n"
-                    "                        break;\n"
-                    "                    }\n"
-                    "                }\n"
-                    "            }\n"
-                    "        }\n"
-                    "        if (match == filter.length)\n"
-                    "        {\n"
-                    "            tr[i].style.display = \"\";\n"
-                    "        }\n"
-                    "        else\n"
-                    "        {\n"
-                    "            tr[i].style.display = \"none\";\n"
-                    "        }\n"
-                    "    }\n"
-                    "}");
+    body->AddScript("filterTable.js");
 
     return html.ToString();
 }

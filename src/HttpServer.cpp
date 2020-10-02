@@ -400,6 +400,30 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             _errorMessage = fmt::format("Could not get stylesheet {}", GetUrl(req));
         }
     });
+    
+    // Get JS javascript file
+    _server->Get("/(.*\\.js)", [&](const httplib::Request& req, httplib::Response& res) {
+        try
+        {
+            if (!TrySetContentFromCache(req, res))
+            {
+                fs::path path = fs::current_path() / ".." / "html" / std::string(req.matches[1]);
+                std::string js = Utils::ReadFileContent(path);
+
+                SetContentAndSetCache(req, res, js, CONTENT_TYPE_JS);
+            }
+        }
+        catch (const std::exception& e)
+        {
+            _errorStatus = 500;
+            _errorMessage = e.what();
+        }
+        catch (...)
+        {
+            _errorStatus = 500;
+            _errorMessage = fmt::format("Could not get stylesheet {}", GetUrl(req));
+        }
+    });
 
     // Get Images
     _server->Get("/(.*\\.png)", [&](const httplib::Request& req, httplib::Response& res) {
