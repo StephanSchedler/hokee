@@ -204,9 +204,11 @@ HtmlElement* HtmlElement::AddLink(const std::string& text)
     return AddElement("link", text);
 }
 
-HtmlElement* HtmlElement::AddScript(const std::string& text)
+HtmlElement* HtmlElement::AddScript(const std::string& scriptFile)
 {
-    return AddElement("script", text);
+    auto script = AddElement("script", " ");
+    script->SetAttribute("src", scriptFile);
+    return script;
 }
 
 HtmlElement* HtmlElement::AddInput(const std::string& text)
