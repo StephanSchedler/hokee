@@ -246,6 +246,10 @@ input[type=text], textarea {
   box-shadow: 5px 5px 5px rgba(0,0,0, .2);
 }
 
+input[type=text]:focus {
+  background-color: #EEF;
+}
+
 input.filter {
   background-image: url('48-search.png');
   background-position: 5px 5px;
