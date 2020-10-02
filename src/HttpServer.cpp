@@ -132,6 +132,62 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
         return;
     }
 
+    // support.html
+    if (req.path == std::string("/") + HtmlGenerator::SUPPORT_HTML)
+    {
+        SetContent(req, res, HtmlGenerator::GetSupportPage(_database, _ruleSetFile, _inputDirectory),
+                   CONTENT_TYPE_HTML);
+        return;
+    }
+
+    // settings.html
+    if (req.path == std::string("/") + HtmlGenerator::SETTINGS_HTML)
+    {
+        Settings config(fs::absolute(_configFile));
+        bool save = false;
+        std::string value = GetParam(req.params, "InputDirectory", HtmlGenerator::SETTINGS_HTML);
+        if (!value.empty())
+        {
+            config.SetInputDirectory(value);
+            save = true;
+        }
+        value = GetParam(req.params, "Browser", HtmlGenerator::SETTINGS_HTML);
+        if (!value.empty())
+        {
+            config.SetBrowser(value);
+            save = true;
+        }
+        value = GetParam(req.params, "RuleSetFile", HtmlGenerator::SETTINGS_HTML);
+        if (!value.empty())
+        {
+            config.SetRuleSetFile(value);
+            save = true;
+        }
+        value = GetParam(req.params, "Explorer", HtmlGenerator::SETTINGS_HTML);
+        if (!value.empty())
+        {
+            config.SetExplorer(value);
+            save = true;
+        }
+        value = GetParam(req.params, "Editor", HtmlGenerator::SETTINGS_HTML);
+        if (!value.empty())
+        {
+            config.SetEditor(value);
+            save = true;
+        }
+        if (save)
+        {
+            config.Save(fs::absolute(_configFile));
+            res.set_redirect(HtmlGenerator::SETTINGS_HTML);
+        }
+        else
+        {
+            SetContent(req, res, HtmlGenerator::GetSettingsPage(_database, fs::absolute(_configFile)),
+                       CONTENT_TYPE_HTML);
+        }
+        return;
+    }
+
     // Check for empty input folder
     auto inputFolderCount = std::distance(fs::directory_iterator(_inputDirectory), fs::directory_iterator{});
     if (inputFolderCount == 0)
@@ -190,62 +246,6 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     if (req.path == std::string("/") + HtmlGenerator::HELP_HTML)
     {
         SetContentAndSetCache(req, res, HtmlGenerator::GetHelpPage(_database), CONTENT_TYPE_HTML);
-        return;
-    }
-
-    // support.html
-    if (req.path == std::string("/") + HtmlGenerator::SUPPORT_HTML)
-    {
-        SetContent(req, res, HtmlGenerator::GetSupportPage(_database, _ruleSetFile, _inputDirectory),
-                   CONTENT_TYPE_HTML);
-        return;
-    }
-
-    // settings.html
-    if (req.path == std::string("/") + HtmlGenerator::SETTINGS_HTML)
-    {
-        Settings config(fs::absolute(_configFile));
-        bool save = false;
-        std::string value = GetParam(req.params, "InputDirectory", HtmlGenerator::SETTINGS_HTML);
-        if (!value.empty())
-        {
-            config.SetInputDirectory(value);
-            save = true;
-        }
-        value = GetParam(req.params, "Browser", HtmlGenerator::SETTINGS_HTML);
-        if (!value.empty())
-        {
-            config.SetBrowser(value);
-            save = true;
-        }
-        value = GetParam(req.params, "RuleSetFile", HtmlGenerator::SETTINGS_HTML);
-        if (!value.empty())
-        {
-            config.SetRuleSetFile(value);
-            save = true;
-        }
-        value = GetParam(req.params, "Explorer", HtmlGenerator::SETTINGS_HTML);
-        if (!value.empty())
-        {
-            config.SetExplorer(value);
-            save = true;
-        }
-        value = GetParam(req.params, "Editor", HtmlGenerator::SETTINGS_HTML);
-        if (!value.empty())
-        {
-            config.SetEditor(value);
-            save = true;
-        }
-        if (save)
-        {
-            config.Save(fs::absolute(_configFile));
-            res.set_redirect(HtmlGenerator::SETTINGS_HTML);
-        }
-        else
-        {
-            SetContent(req, res, HtmlGenerator::GetSettingsPage(_database, fs::absolute(_configFile)),
-                       CONTENT_TYPE_HTML);
-        }
         return;
     }
 
@@ -685,6 +685,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             {
                 url = HtmlGenerator::INDEX_HTML;
             }
+            CsvWriter::Write(ruleSetFile, _database.Rules);
             res.set_redirect(url.c_str());
         }
         catch (const std::exception& e)

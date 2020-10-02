@@ -354,11 +354,8 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input Folder");
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Support");
     AddButton(row, SETTINGS_HTML, "Open Settings File", "48-cogs.png", "Settings");
-    auto reload = AddButton(row, "#", "Reload CSV Data", "48-sign-sync.png", "Reload");
+    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
-
-    reload->SetAttribute("onclick", fmt::format("reload('{}')", RELOAD_CMD));
-    body->AddScript("reload.js");
 
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
@@ -459,12 +456,8 @@ std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::pa
     cell = row->AddTableCell();
     cell->AddImage("48-floppy.png", "Save File", 40);
     cell->SetAttribute("class", "form link");
-    cell->SetAttribute("onclick", "submitForm()");
-    body->AddScript("function submitForm() {\n"
-                    "  if (confirm(\"Do you want to save changes?\") == true) {\n"
-                    "    document.getElementById(\"form\").submit();\n"
-                    "  }\n"
-                    "}");
+    cell->SetAttribute("onclick", "submitFile('form')");
+    body->AddScript("submitFile.js");
 
     table = form->AddTable();
     table->SetAttribute("class", "form");
@@ -538,13 +531,8 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     cell = row->AddTableCell();
     cell->AddImage("48-floppy.png", "Save Settings", 40);
     cell->SetAttribute("class", "form link");
-    cell->SetAttribute("onclick", "submitForm()");
-    body->AddScript(
-        "function submitForm() {\n"
-        "  if (confirm(\"Do you want to save settings? (You have to reload to apply new settings.)\") == true) {\n"
-        "    document.getElementById(\"form\").submit();\n"
-        "  }\n"
-        "}");
+    cell->SetAttribute("onclick", "submitSettings('form')");
+    body->AddScript("submitSettings.js");
 
     table = form->AddTable();
     table->SetAttribute("class", "form");
@@ -608,14 +596,8 @@ std::string HtmlGenerator::GetEmptyInputPage()
 
     AddButton(row, COPY_SAMPLES_CMD, "Copy Samples", "48-box-in.png", "Copy&nbsp;Samples");
     AddButton(row, SETTINGS_HTML, "Open Settings", "48-cogs.png", "Open&nbsp;Settings");
-    auto reload = AddButton(row, "#", "Reload CSV Data", "48-sign-sync.png", "Reload");
+    AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
-
-    reload->SetAttribute("onclick", "reload()");
-    body->AddScript(
-        std::string("function reload() {\n")
-        + "  if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {\n"
-        + fmt::format("    window.location='{}'\n", RELOAD_CMD) + "  }\n" + "}");
 
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
@@ -712,10 +694,8 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         auto cell = row->AddTableCell();
         cell->AddImage("48-sign-delete.png", "Delete this rule", 38);
         cell->SetAttribute("class", "form link");
-        cell->SetAttribute("onclick", "deleteRule()");
-        body->AddScript(std::string("function deleteRule() {\n"
-                                    "  if (confirm(\"Do you want to delete this rule?\") == true) {\n")
-                        + fmt::format("    window.location='{}?id={}';\n", DELETE_CMD, id) + "  }\n" + "}");
+        cell->SetAttribute("onclick", fmt::format("deleteRule('{}', '{}')", DELETE_CMD, id));
+        body->AddScript("deleteRule.js");
     }
 
     auto cell = row->AddTableCell();
@@ -730,11 +710,8 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         cell = row->AddTableCell();
         cell->AddImage("48-floppy.png", "Save Rules", 40);
         cell->SetAttribute("class", "form link");
-        cell->SetAttribute("onclick", "saveRules()");
-        body->AddScript(std::string("function saveRules() {\n")
-                        + "  if (confirm(\"Do you want to save all rules? (You have to reload to apply new "
-                          "rules.)\") == true) {\n"
-                        + fmt::format("   window.location='{}'\n", SAVE_CMD) + "  }\n" + "}");
+        cell->SetAttribute("onclick", fmt::format("saveRules('{}')", SAVE_CMD));
+        body->AddScript("saveRules.js");
     }
 
     if (database.Unassigned.HasItem(id))
