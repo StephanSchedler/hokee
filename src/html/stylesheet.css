@@ -246,11 +246,22 @@ input[type=text], textarea {
   box-shadow: 5px 5px 5px rgba(0,0,0, .2);
 }
 
+input.filter {
+  background-image: url('48-search.png');
+  background-position: 5px 5px;
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  padding-left: 30px;
+  padding-right: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
 .mono {
   font-family: 'Courier New', Courier, monospace;
 }
 
-input[type=text] {
+input.form[type=text] {
   padding: 5px;
 }
 

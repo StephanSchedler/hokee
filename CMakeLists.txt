@@ -112,7 +112,6 @@ configure_file(third_party/small-n-flat/png/48/notepad.png ${PROJECT_BINARY_DIR}
 configure_file(third_party/small-n-flat/png/48/wrench-screwdriver.png ${PROJECT_BINARY_DIR}/html/images/48-wrench-screwdriver.png COPYONLY)
 configure_file(third_party/small-n-flat/png/48/folder.png ${PROJECT_BINARY_DIR}/html/images/48-folder.png COPYONLY)
 configure_file(third_party/small-n-flat/png/48/money.png ${PROJECT_BINARY_DIR}/html/images/48-money.png COPYONLY)
-configure_file(third_party/small-n-flat/png/48/file-text.png ${PROJECT_BINARY_DIR}/html/images/48-file-text.png COPYONLY) 
 configure_file(third_party/small-n-flat/png/48/sign-check.png ${PROJECT_BINARY_DIR}/html/images/48-sign-check.png COPYONLY)
 configure_file(third_party/small-n-flat/png/48/sign-left.png ${PROJECT_BINARY_DIR}/html/images/48-sign-left.png COPYONLY)
 configure_file(third_party/small-n-flat/png/48/sign-right.png ${PROJECT_BINARY_DIR}/html/images/48-sign-right.png COPYONLY)
