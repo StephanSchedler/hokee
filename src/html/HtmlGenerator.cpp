@@ -357,10 +357,8 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     auto reload = AddButton(row, "#", "Reload CSV Data", "48-sign-sync.png", "Reload");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
 
-    reload->SetAttribute("onclick", "reload()");
-    body->AddScript(std::string("function reload() {\n")
-                    + "if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {\n"
-                    + fmt::format("    window.location='{}'\n", RELOAD_CMD) + "}\n" + "}");
+    reload->SetAttribute("onclick", fmt::format("reload('{}')", RELOAD_CMD));
+    body->AddScript("reload.js");
 
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
@@ -417,12 +415,8 @@ std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs:
     cell = row->AddTableCell();
     cell->AddImage("48-envelope-letter.png", "Submit", 40);
     cell->SetAttribute("class", "form link");
-    cell->SetAttribute("onclick", "submitForm()");
-    body->AddScript("function submitForm() {\n"
-                    "  if (confirm(\"Do you want to send an email?\") == true) {\n"
-                    "    document.getElementById(\"form\").submit();\n"
-                    "  }\n"
-                    "}");
+    cell->SetAttribute("onclick", "submitMail('form')");
+    body->AddScript("submitMail.js");
 
     std::string mail = Utils::GenerateSupportMail(ruleSetFile, inputDir);
     auto label = form->AddLabel("Fill the section below and send it to schedler@paderborn.com");
