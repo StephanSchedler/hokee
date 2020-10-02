@@ -38,7 +38,7 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
 
     AddButton(row, INDEX_HTML, "Show Summary", "48-file-excel.png", "Summary &nbsp;");
     AddButton(row, RULES_HTML, "Show Rules", "48-file-exe.png", fmt::format("Rules ({})", database.Rules.size()));
-    AddButton(row, ALL_HTML, "Show All Items", "48-file-text.png",
+    AddButton(row, ALL_HTML, "Show All Items", "48-search.png",
               fmt::format("Items ({})", database.Data.size()));
 
     if (database.Unassigned.size() == 0 && database.Issues.size() == 0)
@@ -85,7 +85,6 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
 
-    AddButton(row, SEARCH_HTML, "Open Search Page", "48-search.png", "Search");
     AddButton(row, SETTINGS_HTML, "Open Settings File", "48-cogs.png", "Settings");
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Support");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-folder.png", "Input");
@@ -94,9 +93,10 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
 
     reload->SetAttribute("onclick", "reload()");
-    body->AddScript(std::string("function reload() {\n")
-                    + "  if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {\n"
-                    + fmt::format("    window.location='{}'\n", RELOAD_CMD) + "  }\n" + "}");
+    body->AddScript(
+        std::string("function reload() {\n")
+        + "  if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {\n"
+        + fmt::format("    window.location='{}'\n", RELOAD_CMD) + "  }\n" + "}");
 }
 
 HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
@@ -307,6 +307,7 @@ std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::
     input->SetAttribute("placeholder", "Filter...");
     input->SetAttribute("title", "Type in a string");
     input->SetAttribute("oninput", "filterFunction()");
+    input->SetAttribute("class", "filter");
 
     table = main->AddTable();
     table->SetAttribute("id", "table");
@@ -318,27 +319,31 @@ std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::
     }
     body->AddScript("function filterFunction()\n"
                     "{\n"
-                    "    var input, filter, table, tr, match, td, i, j, txtValue;\n"
+                    "    var input, filter, table, tr, match, td, i, j, k, txtValue;\n"
                     "    input = document.getElementById(\"filter\");\n"
-                    "    filter = input.value.toUpperCase();\n"
+                    "    filter = input.value.toUpperCase().split(\" \");\n"
                     "    table = document.getElementById(\"table\");\n"
                     "    tr = table.getElementsByTagName(\"tr\");\n"
-                    "    for (i = 0; i < tr.length; i++)\n"
+                    "    for (i = 1; i < tr.length; i++)\n"
                     "    {\n"
-                    "        match = null;\n"
-                    "        for (j = 0; j < table.rows[0].cells.length; j++)\n"
+                    "        match = 0;\n"
+                    "        for (k = 0; k < filter.length; k++)\n"
                     "        {\n"
-                    "            td = tr[i].getElementsByTagName(\"td\")[j];\n"
-                    "            if (td)\n"
+                    "            for (j = 0; j < table.rows[0].cells.length; j++)\n"
                     "            {\n"
-                    "                txtValue = td.textContent || td.innerText;\n"
-                    "                if (txtValue.toUpperCase().indexOf(filter) > -1)\n"
+                    "                td = tr[i].getElementsByTagName(\"td\")[j];\n"
+                    "                if (td)\n"
                     "                {\n"
-                    "                    match = \"true\";\n"
+                    "                    txtValue = td.textContent || td.innerText;\n"
+                    "                    if (txtValue.toUpperCase().indexOf(filter[k]) > -1)\n"
+                    "                    {\n"
+                    "                        match++;\n"
+                    "                        break;\n"
+                    "                    }\n"
                     "                }\n"
                     "            }\n"
                     "        }\n"
-                    "        if (match)\n"
+                    "        if (match == filter.length)\n"
                     "        {\n"
                     "            tr[i].style.display = \"\";\n"
                     "        }\n"
@@ -349,7 +354,7 @@ std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::
                     "    }\n"
                     "}");
 
-        return html.ToString();
+    return html.ToString();
 }
 
 std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorMessage)
@@ -541,6 +546,7 @@ void HtmlGenerator::AddInputForm(HtmlElement* table, const std::string& name, co
     auto label = cell->AddLabel(description);
     label->SetAttribute("class", "marb-20");
     auto input = label->AddInput();
+    input->SetAttribute("class", "form");
     input->SetAttribute("type", "text");
     input->SetAttribute("name", name);
     input->SetAttribute("value", value);
@@ -650,9 +656,10 @@ std::string HtmlGenerator::GetEmptyInputPage()
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
 
     reload->SetAttribute("onclick", "reload()");
-    body->AddScript(std::string("function reload() {\n")
-                    + "  if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {\n"
-                    + fmt::format("    window.location='{}'\n", RELOAD_CMD) + "  }\n" + "}");
+    body->AddScript(
+        std::string("function reload() {\n")
+        + "  if (confirm(\"Do you want to reload data? (All unsaved data will be lost!)\") == true) {\n"
+        + fmt::format("    window.location='{}'\n", RELOAD_CMD) + "  }\n" + "}");
 
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
@@ -768,10 +775,10 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         cell->AddImage("48-floppy.png", "Save Rules", 40);
         cell->SetAttribute("class", "form link");
         cell->SetAttribute("onclick", "saveRules()");
-        body->AddScript(
-            std::string("function saveRules() {\n")
-            + "  if (confirm(\"Do you want to save all rules? (You have to reload to apply new rules.)\") == true) {\n"
-            + fmt::format("   window.location='{}'\n", SAVE_CMD) + "  }\n" + "}");
+        body->AddScript(std::string("function saveRules() {\n")
+                        + "  if (confirm(\"Do you want to save all rules? (You have to reload to apply new "
+                          "rules.)\") == true) {\n"
+                        + fmt::format("   window.location='{}'\n", SAVE_CMD) + "  }\n" + "}");
     }
 
     if (database.Unassigned.HasItem(id))

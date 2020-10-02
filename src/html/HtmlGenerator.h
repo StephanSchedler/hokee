@@ -33,7 +33,6 @@ class HtmlGenerator
     static constexpr const char* ISSUES_HTML = "issues.html";
     static constexpr const char* ITEM_HTML = "item.html";
     static constexpr const char* ITEMS_HTML = "items.html";
-    static constexpr const char* SEARCH_HTML = "search.html";
     static constexpr const char* HELP_HTML = "help.html";
     static constexpr const char* SUPPORT_HTML = "support.html";
     static constexpr const char* EDIT_HTML = "edit.html";
