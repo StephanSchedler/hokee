@@ -850,16 +850,29 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         cell->AddHeading(3, "Rule(s):");
 
         cell = row->AddTableCell();
-        cell->SetAttribute("class", "form fill");
+        cell->SetAttribute("class", "form");
     }
     else
     {
-        cell->SetAttribute("class", "form fill");
+        cell->SetAttribute("class", "form");
         cell->AddHeading(3, "Item(s):");
     }
 
+    cell->SetAttribute("style", "width: 50%;");
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    auto input = cell->AddInput();
+    input->SetAttribute("id", "filter");
+    input->SetAttribute("type", "text");
+    input->SetAttribute("placeholder", "Filter...");
+    input->SetAttribute("title", "Type in a string");
+    input->SetAttribute("oninput", "filterTable('table', 'filter')");
+    input->SetAttribute("class", "filter");
+    body->AddScript("filterTable.js");
+
     table = main->AddDivision()->AddTable();
     table->SetAttribute("class", "item mar-20");
+    table->SetAttribute("id", "table");
     AddItemTableHeader(table);
 
     for (auto& ref : item->References)
