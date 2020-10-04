@@ -294,7 +294,7 @@ label {
 
 @keyframes blink-bg {
   0% {background-color: white;}
-  50% {background-color: #DFD;}
+  50% {background-color: #CFC;}
   100% {background-color: white;}
 }
 

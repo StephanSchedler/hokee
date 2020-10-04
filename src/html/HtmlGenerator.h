@@ -52,9 +52,9 @@ class HtmlGenerator
                                       const fs::path& inputDir);
     static std::string GetErrorPage(int errorCode, const std::string& errorMessage);
     static std::string GetSummaryPage(const CsvDatabase& database);
-    static std::string GetItemPage(const CsvDatabase& database, int id);
-    static std::string GetEditPage(const CsvDatabase& database, const fs::path& file);
-    static std::string GetSettingsPage(const CsvDatabase& database, const fs::path& file);
+    static std::string GetItemPage(const CsvDatabase& database, int id, bool saved);
+    static std::string GetEditPage(const CsvDatabase& database, const fs::path& file, bool saved);
+    static std::string GetSettingsPage(const CsvDatabase& database, const fs::path& file, bool saved);
     static std::string GetTablePage(const CsvDatabase& database, const std::string& title, const CsvTable& data);
 
     static std::string GetEmptyInputPage();
