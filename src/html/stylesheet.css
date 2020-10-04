@@ -290,4 +290,18 @@ input[type=submit]:hover, div.button:hover {
 
 label { 
   display: block;
-};
+}
+
+@keyframes blink-bg {
+  0% {background-color: white;}
+  50% {background-color: #DFD;}
+  100% {background-color: white;}
+}
+
+.blink-once {
+  background-color: white;
+  animation-name: blink-bg;
+  animation-duration: 0.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
+}

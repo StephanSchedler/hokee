@@ -85,11 +85,29 @@ void CsvDatabase::CheckRules()
 
 int CsvDatabase::DeleteRule(int id)
 {
-    Data.DeleteItem(id);  
+    Data.DeleteItem(id);
     Assigned.DeleteItem(id);
     Unassigned.DeleteItem(id);
-    Issues.DeleteItem(id);    
+    Issues.DeleteItem(id);
     return Rules.DeleteItem(id);
+}
+
+int CsvDatabase::NewRule(int itemId)
+{
+    auto item = Data.at(itemId);
+
+    CsvRowShared newRule = std::make_shared<CsvItem>(*item);
+
+    newRule->Id = Utils::GenerateId();
+    newRule->Issues.clear();
+    newRule->File = "???";
+    newRule->Line = -1;
+    newRule->References.clear();
+    newRule->References.push_back(item.get());
+
+    Rules.push_back(newRule);
+
+    return newRule->Id;
 }
 
 void CsvDatabase::AddRules(const fs::path& ruleSetFile, const std::string& editor)
