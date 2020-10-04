@@ -37,9 +37,8 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     auto row = table->AddTableRow();
 
     AddButton(row, INDEX_HTML, "Show Summary", "48-file-excel.png", "Summary &nbsp;");
+    AddButton(row, ALL_HTML, "Show All Items", "48-search.png", fmt::format("Items ({})", database.Data.size()));
     AddButton(row, RULES_HTML, "Show Rules", "48-file-exe.png", fmt::format("Rules ({})", database.Rules.size()));
-    AddButton(row, ALL_HTML, "Show All Items", "48-search.png",
-              fmt::format("Items ({})", database.Data.size()));
 
     if (database.Unassigned.size() == 0 && database.Issues.size() == 0)
     {
@@ -86,7 +85,7 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     cell->SetAttribute("class", "nav fill");
 
     AddButton(row, SETTINGS_HTML, "Open Settings File", "48-cogs.png", "Settings");
-    AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Support");
+    AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-profile.png", "Support");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-folder.png", "Input");
     AddButton(row, HELP_HTML, "Open Online Help", "48-sign-question.png", "Help");
     auto reload = AddButton(row, "#", "Reload CSV Data", "48-sign-sync.png", "Reload");
@@ -351,7 +350,7 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     auto cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
 
-    AddButton(row, INPUT_CMD, "Open Input Folder", "48-box-full.png", "Input Folder");
+    AddButton(row, INPUT_CMD, "Open Input Folder", "48-folder.png", "Input Folder");
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Support");
     AddButton(row, SETTINGS_HTML, "Open Settings File", "48-cogs.png", "Settings");
     AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
@@ -431,6 +430,7 @@ std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::pa
     AddHtmlHead(&html);
 
     auto body = html.AddBody();
+    body->SetAttribute("class", "blink-once");
     AddNavigationHeader(body, database);
 
     auto main = body->AddMain();
@@ -507,6 +507,7 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     AddHtmlHead(&html);
 
     auto body = html.AddBody();
+    body->SetAttribute("class", "blink-once");
     AddNavigationHeader(body, database);
 
     auto main = body->AddMain();
@@ -679,6 +680,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     AddHtmlHead(&html);
 
     auto body = html.AddBody();
+    body->SetAttribute("class", "blink-once");
     AddNavigationHeader(body, database);
 
     auto main = body->AddMain();
@@ -710,8 +712,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
         cell = row->AddTableCell();
         cell->AddImage("48-floppy.png", "Save Rules", 40);
         cell->SetAttribute("class", "form link");
-        cell->SetAttribute("onclick", fmt::format("saveRules('{}')", SAVE_CMD));
-        body->AddScript("saveRules.js");
+        cell->SetAttribute("onclick", fmt::format("window.location='{}';", SAVE_CMD));
     }
 
     if (database.Unassigned.HasItem(id))
@@ -843,7 +844,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     {
         cell->SetAttribute("class", "form link");
         cell->AddImage("48-sign-add.png", "Add new rule", 38);
-        cell->SetAttribute("onclick", "");
+        cell->SetAttribute("onclick", fmt::format("window.location='{}?id={}';", NEW_CMD, id));
 
         cell = row->AddTableCell();
         cell->SetAttribute("class", "form");
