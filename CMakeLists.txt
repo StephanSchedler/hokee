@@ -134,6 +134,7 @@ configure_file(third_party/small-n-flat/png/48/cogs.png ${PROJECT_BINARY_DIR}/ht
 configure_file(third_party/small-n-flat/png/48/search.png ${PROJECT_BINARY_DIR}/html/images/48-search.png COPYONLY)
 configure_file(third_party/small-n-flat/png/48/box-in.png ${PROJECT_BINARY_DIR}/html/images/48-box-in.png COPYONLY)  
 configure_file(third_party/small-n-flat/png/48/envelope-letter.png ${PROJECT_BINARY_DIR}/html/images/48-envelope-letter.png COPYONLY)  
+configure_file(third_party/small-n-flat/png/48/safe.png ${PROJECT_BINARY_DIR}/html/images/48-safe.png COPYONLY)  
 configure_file(third_party/small-n-flat/png/96/box.png ${PROJECT_BINARY_DIR}/html/images/96-box.png COPYONLY)
 configure_file(third_party/small-n-flat/png/96/sign-ban.png ${PROJECT_BINARY_DIR}/html/images/96-sign-ban.png COPYONLY)
 

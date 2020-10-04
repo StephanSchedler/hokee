@@ -2,8 +2,8 @@
 #include "Filesystem.h"
 #include "InternalException.h"
 #include "Settings.h"
-#include "csv/CsvWriter.h"
 #include "Utils.h"
+#include "csv/CsvWriter.h"
 
 #include <chrono>
 #include <cstdio>
@@ -178,11 +178,13 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
         if (save)
         {
             config.Save(fs::absolute(_configFile));
-            res.set_redirect(HtmlGenerator::SETTINGS_HTML);
+            res.set_redirect((std::string(HtmlGenerator::SETTINGS_HTML) + "?saved").c_str());
         }
         else
         {
-            SetContent(req, res, HtmlGenerator::GetSettingsPage(_database, fs::absolute(_configFile)),
+            SetContent(req, res,
+                       HtmlGenerator::GetSettingsPage(_database, fs::absolute(_configFile),
+                                                      req.params.find("saved") != req.params.end()),
                        CONTENT_TYPE_HTML);
         }
         return;
@@ -277,7 +279,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
             return;
         }
         const int id = std::stoi(idStr);
-        SetContent(req, res, HtmlGenerator::GetItemPage(_database, id), CONTENT_TYPE_HTML);
+        SetContent(req, res, HtmlGenerator::GetItemPage(_database, id, req.params.find("saved") != req.params.end()), CONTENT_TYPE_HTML);
         return;
     }
 
@@ -293,7 +295,9 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
             res.set_redirect(HtmlGenerator::INDEX_HTML);
             return;
         }
-        SetContent(req, res, HtmlGenerator::GetEditPage(_database, filename), CONTENT_TYPE_HTML);
+        SetContent(req, res,
+                   HtmlGenerator::GetEditPage(_database, filename, req.params.find("saved") != req.params.end()),
+                   CONTENT_TYPE_HTML);
         return;
     }
 
@@ -400,7 +404,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             _errorMessage = fmt::format("Could not get stylesheet {}", GetUrl(req));
         }
     });
-    
+
     // Get JS javascript file
     _server->Get("/(.*\\.js)", [&](const httplib::Request& req, httplib::Response& res) {
         try
@@ -485,7 +489,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
 
             std::string content = req.body.substr(8, std::string::npos);
             Utils::WriteFileContent(file, content);
-            res.set_redirect(fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, file).c_str());
+            res.set_redirect(fmt::format("{}?file={}&saved", HtmlGenerator::EDIT_HTML, file).c_str());
         }
         catch (const std::exception& e)
         {
@@ -500,25 +504,25 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
     });
 
     // Save Rules
-    _server->Get((std::string("/") + HtmlGenerator::SAVE_CMD).c_str(), [&](const httplib::Request& /*unused*/,
-                                                                            httplib::Response& res) {
-        try
-        {
-            Utils::PrintTrace("Received save rules request");
-            CsvWriter::Write(ruleSetFile, _database.Rules);
-            res.set_redirect(_lastUrl.c_str());
-        }
-        catch (const std::exception& e)
-        {
-            _errorStatus = 500;
-            _errorMessage = e.what();
-        }
-        catch (...)
-        {
-            _errorStatus = 500;
-            _errorMessage = "Could not exit";
-        }
-    });
+    _server->Get((std::string("/") + HtmlGenerator::SAVE_CMD).c_str(),
+                 [&](const httplib::Request& /*unused*/, httplib::Response& res) {
+                     try
+                     {
+                         Utils::PrintTrace("Received save rules request");
+                         CsvWriter::Write(ruleSetFile, _database.Rules);
+                         res.set_redirect((_lastUrl + "&saved").c_str());
+                     }
+                     catch (const std::exception& e)
+                     {
+                         _errorStatus = 500;
+                         _errorMessage = e.what();
+                     }
+                     catch (...)
+                     {
+                         _errorStatus = 500;
+                         _errorMessage = "Could not exit";
+                     }
+                 });
 
     // Exit
     _server->Get((std::string("/") + HtmlGenerator::EXIT_CMD).c_str(),
@@ -649,7 +653,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
 
     // new rule
     _server->Get((std::string("/") + HtmlGenerator::NEW_CMD).c_str(), [&](const httplib::Request& req,
-                                                                             httplib::Response& res) {
+                                                                          httplib::Response& res) {
         try
         {
             Utils::PrintTrace("Received add rule request...");
@@ -691,7 +695,6 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             _errorMessage = fmt::format("Could not delete rule {}", GetUrl(req));
         }
     });
-
 
     // delete rule
     _server->Get((std::string("/") + HtmlGenerator::DELETE_CMD).c_str(), [&](const httplib::Request& req,

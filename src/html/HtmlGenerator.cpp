@@ -39,6 +39,12 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     AddButton(row, INDEX_HTML, "Show Summary", "48-file-excel.png", "Summary &nbsp;");
     AddButton(row, ALL_HTML, "Show All Items", "48-search.png", fmt::format("Items ({})", database.Data.size()));
     AddButton(row, RULES_HTML, "Show Rules", "48-file-exe.png", fmt::format("Rules ({})", database.Rules.size()));
+    AddButton(row, RULES_HTML, "Backup Rules", "48-safe.png", "Backup &nbsp;");
+    
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("class", std::string("nav"));
+    div = cell->AddDivision();
+    div->SetAttribute("style", "width: 24px;");
 
     if (database.Unassigned.size() == 0 && database.Issues.size() == 0)
     {
@@ -73,7 +79,7 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
                   fmt::format("Errors ({})", database.Issues.size()));
     }
 
-    auto cell = row->AddTableCell("&nbsp;");
+    cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
 
     cell = row->AddTableCell();
@@ -424,13 +430,16 @@ std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs:
     return html.ToString();
 }
 
-std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::path& file)
+std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::path& file, bool saved)
 {
     HtmlElement html;
     AddHtmlHead(&html);
 
     auto body = html.AddBody();
-    body->SetAttribute("class", "blink-once");
+    if (saved)
+    {
+        body->SetAttribute("class", "blink-once");
+    }
     AddNavigationHeader(body, database);
 
     auto main = body->AddMain();
@@ -501,13 +510,16 @@ void HtmlGenerator::AddInputForm(HtmlElement* table, const std::string& name, co
     input->SetAttribute("value", value);
 }
 
-std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs::path& file)
+std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs::path& file, bool saved)
 {
     HtmlElement html;
     AddHtmlHead(&html);
 
     auto body = html.AddBody();
-    body->SetAttribute("class", "blink-once");
+    if (saved)
+    {
+        body->SetAttribute("class", "blink-once");
+    }
     AddNavigationHeader(body, database);
 
     auto main = body->AddMain();
@@ -643,7 +655,7 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
     return html.ToString();
 }
 
-std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
+std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, bool saved)
 {
     std::string title = "";
     bool isItem = false;
@@ -680,7 +692,10 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id)
     AddHtmlHead(&html);
 
     auto body = html.AddBody();
-    body->SetAttribute("class", "blink-once");
+    if (saved)
+    {
+        body->SetAttribute("class", "blink-once");
+    }
     AddNavigationHeader(body, database);
 
     auto main = body->AddMain();
