@@ -9,6 +9,7 @@
 #include <cstdlib>
 
 #include <array>
+#include <ctime>
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -17,6 +18,7 @@
 #include <string>
 #include <string_view>
 #include <thread>
+
 
 namespace hokee::Utils
 {
@@ -80,6 +82,19 @@ std::string ReadFileObfuscated(const fs::path& path, bool obfuscate)
     return output.str();
 }
 } // namespace
+
+std::string GenerateTimestamp()
+{
+    time_t rawtime;
+    struct tm* timeinfo;
+    char buffer[80];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d_%H-%M-%S", timeinfo);
+    return std::string(buffer);
+}
 
 const std::vector<std::string> GetLastMessages()
 {

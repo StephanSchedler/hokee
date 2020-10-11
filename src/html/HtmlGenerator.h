@@ -34,18 +34,22 @@ class HtmlGenerator
     static constexpr const char* ITEM_HTML = "item.html";
     static constexpr const char* ITEMS_HTML = "items.html";
     static constexpr const char* HELP_HTML = "help.html";
+    static constexpr const char* BACKUP_HTML = "backup.html";
     static constexpr const char* SUPPORT_HTML = "support.html";
     static constexpr const char* EDIT_HTML = "edit.html";
     static constexpr const char* SETTINGS_HTML = "settings.html";
     static constexpr const char* EXIT_CMD = "exit";
     static constexpr const char* DELETE_CMD = "delete";
     static constexpr const char* NEW_CMD = "new";
+    static constexpr const char* BACKUP_CMD = "backup";
+    static constexpr const char* RESTORE_CMD = "restore";
     static constexpr const char* SAVE_CMD = "save";
     static constexpr const char* RELOAD_CMD = "reload";
     static constexpr const char* COPY_SAMPLES_CMD = "copy-samples";
     static constexpr const char* OPEN_CMD = "open";
     static constexpr const char* INPUT_CMD = "input";
 
+    static std::string GetBackupPage(const CsvDatabase& database, const fs::path& ruleSetFile);
     static std::string GetHelpPage(const CsvDatabase& database);
     static std::string GetProgressPage(size_t value, size_t max);
     static std::string GetSupportPage(const CsvDatabase& database, const fs::path& ruleSetFile,
