@@ -38,6 +38,7 @@ fs::path GetTempDir();
 
 std::string EscapeHtml(std::string text);
 std::string GenerateSupportMail(const fs::path& ruleSetFile, const fs::path& inputDir);
+std::string GenerateTimestamp();
 
 void TerminationHandler();
 void TerminationHandler(const std::exception& e);

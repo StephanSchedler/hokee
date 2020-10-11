@@ -279,7 +279,16 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
             return;
         }
         const int id = std::stoi(idStr);
-        SetContent(req, res, HtmlGenerator::GetItemPage(_database, id, req.params.find("saved") != req.params.end()), CONTENT_TYPE_HTML);
+        SetContent(req, res,
+                   HtmlGenerator::GetItemPage(_database, id, req.params.find("saved") != req.params.end()),
+                   CONTENT_TYPE_HTML);
+        return;
+    }
+
+    // backup.html
+    if (req.path == std::string("/") + HtmlGenerator::BACKUP_HTML)
+    {
+        SetContent(req, res, HtmlGenerator::GetBackupPage(_database, _ruleSetFile), CONTENT_TYPE_HTML);
         return;
     }
 
@@ -524,6 +533,62 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      }
                  });
 
+    // restore folder
+    _server->Get((std::string("/") + HtmlGenerator::RESTORE_CMD).c_str(), [&](const httplib::Request& req,
+                                                                              httplib::Response& res) {
+        try
+        {
+            Utils::PrintTrace("Received restore request...");
+            const fs::path file = GetParam(req.params, "file", HtmlGenerator::RESTORE_CMD);
+            if (file.empty())
+            {
+                res.status = 404;
+                std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
+                                                       HtmlGenerator::RESTORE_CMD, "file");
+
+                Utils::PrintInfo(fmt::format("Last request: {}", GetUrl(req)));
+                res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
+                return;
+            }
+
+            fs::copy_file(ruleSetFile.parent_path() / file, ruleSetFile, fs::copy_options::overwrite_existing);
+            res.set_redirect(HtmlGenerator::RELOAD_CMD);
+        }
+        catch (const std::exception& e)
+        {
+            _errorStatus = 500;
+            _errorMessage = e.what();
+        }
+        catch (...)
+        {
+            _errorStatus = 500;
+            _errorMessage = fmt::format("Could not open folder {}", GetUrl(req));
+        }
+    });
+
+    // Backup Rules
+    _server->Get((std::string("/") + HtmlGenerator::BACKUP_CMD).c_str(), [&](const httplib::Request& /*unused*/,
+                                                                             httplib::Response& res) {
+        try
+        {
+            Utils::PrintTrace("Received backup rules request");
+            fs::path backupPath = fmt::format("{}.{}.backup", ruleSetFile.string(), Utils::GenerateTimestamp());
+            CsvWriter::Write(ruleSetFile, _database.Rules);
+            fs::copy_file(ruleSetFile, backupPath, fs::copy_options::overwrite_existing);
+            res.set_redirect((_lastUrl).c_str());
+        }
+        catch (const std::exception& e)
+        {
+            _errorStatus = 500;
+            _errorMessage = e.what();
+        }
+        catch (...)
+        {
+            _errorStatus = 500;
+            _errorMessage = "Could not exit";
+        }
+    });
+
     // Exit
     _server->Get((std::string("/") + HtmlGenerator::EXIT_CMD).c_str(),
                  [&](const httplib::Request& /*req*/, httplib::Response& /*res*/) {
@@ -703,39 +768,47 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             Utils::PrintTrace("Received delete rule request...");
             const std::string idStr = GetParam(req.params, "id", HtmlGenerator::DELETE_CMD);
-            if (idStr.empty())
+            const std::string file = GetParam(req.params, "file", HtmlGenerator::DELETE_CMD);
+            if (!idStr.empty())
+            {
+                int id = -1;
+                try
+                {
+                    id = std::stoi(idStr);
+                }
+                catch (const std::exception& e)
+                {
+                    throw InternalException(__FILE__, __LINE__,
+                                            fmt::format("Could not convert '{}' to 'int'. ({})", idStr, e.what()));
+                }
+                int nextId = _database.DeleteRule(id);
+                std::string url;
+                if (nextId >= 0)
+                {
+                    url = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
+                }
+                else
+                {
+                    url = HtmlGenerator::INDEX_HTML;
+                }
+                CsvWriter::Write(ruleSetFile, _database.Rules);
+                res.set_redirect(url.c_str());
+            }
+            else if (!file.empty())
+            {
+                fs::remove(ruleSetFile.parent_path() / file);
+                res.set_redirect(_lastUrl.c_str());
+            }
+            else
             {
                 res.status = 404;
                 std::string errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
-                                                       HtmlGenerator::DELETE_CMD, "id");
+                                                       HtmlGenerator::DELETE_CMD, "id' or 'file");
 
                 Utils::PrintInfo(fmt::format("Last request: {}", GetUrl(req)));
                 res.set_content(HtmlGenerator::GetErrorPage(res.status, errorMessage), CONTENT_TYPE_HTML);
                 return;
             }
-
-            int id = -1;
-            try
-            {
-                id = std::stoi(idStr);
-            }
-            catch (const std::exception& e)
-            {
-                throw InternalException(__FILE__, __LINE__,
-                                        fmt::format("Could not convert '{}' to 'int'. ({})", idStr, e.what()));
-            }
-            int nextId = _database.DeleteRule(id);
-            std::string url;
-            if (nextId >= 0)
-            {
-                url = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
-            }
-            else
-            {
-                url = HtmlGenerator::INDEX_HTML;
-            }
-            CsvWriter::Write(ruleSetFile, _database.Rules);
-            res.set_redirect(url.c_str());
         }
         catch (const std::exception& e)
         {

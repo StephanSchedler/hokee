@@ -21,9 +21,10 @@ HtmlElement* HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& 
 {
     auto cell = tableRow->AddTableCell();
     cell->SetAttribute("class", std::string("nav link ") + style);
-    auto hyperlink = cell->AddHyperlink(link, tooltip);
-    hyperlink->AddImage(image, tooltip, 42);
-    hyperlink->AddText(text);
+    cell->SetAttribute("onclick", fmt::format("window.location='{}'", link));
+    cell->SetAttribute("title", tooltip);
+    cell->AddImage(image, tooltip, 42);
+    cell->AddText(text);
     return cell;
 }
 
@@ -39,8 +40,8 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     AddButton(row, INDEX_HTML, "Show Summary", "48-file-excel.png", "Summary &nbsp;");
     AddButton(row, ALL_HTML, "Show All Items", "48-search.png", fmt::format("Items ({})", database.Data.size()));
     AddButton(row, RULES_HTML, "Show Rules", "48-file-exe.png", fmt::format("Rules ({})", database.Rules.size()));
-    AddButton(row, RULES_HTML, "Backup Rules", "48-safe.png", "Backup &nbsp;");
-    
+    AddButton(row, BACKUP_HTML, "Backup Rules", "48-safe.png", "Backup &nbsp;");
+
     auto cell = row->AddTableCell();
     cell->SetAttribute("class", std::string("nav"));
     div = cell->AddDivision();
@@ -364,6 +365,77 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
 
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
+
+    return html.ToString();
+}
+
+std::string HtmlGenerator::GetBackupPage(const CsvDatabase& database, const fs::path& ruleSetFile)
+{
+    HtmlElement html;
+    AddHtmlHead(&html);
+
+    auto body = html.AddBody();
+    AddNavigationHeader(body, database);
+
+    auto main = body->AddMain();
+    main->SetAttribute("class", "pad-100");
+
+    main->AddHeading(2, "Backup Rules");
+
+    auto table = main->AddTable();
+    table->SetAttribute("class", "form");
+    auto row = table->AddTableRow();
+    row->SetAttribute("class", "form");
+
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("class", "form link");
+    cell->AddImage("48-sign-add.png", "Add new rule", 38);
+    cell->SetAttribute("onclick", fmt::format("window.location='{}';", BACKUP_CMD));
+
+    cell = row->AddTableCell(ruleSetFile.string());
+    cell->SetAttribute("class", "form fill center mono");
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    std::string link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, ruleSetFile.string());
+    cell->AddHyperlinkImage(link, "Edit Settings File", "48-notepad.png", 38);
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, ruleSetFile.parent_path().string());
+    cell->AddHyperlinkImage(link, "Open folder", "48-folder.png", 38);
+
+    main->AddHeading(3, "Backup Files");
+    table = main->AddTable();
+    table->SetAttribute("class", "item mar-20");
+    for (const auto& entry : fs::directory_iterator(ruleSetFile.parent_path()))
+    {
+        std::string filename = entry.path().filename().string();
+
+        if (filename.find(ruleSetFile.filename().string() + ".") != std::string::npos)
+        {
+            row = table->AddTableRow();
+            cell = row->AddTableCell();
+            cell->SetAttribute("class", "item link");
+            cell->AddImage("48-sign-delete.png", "Add new rule", 38);
+            cell->SetAttribute("onclick", fmt::format("deleteBackup('{}?file={}', '{}')", DELETE_CMD, filename, filename));
+            body->AddScript("deleteBackup.js");
+            
+            cell = row->AddTableCell(filename);
+            cell->SetAttribute("class", "item center mono link fill");
+            cell->SetAttribute("onclick", fmt::format("window.location='{}?file={}'", RESTORE_CMD, filename));
+            
+            cell = row->AddTableCell();
+            cell->SetAttribute("class", "item link");
+            link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, entry.path().string());
+            cell->AddHyperlinkImage(link, "Edit Settings File", "48-notepad.png", 38);
+
+            cell = row->AddTableCell();
+            cell->SetAttribute("class", "item link");
+            link = fmt::format("{}?folder={}", HtmlGenerator::OPEN_CMD, entry.path().parent_path().string());
+            cell->AddHyperlinkImage(link, "Open folder", "48-folder.png", 38);
+        }
+    }
 
     return html.ToString();
 }
