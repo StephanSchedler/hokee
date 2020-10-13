@@ -41,35 +41,6 @@ void CsvWriter::Write(const fs::path& file, const CsvTable& data)
         csvFile << row->Value;
         csvFile << std::endl;
     }
-
-
-    for (const auto& line : data.GetCsvHeader())
-    {
-        std::cerr << line << std::endl;
-    }
-
-    std::cerr << "Category;";
-    std::cerr << "Payer/Payee;";
-    std::cerr << "Description;";
-    std::cerr << "Type;";
-    std::cerr << "Date;";
-    std::cerr << "Account;";
-    std::cerr << "Value"; 
-    std::cerr << std::endl;
-    
-    for (auto& row : data)
-    {
-        std::cerr << row->Category << ';';
-        std::cerr << row->PayerPayee << ';';
-        std::cerr << row->Description << ';';
-        std::cerr << row->Type << ';';
-        std::cerr << row->Date << ';';
-        std::cerr << row->Account << ';';
-        std::cerr << row->Value;
-        std::cerr << std::endl;
-    }
-
-
     csvFile.close();
 }
 

@@ -21,7 +21,10 @@ HtmlElement* HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& 
 {
     auto cell = tableRow->AddTableCell();
     cell->SetAttribute("class", std::string("nav link ") + style);
-    cell->SetAttribute("onclick", fmt::format("window.location='{}'", link));
+    if (!link.empty())
+    {
+        cell->SetAttribute("onclick", fmt::format("window.location='{}'", link));
+    }
     cell->SetAttribute("title", tooltip);
     cell->AddImage(image, tooltip, 42);
     cell->AddText(text);
@@ -95,11 +98,11 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-profile.png", "Support");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-folder.png", "Input");
     AddButton(row, HELP_HTML, "Open Online Help", "48-sign-question.png", "Help");
-    auto reload = AddButton(row, "#", "Reload CSV Data", "48-sign-sync.png", "Reload");
-    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
-
+    auto reload = AddButton(row, "", "Reload CSV Data", "48-sign-sync.png", "Reload");
     reload->SetAttribute("onclick", fmt::format("reload('{}')", RELOAD_CMD));
     body->AddScript("reload.js");
+    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
+
 }
 
 HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
@@ -423,8 +426,9 @@ std::string HtmlGenerator::GetBackupPage(const CsvDatabase& database, const fs::
             
             cell = row->AddTableCell(filename);
             cell->SetAttribute("class", "item center mono link fill");
-            cell->SetAttribute("onclick", fmt::format("window.location='{}?file={}'", RESTORE_CMD, filename));
-            
+            cell->SetAttribute("onclick", fmt::format("restoreBackup('{}?file={}', '{}')", RESTORE_CMD, filename, filename));
+            body->AddScript("restoreBackup.js");
+
             cell = row->AddTableCell();
             cell->SetAttribute("class", "item link");
             link = fmt::format("{}?file={}", HtmlGenerator::EDIT_HTML, entry.path().string());
