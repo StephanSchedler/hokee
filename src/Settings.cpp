@@ -10,15 +10,12 @@ Settings::Settings()
     SetInputDirectory("input");
     SetRuleSetFile("rules.csv");
 #ifdef _MSC_VER
-    SetEditor("notepad");
     SetExplorer("explorer");
     SetBrowser("start");
 #elif __APPLE__
-    SetEditor("open -a TextEdit");
     SetExplorer("open");
     SetBrowser("open -a Safari");
 #else
-    SetEditor("nano");
     SetExplorer("nautilus");
     SetBrowser("firefox");
 #endif
@@ -49,19 +46,9 @@ void Settings::SetRuleSetFile(const fs::path& value)
     SetString("RuleSetFile", value.string());
 }
 
-const std::string Settings::GetEditor() const
-{
-    return GetString("Editor");
-}
-
 const std::string Settings::GetExplorer() const
 {
     return GetString("Explorer");
-}
-
-void Settings::SetEditor(const std::string& value)
-{
-    SetString("Editor", value);
 }
 
 void Settings::SetExplorer(const std::string& value)

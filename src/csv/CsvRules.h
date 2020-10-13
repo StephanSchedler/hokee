@@ -10,6 +10,5 @@ class CsvRules final : public CsvTable
 {
   public:
     static const CsvFormat GetFormat();
-    std::vector<std::string> GetCategories();
 };
 } // namespace hokee

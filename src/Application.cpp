@@ -9,7 +9,6 @@
 #include "hokee.h"
 #include "html/HtmlGenerator.h"
 
-
 #include <chrono>
 #include <fmt/format.h>
 
@@ -87,10 +86,10 @@ Application::Application(int argc, const char* argv[])
     {
         ReadSettings();
         std::string mail = Utils::GenerateSupportMail(_ruleSetFile, _inputDirectory);
-        
+
         Utils::PrintInfo(fmt::format("Fill the section below and send it to schedler@paderborn.com"));
         std::cout << mail << std::endl;
-        
+
         std::exit(EXIT_SUCCESS);
     }
 }
@@ -145,8 +144,8 @@ std::unique_ptr<CsvDatabase> Application::RunBatch()
     csvDatabase->Load(_inputDirectory, _ruleSetFile);
 
     Utils::PrintInfo(fmt::format("Found {} items (assigned: {}, unassigned: {}, issues: {})",
-                                    csvDatabase->Data.size(), csvDatabase->Assigned.size(),
-                                    csvDatabase->Unassigned.size(), csvDatabase->Issues.size()));
+                                 csvDatabase->Data.size(), csvDatabase->Assigned.size(),
+                                 csvDatabase->Unassigned.size(), csvDatabase->Issues.size()));
 
     return csvDatabase;
 }
@@ -170,8 +169,7 @@ void Application::Run()
         Utils::RunAsync(fmt::format("{} http://localhost", _config.GetBrowser()));
 
         Utils::PrintInfo("Start HttpServer...");
-        HttpServer httpServer(_inputDirectory, _ruleSetFile, _configFile, _config.GetEditor(),
-                              _config.GetExplorer());
+        HttpServer httpServer(_inputDirectory, _ruleSetFile, _configFile, _config.GetExplorer());
         exitCode = httpServer.Run();
     }
 }

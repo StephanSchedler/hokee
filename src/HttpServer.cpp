@@ -169,12 +169,6 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
             config.SetExplorer(value);
             save = true;
         }
-        value = GetParam(req.params, "Editor", HtmlGenerator::SETTINGS_HTML);
-        if (!value.empty())
-        {
-            config.SetEditor(value);
-            save = true;
-        }
         if (save)
         {
             config.Save(fs::absolute(_configFile));
@@ -354,12 +348,11 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
 }
 
 HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile, const fs::path& configFile,
-                       const std::string& editor, const std::string& explorer)
+                       const std::string& explorer)
     : _server{std::make_unique<httplib::Server>()}
     , _inputDirectory{inputDirectory}
     , _ruleSetFile{ruleSetFile}
     , _configFile{configFile}
-    , _editor{editor}
     , _explorer{explorer}
 {
     if (!_server->is_valid())

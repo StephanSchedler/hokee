@@ -9,7 +9,7 @@ const CsvFormat CsvRules::GetFormat()
     config["AccountOwner"] = "hokee";
     config["ColumnNames"] = "Category;Payer/Payee;Description;Type;Date;Account;Value";
     config["HasHeader"] = "true";
-    config["IgnoreLines"] = "4";
+    config["IgnoreLines"] = "0";
     config["HasDoubleQuotes"] = "false";
     config["HasTrailingDelimiter"] = "false";
     config["Delimiter"] = ";";
@@ -25,17 +25,5 @@ const CsvFormat CsvRules::GetFormat()
     config["Value"] = "6";
     CsvFormat format(config, "builtin CsvRules format");
     return format;
-}
-
-std::vector<std::string> CsvRules::GetCategories()
-{
-    auto rulesFormat = CsvRules::GetFormat();
-    const auto rulesHeader = this->GetCsvHeader();
-    if (rulesHeader.size() != static_cast<size_t>(rulesFormat.GetIgnoreLines()))
-    {
-        throw InternalException(__FILE__, __LINE__, "Internal header of rule set does not match expected format!");
-    }
-
-    return Utils::SplitLine(rulesHeader[1], rulesFormat.GetDelimiter(), rulesFormat.GetHasTrailingDelimiter());
 }
 } // namespace hokee
