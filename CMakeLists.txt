@@ -113,6 +113,7 @@ configure_file(src/html/submitMail.js ${PROJECT_BINARY_DIR}/html/submitMail.js C
 configure_file(src/html/submitFile.js ${PROJECT_BINARY_DIR}/html/submitFile.js COPYONLY)
 configure_file(src/html/submitSettings.js ${PROJECT_BINARY_DIR}/html/submitSettings.js COPYONLY)
 configure_file(src/html/deleteRule.js ${PROJECT_BINARY_DIR}/html/deleteRule.js COPYONLY)
+configure_file(src/html/restoreBackup.js ${PROJECT_BINARY_DIR}/html/restoreBackup.js COPYONLY)
 configure_file(src/html/deleteBackup.js ${PROJECT_BINARY_DIR}/html/deleteBackup.js COPYONLY)
 configure_file(third_party/small-n-flat/png/48/floppy.png ${PROJECT_BINARY_DIR}/html/images/48-floppy.png COPYONLY)
 configure_file(third_party/small-n-flat/png/48/notepad.png ${PROJECT_BINARY_DIR}/html/images/48-notepad.png COPYONLY)
