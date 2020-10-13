@@ -31,7 +31,6 @@ class HttpServer
     fs::path _inputDirectory{};
     fs::path _ruleSetFile{};
     fs::path _configFile{};
-    std::string _editor{};
     std::string _explorer{};
     std::string _errorMessage{};
     std::atomic<int> _errorStatus{200};
@@ -50,7 +49,7 @@ class HttpServer
   public:
     HttpServer() = delete;
     HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile, const fs::path& configFile,
-               const std::string& editor, const std::string& explorer);
+               const std::string& explorer);
     ~HttpServer();
 
     HttpServer(const HttpServer&) = delete;

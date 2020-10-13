@@ -17,13 +17,11 @@ class Settings final : public CsvConfig
 
     const fs::path GetInputDirectory() const;
     const fs::path GetRuleSetFile() const;
-    const std::string GetEditor() const;
     const std::string GetExplorer() const;
     const std::string GetBrowser() const;
 
     void SetInputDirectory(const fs::path& value);
     void SetRuleSetFile(const fs::path& value);
-    void SetEditor(const std::string& value);
     void SetExplorer(const std::string& value);
     void SetBrowser(const std::string& value);
 };

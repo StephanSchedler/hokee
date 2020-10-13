@@ -1,7 +1,3 @@
-Categories:
-Rent;Insurance;Shopping;Salary;Online;Ignore!
-
-Rules:
 Category;Payer/Payee;Description;Type;Date;Account;Value
 Rent;;rent;;;;
 Insurance;;insurance;;;;
