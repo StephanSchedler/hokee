@@ -10,18 +10,13 @@ namespace hokee
 {
 class Application
 {
-    bool _interactiveMode{false};
     bool _supportMode{false};
-    bool _editRules{false};
-    bool _addRules{false};
-    bool _batchMode{false};
     Settings _config;
     fs::path _inputDirectory{};
     fs::path _ruleSetFile{};
     fs::path _configFile{};
-    
+
     void ReadSettings();
-    std::unique_ptr<CsvDatabase> RunInteractive();
 
   public:
     Application(int argc, const char* argv[]);
@@ -32,7 +27,8 @@ class Application
     Application(Application&&) = delete;
     Application& operator=(Application&&) = delete;
 
-    std::unique_ptr<CsvDatabase> Run();
+    void Run();
+    std::unique_ptr<CsvDatabase> RunBatch();
 };
 
 } // namespace hokee

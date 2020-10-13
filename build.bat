@@ -51,7 +51,7 @@ call cmake --build . --config %1 --target install --parallel
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 echo ==== Run test(s) ====
-call ctest -C %1 --output-on-failure 
+call hokee-test
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 popd
