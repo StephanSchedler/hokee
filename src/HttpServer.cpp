@@ -647,7 +647,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          Utils::PrintTrace("Received copy samples request. Copy and reload...");
                          std::error_code ec;
-                         fs::path src = fs::absolute("../test_data/rules_match_test/input/ABC");
+                         fs::path src = fs::absolute("../test_data/rules_test/input/ABC");
                          fs::path dest = _inputDirectory / "ABC";
                          fs::copy(src, dest, fs::copy_options::recursive, ec);
                          if (ec.value() != 0)
@@ -659,7 +659,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                          }
 
                          ec.clear();
-                         src = fs::absolute("../test_data/rules_match_test/rules_match_test.csv");
+                         src = fs::absolute("../test_data/rules.csv");
                          dest = _ruleSetFile;
                          fs::copy_file(src, dest, fs::copy_options::overwrite_existing, ec);
                          if (ec.value() != 0)

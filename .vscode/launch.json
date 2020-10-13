@@ -18,10 +18,10 @@
             "processId": "${command:pickProcess}"
         },
         {
-            "name": "rules_match_test",
+            "name": "test",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "rules_match_test",
+            "program": "hokee-test",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin",

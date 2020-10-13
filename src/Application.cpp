@@ -29,20 +29,13 @@ Application::Application(int argc, const char* argv[])
 
         if (arg == "--help" || arg == "-h" || arg == "-help" || arg == "-?")
         {
-            Utils::PrintInfo(fmt::format("{} version {}", fs::path(argv[0]).filename().string(), PROJECT_VERSION));
+            Utils::PrintInfo(fmt::format("hokee version {}", PROJECT_VERSION));
             Utils::PrintInfo(fmt::format("{} ({})", PROJECT_DESCRIPTION, PROJECT_HOMEPAGE_URL));
             Utils::PrintInfo("");
             Utils::PrintInfo("usage: hokee [options] [path]");
             Utils::PrintInfo("");
             Utils::PrintInfo("  path            - Path to config file.");
             Utils::PrintInfo("                    (default: ~/hokee/hokee.ini)");
-            Utils::PrintInfo("  -i,--iteractive - Interactive commandline mode that is useful to fix issues.");
-            Utils::PrintInfo("  -b,--batch      - Do not show html report.");
-            Utils::PrintInfo("                    (interactive mode, only)");
-            Utils::PrintInfo("  -a,--add-rules -  Open editor to add rules for unassigned items.");
-            Utils::PrintInfo("                    (interactive mode, only)");
-            Utils::PrintInfo("  -e,--edit-rules - Open editor to edit rules and categories.");
-            Utils::PrintInfo("                    (interactive batch mode, only)");
             Utils::PrintInfo("  -v,--verbose    - Print trace infos to console.");
             Utils::PrintInfo("  --version       - Show version infos.");
             Utils::PrintInfo("  -h,--help       - Show this help.");
@@ -51,17 +44,9 @@ Application::Application(int argc, const char* argv[])
         }
         else if (arg == "-version" || arg == "--version")
         {
-            Utils::PrintInfo(fmt::format("{} version {}", fs::path(argv[0]).filename().string(), PROJECT_VERSION));
+            Utils::PrintInfo(fmt::format("hokee version {}", PROJECT_VERSION));
             Utils::PrintInfo(fmt::format("{} ({})", PROJECT_DESCRIPTION, PROJECT_HOMEPAGE_URL));
             std::exit(EXIT_SUCCESS);
-        }
-        else if (arg == "-b" || arg == "-batch" || arg == "--batch")
-        {
-            _batchMode = true;
-        }
-        else if (arg == "-i" || arg == "-interactive" || arg == "--interactive")
-        {
-            _interactiveMode = true;
         }
         else if (arg == "-s" || arg == "-support" || arg == "--support")
         {
@@ -70,14 +55,6 @@ Application::Application(int argc, const char* argv[])
         else if (arg == "-v" || arg == "-verbose" || arg == "--verbose")
         {
             Utils::SetVerbose(true);
-        }
-        else if (arg == "-a" || arg == "-add-rules" || arg == "--add-rules")
-        {
-            _addRules = true;
-        }
-        else if (arg == "-e" || arg == "-edit-rules" || arg == "--edit-rules")
-        {
-            _editRules = true;
         }
         else
         {
@@ -160,52 +137,21 @@ void Application::ReadSettings()
     }
 }
 
-std::unique_ptr<CsvDatabase> Application::RunInteractive()
+std::unique_ptr<CsvDatabase> Application::RunBatch()
 {
-    Utils::PrintInfo("Parse CSV files...");
+    ReadSettings();
 
     auto csvDatabase = std::make_unique<CsvDatabase>();
-    int maxIterations = 10;
-    bool restart = false;
-    do
-    {
-        restart = false;
-        if (--maxIterations <= 0)
-        {
-            throw InternalException(__FILE__, __LINE__, "Infinte loop in batchMode.");
-        }
+    csvDatabase->Load(_inputDirectory, _ruleSetFile);
 
-        csvDatabase->Load(_inputDirectory, _ruleSetFile);
-
-        Utils::PrintInfo(fmt::format("Found {} items (assigned: {}, unassigned: {}, issues: {})",
-                                     csvDatabase->Data.size(), csvDatabase->Assigned.size(),
-                                     csvDatabase->Unassigned.size(), csvDatabase->Issues.size()));
-
-        if (csvDatabase->Unassigned.size() > 0)
-        {
-            if (_addRules || (!_batchMode && Utils::AskYesNoQuestion("Add rules for unassigned items?")))
-            {
-                std::string editor = _config.GetEditor();
-                csvDatabase->AddRules(_ruleSetFile, editor);
-
-                restart = true;
-                continue;
-            }
-        }
-
-        if (_editRules || (!_batchMode && Utils::AskYesNoQuestion("Edit rules & categories?")))
-        {
-            std::string editor = _config.GetEditor();
-            Utils::RunSync(editor, {fs::absolute(_ruleSetFile).string()});
-            restart = true;
-            continue;
-        }
-    } while (restart);
+    Utils::PrintInfo(fmt::format("Found {} items (assigned: {}, unassigned: {}, issues: {})",
+                                    csvDatabase->Data.size(), csvDatabase->Assigned.size(),
+                                    csvDatabase->Unassigned.size(), csvDatabase->Issues.size()));
 
     return csvDatabase;
 }
 
-std::unique_ptr<CsvDatabase> Application::Run()
+void Application::Run()
 {
     int exitCode = 1;
     while (exitCode > 0)
@@ -219,23 +165,6 @@ std::unique_ptr<CsvDatabase> Application::Run()
             Utils::PrintError(e.what());
             // Continue, HttpServer will show error page
         }
-        if (_interactiveMode)
-        {
-            std::unique_ptr<CsvDatabase> result = nullptr;
-            try
-            {
-                result = RunInteractive();
-            }
-            catch (UserException& e)
-            {
-                Utils::PrintError(e.what());
-                // Continue, HttpServer will show error page
-            }
-            if (_batchMode)
-            {
-                return result;
-            }
-        }
 
         Utils::PrintInfo("Open browser...");
         Utils::RunAsync(fmt::format("{} http://localhost", _config.GetBrowser()));
@@ -245,7 +174,5 @@ std::unique_ptr<CsvDatabase> Application::Run()
                               _config.GetExplorer());
         exitCode = httpServer.Run();
     }
-
-    return nullptr;
 }
 } // namespace hokee

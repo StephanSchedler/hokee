@@ -14,7 +14,7 @@ int main(int argc, const char* argv[])
     try
     {
         Application app(argc, argv);
-        std::unique_ptr<CsvDatabase> database = app.Run();
+        app.Run();
 
         Utils::PrintInfo("DONE");
     }
