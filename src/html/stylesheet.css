@@ -302,6 +302,6 @@ label {
   background-color: white;
   animation-name: blink-bg;
   animation-duration: 0.5s;
-  animation-timing-function: linear;
+  animation-timing-function: ease-in-out;
   animation-iteration-count: 1;
 }
