@@ -737,6 +737,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                 throw InternalException(__FILE__, __LINE__,
                                         fmt::format("Could not convert '{}' to 'int'. ({})", idStr, e.what()));
             }
+            Utils::PrintInfo(fmt::format("Create new Rule based on id {}", id));
             int nextId = _database.NewRule(id);
             std::string url = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
             CsvWriter::Write(ruleSetFile, _database.Rules);

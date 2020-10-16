@@ -20,7 +20,7 @@ struct CsvItem
     std::string Account = {};
     std::string Description = {};
     std::string Value = {};
-    std::string Category = "???";
+    std::string Category = {};
     std::vector<std::string> Issues = {};
     std::vector<CsvItem*> References = {};
     fs::path File = {};
