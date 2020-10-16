@@ -94,11 +94,26 @@ int CsvDatabase::DeleteRule(int id)
 
 int CsvDatabase::NewRule(int itemId)
 {
-    auto item = Data.at(itemId);
+    std::shared_ptr<CsvItem> item = nullptr;
+    for (auto& i : Data)
+    {
+        if (i->Id == itemId)
+        {
+            item = i;
+            break;
+        }
+    }
+    if (!item)
+    {
+        throw InternalException(__FILE__, __LINE__, fmt::format("Could not find item id {}", itemId));
+    }
 
     CsvRowShared newRule = std::make_shared<CsvItem>(*item);
 
     newRule->Id = Utils::GenerateId();
+    newRule->Date = {};
+    newRule->Value = {};
+    newRule->Account = {};
     newRule->Issues.clear();
     newRule->File = "???";
     newRule->Line = -1;
