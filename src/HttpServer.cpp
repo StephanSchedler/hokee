@@ -640,7 +640,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          Utils::PrintTrace("Received copy samples request. Copy and reload...");
                          std::error_code ec;
-                         fs::path src = fs::absolute("../test_data/rules_test/input/ABC");
+                         fs::path src = fs::absolute("../test_data/input1/ABC");
                          fs::path dest = _inputDirectory / "ABC";
                          fs::copy(src, dest, fs::copy_options::recursive, ec);
                          if (ec.value() != 0)
