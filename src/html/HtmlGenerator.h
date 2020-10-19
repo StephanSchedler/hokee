@@ -44,6 +44,7 @@ class HtmlGenerator
     static constexpr const char* BACKUP_CMD = "backup";
     static constexpr const char* RESTORE_CMD = "restore";
     static constexpr const char* SAVE_CMD = "save";
+    static constexpr const char* SAVE_RULE_CMD = "save-rule";
     static constexpr const char* RELOAD_CMD = "reload";
     static constexpr const char* COPY_SAMPLES_CMD = "copy-samples";
     static constexpr const char* OPEN_CMD = "open";

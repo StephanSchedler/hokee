@@ -12,6 +12,7 @@ class CsvDate
     int _month{-1};
     int _day{-1};
     std::string _dateStr{};
+    std::string _formatStr{};
 
   public:
     CsvDate() = default;
@@ -42,6 +43,11 @@ class CsvDate
     inline int GetDay()
     {
         return _day;
+    }
+
+    inline const std::string& GetFormat()
+    {
+        return _formatStr;
     }
 
     const std::string& ToString() const;

@@ -102,7 +102,6 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     reload->SetAttribute("onclick", fmt::format("reload('{}')", RELOAD_CMD));
     body->AddScript("reload.js");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
-
 }
 
 HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
@@ -250,17 +249,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
                     {
                         continue;
                     }
-
-                    try
-                    {
-                        sum += std::stod(item->Value);
-                    }
-                    catch (const std::exception& e)
-                    {
-                        throw InternalException(
-                            __FILE__, __LINE__,
-                            fmt::format("Could not convert '{}' to 'double'. ({})", item->Value, e.what()));
-                    }
+                    sum += item->Value.ToDouble();
                 }
 
                 std::string cellStyle = "link";
@@ -421,12 +410,14 @@ std::string HtmlGenerator::GetBackupPage(const CsvDatabase& database, const fs::
             cell = row->AddTableCell();
             cell->SetAttribute("class", "item link");
             cell->AddImage("48-sign-delete.png", "Add new rule", 38);
-            cell->SetAttribute("onclick", fmt::format("deleteBackup('{}?file={}', '{}')", DELETE_CMD, filename, filename));
+            cell->SetAttribute("onclick",
+                               fmt::format("deleteBackup('{}?file={}', '{}')", DELETE_CMD, filename, filename));
             body->AddScript("deleteBackup.js");
-            
+
             cell = row->AddTableCell(filename);
             cell->SetAttribute("class", "item center mono link fill");
-            cell->SetAttribute("onclick", fmt::format("restoreBackup('{}?file={}', '{}')", RESTORE_CMD, filename, filename));
+            cell->SetAttribute("onclick",
+                               fmt::format("restoreBackup('{}?file={}', '{}')", RESTORE_CMD, filename, filename));
             body->AddScript("restoreBackup.js");
 
             cell = row->AddTableCell();
@@ -575,7 +566,6 @@ void HtmlGenerator::AddInputForm(HtmlElement* table, const std::string& name, co
 {
     auto row = table->AddTableRow();
     auto cell = row->AddTableCell();
-    cell->SetAttribute("class", "form");
     cell->SetAttribute("class", "form fill");
     auto label = cell->AddLabel(description);
     label->SetAttribute("class", "marb-20");
@@ -802,7 +792,8 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, bool
         cell = row->AddTableCell();
         cell->AddImage("48-floppy.png", "Save Rules", 40);
         cell->SetAttribute("class", "form link");
-        cell->SetAttribute("onclick", fmt::format("window.location='{}';", SAVE_CMD));
+        cell->SetAttribute("onclick", "submitSettings('form')");
+        body->AddScript("submitSettings.js");
     }
 
     if (database.Unassigned.HasItem(id))
@@ -886,11 +877,76 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, bool
         cell->AddHyperlinkImage(link, "Open corresponding format file", "48-wrench-screwdriver.png", 38);
     }
 
-    auto div = main->AddDivision();
+    auto form = main->AddForm();
+    form->SetAttribute("action", fmt::format("{}?id={}&format={}", HtmlGenerator::SAVE_RULE_CMD, item->Id, item->Date.GetFormat()));
+    form->SetAttribute("method", "get");
+    form->SetAttribute("enctype", "text/plain");
+    form->SetAttribute("id", "form");
+
+    auto div = form->AddDivision();
     table = div->AddTable();
-    table->SetAttribute("class", "item mar-20");
+    table->SetAttribute("class", "rule mar-20");
     AddItemTableHeader(table);
-    AddItemTableRow(table, item.get());
+
+    if (isItem)
+    {
+        AddItemTableRow(table, item.get());
+    }
+    else
+    {
+        auto htmlRow = table->AddTableRow();
+
+        htmlRow->AddTableCell(fmt::format("{}", item->Id));
+
+        cell = htmlRow->AddTableCell();
+        auto input = cell->AddInput();
+        input->SetAttribute("name", "Category");
+        input->SetAttribute("type", "text");
+        input->SetAttribute("class", "rule mono");
+        input->SetAttribute("value", item->Category);
+
+        cell = htmlRow->AddTableCell();
+        input = cell->AddInput();
+        input->SetAttribute("name", "PayerPayee");
+        input->SetAttribute("type", "text");
+        input->SetAttribute("class", "rule mono");
+        input->SetAttribute("value", item->PayerPayee);
+
+        cell = htmlRow->AddTableCell();
+        input = cell->AddInput();
+        input->SetAttribute("name", "Description");
+        input->SetAttribute("type", "text");
+        input->SetAttribute("class", "rule mono");
+        input->SetAttribute("value", item->Description);
+
+        cell = htmlRow->AddTableCell();
+        input = cell->AddInput();
+        input->SetAttribute("name", "Type");
+        input->SetAttribute("type", "text");
+        input->SetAttribute("class", "rule mono");
+        input->SetAttribute("value", item->Type);
+
+        cell = htmlRow->AddTableCell();
+        input = cell->AddInput();
+        input->SetAttribute("name", "Date");
+        input->SetAttribute("type", "text");
+        input->SetAttribute("class", "rule mono");
+        input->SetAttribute("value", item->Date.ToString());
+
+        cell = htmlRow->AddTableCell();
+        input = cell->AddInput();
+        input->SetAttribute("name", "Account");
+        input->SetAttribute("type", "text");
+        input->SetAttribute("class", "rule mono");
+        input->SetAttribute("value", item->Account);
+
+        cell = htmlRow->AddTableCell();
+        input = cell->AddInput();
+        input->SetAttribute("name", "Value");
+        input->SetAttribute("type", "text");
+        input->SetAttribute("class", "rule mono");
+        input->SetAttribute("value", item->Value.ToString());
+    }
 
     if (!item->Issues.empty() || item->References.empty())
     {
@@ -986,16 +1042,14 @@ void HtmlGenerator::AddItemTableRow(HtmlElement* table, CsvItem* row)
         rowStyle += " issue";
     }
 
-    double value;
     std::string colorStyle{};
     try
     {
-        value = std::stod(row->Value);
-        if (value < 0)
+        if (row->Value.ToDouble() < 0)
         {
             colorStyle = "neg";
         }
-        else if (value > 0)
+        else if (row->Value.ToDouble() > 0)
         {
             colorStyle = "pos";
         }
@@ -1016,7 +1070,7 @@ void HtmlGenerator::AddItemTableRow(HtmlElement* table, CsvItem* row)
     htmlRow->AddTableCell(row->Type.empty() ? "&nbsp;" : row->Type);
     htmlRow->AddTableCell(row->Date.ToString().empty() ? "&nbsp;" : row->Date.ToString());
     htmlRow->AddTableCell(row->Account.empty() ? "&nbsp;" : row->Account);
-    cell = htmlRow->AddTableCell(row->Value.empty() ? "&nbsp;" : row->Value);
+    cell = htmlRow->AddTableCell(row->Value.ToString().empty() ? "&nbsp;" : row->Value.ToString());
     cell->SetAttribute("class", colorStyle);
 }
 

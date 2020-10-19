@@ -8,6 +8,7 @@
 namespace hokee
 {
 CsvDate::CsvDate(std::string_view formatStr, std::string_view dateStr)
+: _formatStr{formatStr}
 {
     if (dateStr.empty())
     {

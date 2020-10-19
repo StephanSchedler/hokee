@@ -1,4 +1,4 @@
-#include "csv/CsvItem.h"
+#include "CsvItem.h"
 #include <sstream>
 
 namespace hokee
@@ -14,8 +14,8 @@ std::string CsvItem::ToString()
 
 void CsvItem::Match(const std::shared_ptr<CsvItem>& rule)
 {
-    bool match = rule->Date.GetYear() < 0 || Date == rule->Date;
-    match = match && (rule->Value.empty() || Value == rule->Value);
+    bool match = rule->Date.GetYear() < 0 || Date.ToString() == rule->Date.ToString();
+    match = match && (rule->Value.ToString().empty() || Value.ToString() == rule->Value.ToString());
     match = match && Type.find(rule->Type) != std::string::npos;
     match = match && PayerPayee.find(rule->PayerPayee) != std::string::npos;
     match = match && Account.find(rule->Account) != std::string::npos;

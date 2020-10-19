@@ -313,6 +313,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
             res.status = 404;
             _errorMessage = fmt::format("'{}' requests must define non-empty parameter '{}'!",
                                         HtmlGenerator::ITEM_HTML, "year");
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
             return;
         }
         const int year = std::stoi(yearStr);
@@ -375,11 +376,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             _errorStatus = 500;
             _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
         catch (...)
         {
             _errorStatus = 500;
             _errorMessage = fmt::format("Could not generate html page {}", GetUrl(req));
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
     });
 
@@ -399,11 +402,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             _errorStatus = 500;
             _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
         catch (...)
         {
             _errorStatus = 500;
             _errorMessage = fmt::format("Could not get stylesheet {}", GetUrl(req));
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
     });
 
@@ -423,11 +428,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             _errorStatus = 500;
             _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
         catch (...)
         {
             _errorStatus = 500;
-            _errorMessage = fmt::format("Could not get stylesheet {}", GetUrl(req));
+            _errorMessage = fmt::format("Could not get js {}", GetUrl(req));
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
     });
 
@@ -445,11 +452,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             _errorStatus = 500;
             _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
         catch (...)
         {
             _errorStatus = 500;
             _errorMessage = fmt::format("Could not get image {}", GetUrl(req));
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
     });
     _server->Get("/(.*\\.ico)", [&](const httplib::Request& req, httplib::Response& res) {
@@ -465,11 +474,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             _errorStatus = 500;
             _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
         catch (...)
         {
             _errorStatus = 500;
             _errorMessage = fmt::format("Could not get icon {}", GetUrl(req));
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
     });
 
@@ -497,15 +508,91 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             _errorStatus = 500;
             _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
         catch (...)
         {
             _errorStatus = 500;
-            _errorMessage = "Could not exit";
+            _errorMessage = "Could not save file";
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
     });
 
     // Save Rules
+    _server->Get((std::string("/") + HtmlGenerator::SAVE_RULE_CMD).c_str(), [&](const httplib::Request& req,
+                                                                                httplib::Response& res) {
+        try
+        {
+            std::string id = GetParam(req.params, "id", HtmlGenerator::SAVE_RULE_CMD);
+            if (id.empty())
+            {
+                throw InternalException(__FILE__, __LINE__, "Could not get request parameter 'id'.");
+            }
+            std::string dateFormat = GetParam(req.params, "format", HtmlGenerator::SAVE_RULE_CMD);
+            if (id.empty())
+            {
+                throw InternalException(__FILE__, __LINE__, "Could not get request parameter 'format'.");
+            }
+            std::shared_ptr<CsvItem> rule = nullptr;
+            for (auto& r : _database.Rules)
+            {
+                if (fmt::format("{}", r->Id) == id)
+                {
+                    rule = r;
+                }
+            }
+            if (rule == nullptr)
+            {
+                throw InternalException(__FILE__, __LINE__, fmt::format("Could not find rule with id={}.", id));
+            }
+
+            auto value = GetParam(req.params, "Category", HtmlGenerator::SAVE_RULE_CMD);
+            rule->Category = value;
+            value = GetParam(req.params, "Account", HtmlGenerator::SAVE_RULE_CMD);
+            rule->Account = value;
+            value = GetParam(req.params, "Date", HtmlGenerator::SAVE_RULE_CMD);
+            if (!value.empty())
+            {
+                rule->Date = CsvDate(dateFormat, value);
+            }
+            else
+            {
+                rule->Date = CsvDate();
+            }
+            value = GetParam(req.params, "Description", HtmlGenerator::SAVE_RULE_CMD);
+            rule->Description = value;
+            value = GetParam(req.params, "PayerPayee", HtmlGenerator::SAVE_RULE_CMD);
+            rule->PayerPayee = value;
+            value = GetParam(req.params, "Type", HtmlGenerator::SAVE_RULE_CMD);
+            rule->Type = value;
+            value = GetParam(req.params, "Value", HtmlGenerator::SAVE_RULE_CMD);
+            if (!value.empty())
+            {
+                rule->Value = CsvValue(value, "???", -1);
+            }
+            else
+            {
+                rule->Value = CsvValue();
+            }
+
+            CsvWriter::Write(ruleSetFile, _database.Rules);
+            res.set_redirect((fmt::format("{}?id={}&saved", HtmlGenerator::ITEM_HTML, id).c_str()));
+        }
+        catch (const std::exception& e)
+        {
+            _errorStatus = 500;
+            _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
+        }
+        catch (...)
+        {
+            _errorStatus = 500;
+            _errorMessage = "Could not save rule";
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
+        }
+    });
+
+    // Save File
     _server->Get((std::string("/") + HtmlGenerator::SAVE_CMD).c_str(),
                  [&](const httplib::Request& /*unused*/, httplib::Response& res) {
                      try
@@ -518,11 +605,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          _errorStatus = 500;
                          _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                      catch (...)
                      {
                          _errorStatus = 500;
-                         _errorMessage = "Could not exit";
+                         _errorMessage = "Could not save file";
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                  });
 
@@ -551,11 +640,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             _errorStatus = 500;
             _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
         catch (...)
         {
             _errorStatus = 500;
-            _errorMessage = fmt::format("Could not open folder {}", GetUrl(req));
+            _errorMessage = fmt::format("Could not restore folder {}", GetUrl(req));
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
     });
 
@@ -574,17 +665,19 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             _errorStatus = 500;
             _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
         catch (...)
         {
             _errorStatus = 500;
-            _errorMessage = "Could not exit";
+            _errorMessage = "Could not backup";
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
     });
 
     // Exit
     _server->Get((std::string("/") + HtmlGenerator::EXIT_CMD).c_str(),
-                 [&](const httplib::Request& /*req*/, httplib::Response& /*res*/) {
+                 [&](const httplib::Request& /*req*/, httplib::Response& res) {
                      try
                      {
                          Utils::PrintTrace("Received exit request. Shutdown application...");
@@ -599,17 +692,19 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          _errorStatus = 500;
                          _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                      catch (...)
                      {
                          _errorStatus = 500;
                          _errorMessage = "Could not exit";
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                  });
 
     // Clear cache, reload
     _server->Get((std::string("/") + HtmlGenerator::RELOAD_CMD).c_str(),
-                 [&](const httplib::Request& /*req*/, httplib::Response& /*res*/) {
+                 [&](const httplib::Request& /*req*/, httplib::Response& res) {
                      try
                      {
                          Utils::PrintTrace("Received reload request. Restart...");
@@ -625,11 +720,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          _errorStatus = 500;
                          _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                      catch (...)
                      {
                          _errorStatus = 500;
                          _errorMessage = "Could not restart";
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                  });
 
@@ -648,6 +745,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                              res.status = 500;
                              _errorMessage = fmt::format("Could not copy folder '{}' to '{}' ({})", src.string(),
                                                          dest.string(), ec.message());
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
                              return;
                          }
 
@@ -660,6 +758,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                              res.status = 500;
                              _errorMessage = fmt::format("Could not copy file '{}' to '{}' ({})", src.string(),
                                                          dest.string(), ec.message());
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
                              return;
                          }
 
@@ -669,11 +768,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          _errorStatus = 500;
                          _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                      catch (...)
                      {
                          _errorStatus = 500;
                          _errorMessage = "Could not copy samples";
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                  });
 
@@ -701,11 +802,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             _errorStatus = 500;
             _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
         catch (...)
         {
             _errorStatus = 500;
             _errorMessage = fmt::format("Could not open folder {}", GetUrl(req));
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
     });
 
@@ -747,11 +850,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             _errorStatus = 500;
             _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
         catch (...)
         {
             _errorStatus = 500;
             _errorMessage = fmt::format("Could not delete rule {}", GetUrl(req));
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
     });
 
@@ -808,11 +913,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         {
             _errorStatus = 500;
             _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
         catch (...)
         {
             _errorStatus = 500;
             _errorMessage = fmt::format("Could not delete rule {}", GetUrl(req));
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
         }
     });
 
@@ -829,11 +936,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          _errorStatus = 500;
                          _errorMessage = e.what();
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                      catch (...)
                      {
                          _errorStatus = 500;
                          _errorMessage = "Could not open input folder";
+            res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                  });
 

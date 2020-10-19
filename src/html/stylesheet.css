@@ -51,6 +51,11 @@ table.item td, table.item th {
   text-align: left;
 }
 
+table.rule td, table.rule th {
+  padding: 5px;
+  text-align: left;
+}
+
 table.nav td, table.nav th {
   padding: 5px;
   text-align: center;
@@ -90,47 +95,47 @@ table.form, th.form, td.form, tr.form {
   margin-top: 5px;
 }
 
-table.item {
+table.item, table.rule {
   box-shadow: 5px 5px 5px rgba(0,0,0, .2);
   background-color: #DDD;
 }
 
-table.item tr.unassigned:nth-child(even) {
+table.item tr.unassigned:nth-child(even), table.rule tr.unassigned:nth-child(even) {
   background-color: #FFC;
 }
-table.item tr.unassigned:nth-child(odd) {
+table.item tr.unassigned:nth-child(odd), table.rule tr.unassigned:nth-child(odd) {
   background-color: #FFA;
 }
 
-table.item tr.issue:nth-child(even) {
+table.item tr.issue:nth-child(even), table.rule tr.issue:nth-child(even) {
   background-color: #FCC;
 }
-table.item tr.issue:nth-child(odd) {
+table.item tr.issue:nth-child(odd), table.rule tr.issue:nth-child(odd) {
   background-color: #FBB;
 }
 
-table.item tr:nth-child(even) {
+table.item tr:nth-child(even), table.rule tr:nth-child(even) {
   background-color: #CCE;
 }
-table.item tr:nth-child(odd) {
+table.item tr:nth-child(odd), table.rule tr:nth-child(odd) {
   background-color: #BBE;
 }
 
-table.item tr.pos:nth-child(even) {
+table.item tr.pos:nth-child(even), table.rule tr.pos:nth-child(even) {
   background-color: #CFC;
 }
-table.item tr.pos:nth-child(odd) {
+table.item tr.pos:nth-child(odd), table.rule tr.pos:nth-child(odd) {
   background-color: #AFA;
 }
 
-table.item tr.neg:nth-child(even) {
+table.item tr.neg:nth-child(even), table.rule tr.neg:nth-child(even) {
   background-color: #FCC;
 }
-table.item tr.neg:nth-child(odd) {
+table.item tr.neg:nth-child(odd), table.rule tr.neg:nth-child(odd) {
   background-color: #FBB;
 }
 
-table.item th {
+table.item th, table.rule th {
   background: linear-gradient(180deg, #55A 0%, #337 65%, #448 100%); 
   color: white;
 }
@@ -244,6 +249,13 @@ input[type=text], textarea {
   box-sizing: border-box;
   resize: vertical;
   box-shadow: 5px 5px 5px rgba(0,0,0, .2);
+}
+
+input.rule[type=text] {
+  height: 100%;
+  border: 0px solid #333;
+  box-shadow: none;
+  padding: 5px;
 }
 
 input[type=text]:focus {

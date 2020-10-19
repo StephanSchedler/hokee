@@ -1,6 +1,7 @@
-#include "csv/CsvParser.h"
+#include "CsvParser.h"
 #include "InternalException.h"
 #include "Utils.h"
+#include "CsvValue.h"
 
 #include <algorithm>
 #include <fmt/core.h>
@@ -21,30 +22,6 @@ CsvParser::CsvParser(const fs::path& file, const CsvFormat& format)
     if (_ifstream.fail())
     {
         throw InternalException(__FILE__, __LINE__, fmt::format("Could not open file {}", file.string()));
-    }
-}
-
-void CsvParser::ValidateValue(const std::string value)
-{
-    if (value.empty())
-    {
-        return;
-    }
-    double doubleValue;
-    try
-    {
-        doubleValue = std::stod(value);
-    }
-    catch (const std::exception& e)
-    {
-        throw InternalException(__FILE__, __LINE__,
-                                fmt::format("Could not convert '{}' to 'double'. ({})", value, e.what()));
-    }
-    if (value != fmt::format("{:.2f}", doubleValue))
-    {
-        throw UserException(
-            fmt::format("Could not parse value {} != stod({})", value, fmt::format("{:.2f}", doubleValue)), _file,
-            _lineCounter);
     }
 }
 
@@ -178,7 +155,10 @@ bool CsvParser::GetItem(CsvRowShared& item)
         }
 
         AssignValue(item->Account, trimmedCells, _format.GetAccount());
-        AssignValue(item->Value, trimmedCells, _format.GetValue());
+        std::string value;
+        AssignValue(value, trimmedCells, _format.GetValue());
+        item->Value = CsvValue(value, _file.string(), _lineCounter);
+        
         AssignValue(item->Category, trimmedCells, _format.GetCategory());
         AssignValue(item->Description, trimmedCells, _format.GetDescription());
         AssignValue(item->Type, trimmedCells, _format.GetType());
@@ -217,31 +197,6 @@ bool CsvParser::ParseItem(CsvRowShared& item)
     {
         item->Account = fmt::format("{} ({})", _format.GetFormatName(), _format.GetAccountOwner());
     }
-
-    // Fix value
-    item->Value.erase(std::remove(item->Value.begin(), item->Value.end(), '_'), item->Value.end());
-    item->Value.erase(std::remove(item->Value.begin(), item->Value.end(), ' '), item->Value.end());
-    size_t pos = item->Value.find_last_of(".,");
-    if (pos == std::string::npos)
-    {
-        if (!item->Value.empty())
-        {
-            item->Value += ".00";
-        }
-    }
-    else
-    {
-        if (item->Value[pos] == ',')
-        {
-            item->Value.erase(std::remove(item->Value.begin(), item->Value.end(), '.'), item->Value.end());
-            std::replace(item->Value.begin(), item->Value.end(), ',', '.');
-        }
-        else
-        {
-            item->Value.erase(std::remove(item->Value.begin(), item->Value.end(), ','), item->Value.end());
-        }
-    }
-    ValidateValue(item->Value);
 
     // The csv file may contain separate Payer and Payee columns, or a single
     // PayerPayee column. As Payer or Payee is always the account owner, the
