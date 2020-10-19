@@ -48,8 +48,8 @@ bool FormatTest()
     int64_t sum = 0;
     for (auto& rule : database->Data)
     {
-        sum += static_cast<int64_t>(std::stod(rule->Value));
-        hashes[rule->Category] += static_cast<int64_t>(std::stod(rule->Value));
+        sum += static_cast<int64_t>(rule->Value.ToDouble());
+        hashes[rule->Category] += static_cast<int64_t>(rule->Value.ToDouble());
         hashes[rule->Category] *= rule->Date.GetYear();
         hashes[rule->Category] /= rule->Date.GetMonth();
         hashes[rule->Category] -= rule->Date.GetDay();
@@ -178,8 +178,8 @@ bool RuleTest()
     int64_t sum = 0;
     for (auto& rule : database->Data)
     {
-        sum += static_cast<int64_t>(std::stod(rule->Value));
-        hashes[rule->Category] += static_cast<int64_t>(std::stod(rule->Value));
+        sum += static_cast<int64_t>(rule->Value.ToDouble());
+        hashes[rule->Category] += static_cast<int64_t>(rule->Value.ToDouble());
         hashes[rule->Category] *= rule->Date.GetYear();
         hashes[rule->Category] /= rule->Date.GetMonth();
         hashes[rule->Category] -= rule->Date.GetDay();

@@ -13,8 +13,6 @@ namespace hokee
 
 class CsvParser
 {
-    void ValidateValue(const std::string value);
-
     int _lineCounter = 0;
     fs::path _file = {};
     std::ifstream _ifstream = {};

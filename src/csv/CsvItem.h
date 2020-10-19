@@ -1,6 +1,7 @@
 #pragma once
 
-#include "csv/CsvDate.h"
+#include "CsvDate.h"
+#include "CsvValue.h"
 #include "Utils.h"
 
 #include <memory>
@@ -19,7 +20,7 @@ struct CsvItem
     std::string Payee = {};
     std::string Account = {};
     std::string Description = {};
-    std::string Value = {};
+    CsvValue Value = {};
     std::string Category = {};
     std::vector<std::string> Issues = {};
     std::vector<CsvItem*> References = {};
@@ -29,8 +30,8 @@ struct CsvItem
 
     bool operator==(const CsvItem& ref) const
     {
-        return Date == ref.Date && Type == ref.Type && PayerPayee == ref.PayerPayee &&
-               Account == ref.Account && Description == ref.Description && Value == ref.Value;
+        return Date.ToString() == ref.Date.ToString() && Type == ref.Type && PayerPayee == ref.PayerPayee &&
+               Account == ref.Account && Description == ref.Description && Value.ToString() == ref.Value.ToString();
     }
     void Match(const std::shared_ptr<CsvItem>& rule);
 

@@ -82,6 +82,7 @@ include_directories(${PROJECT_BINARY_DIR})
 
 # Src files
 set(PROJECT_SOURCE_FILES
+    src/csv/CsvValue.cpp
     src/csv/CsvParser.cpp
     src/csv/CsvConfig.cpp
     src/csv/CsvItem.cpp
