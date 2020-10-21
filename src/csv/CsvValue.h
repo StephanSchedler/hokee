@@ -14,7 +14,7 @@ class CsvValue
   public:
     CsvValue() = default;
 
-    CsvValue(const std::string& value, const std::string& file, int lineCounter);
+    CsvValue(const std::string& value, const std::string& file, int lineCounter, bool validate = true);
     ~CsvValue() = default;
 
     CsvValue(const CsvValue&) = default;

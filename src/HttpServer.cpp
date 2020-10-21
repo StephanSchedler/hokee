@@ -129,6 +129,14 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     if (_errorStatus != 200)
     {
         res.status = _errorStatus;
+        _errorStatus = 200;
+        return;
+    }
+
+    // backup.html
+    if (req.path == std::string("/") + HtmlGenerator::BACKUP_HTML)
+    {
+        SetContent(req, res, HtmlGenerator::GetBackupPage(_database, _ruleSetFile), CONTENT_TYPE_HTML);
         return;
     }
 
@@ -273,16 +281,19 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
             return;
         }
         const int id = std::stoi(idStr);
-        SetContent(req, res,
-                   HtmlGenerator::GetItemPage(_database, id, req.params.find("saved") != req.params.end()),
-                   CONTENT_TYPE_HTML);
-        return;
-    }
+        int flag = 0;
+        if (req.params.find("saved") != req.params.end())
+        {
+            flag = 1;
+        } 
+        else if (req.params.find("failed") != req.params.end())
+        {
+            flag = -1;
+        }
 
-    // backup.html
-    if (req.path == std::string("/") + HtmlGenerator::BACKUP_HTML)
-    {
-        SetContent(req, res, HtmlGenerator::GetBackupPage(_database, _ruleSetFile), CONTENT_TYPE_HTML);
+        SetContent(req, res,
+                   HtmlGenerator::GetItemPage(_database, id, flag),
+                   CONTENT_TYPE_HTML);
         return;
     }
 
@@ -550,14 +561,17 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             rule->Category = value;
             value = GetParam(req.params, "Account", HtmlGenerator::SAVE_RULE_CMD);
             rule->Account = value;
+            bool success = true;
             value = GetParam(req.params, "Date", HtmlGenerator::SAVE_RULE_CMD);
-            if (!value.empty())
+            auto ruleBackup = rule->Date;
+            try
             {
                 rule->Date = CsvDate(dateFormat, value);
             }
-            else
+            catch (std::runtime_error&)
             {
-                rule->Date = CsvDate();
+                success = false;
+                rule->Date = ruleBackup;
             }
             value = GetParam(req.params, "Description", HtmlGenerator::SAVE_RULE_CMD);
             rule->Description = value;
@@ -566,17 +580,19 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             value = GetParam(req.params, "Type", HtmlGenerator::SAVE_RULE_CMD);
             rule->Type = value;
             value = GetParam(req.params, "Value", HtmlGenerator::SAVE_RULE_CMD);
-            if (!value.empty())
+            auto valueBackup = rule->Value;
+            try 
             {
-                rule->Value = CsvValue(value, "???", -1);
+                rule->Value = CsvValue(value, "???", -1, false);
             }
-            else
+            catch (InternalException&)
             {
-                rule->Value = CsvValue();
+                success = false;
+                rule->Value = valueBackup;
             }
 
             CsvWriter::Write(ruleSetFile, _database.Rules);
-            res.set_redirect((fmt::format("{}?id={}&saved", HtmlGenerator::ITEM_HTML, id).c_str()));
+            res.set_redirect((fmt::format("{}?id={}&{}", HtmlGenerator::ITEM_HTML, id, success ? "saved" : "failed").c_str()));
         }
         catch (const std::exception& e)
         {

@@ -349,6 +349,7 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     auto cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
 
+    AddButton(row, BACKUP_HTML, "Open Rule Backup", "48-safe.png", "Rule Backups");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-folder.png", "Input Folder");
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Support");
     AddButton(row, SETTINGS_HTML, "Open Settings File", "48-cogs.png", "Settings");
@@ -505,7 +506,7 @@ std::string HtmlGenerator::GetEditPage(const CsvDatabase& database, const fs::pa
     auto body = html.AddBody();
     if (saved)
     {
-        body->SetAttribute("class", "blink-once");
+        body->SetAttribute("class", "blink-success");
     }
     AddNavigationHeader(body, database);
 
@@ -584,7 +585,7 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     auto body = html.AddBody();
     if (saved)
     {
-        body->SetAttribute("class", "blink-once");
+        body->SetAttribute("class", "blink-success");
     }
     AddNavigationHeader(body, database);
 
@@ -720,7 +721,7 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
     return html.ToString();
 }
 
-std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, bool saved)
+std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int flag)
 {
     std::string title = "";
     bool isItem = false;
@@ -757,9 +758,13 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, bool
     AddHtmlHead(&html);
 
     auto body = html.AddBody();
-    if (saved)
+    if (flag > 0)
     {
-        body->SetAttribute("class", "blink-once");
+        body->SetAttribute("class", "blink-success");
+    }
+    else if (flag < 0)
+    {
+        body->SetAttribute("class", "blink-failed");
     }
     AddNavigationHeader(body, database);
 
@@ -878,10 +883,18 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, bool
     }
 
     auto form = main->AddForm();
-    form->SetAttribute("action", fmt::format("{}?id={}&format={}", HtmlGenerator::SAVE_RULE_CMD, item->Id, item->Date.GetFormat()));
+    form->SetAttribute("action", HtmlGenerator::SAVE_RULE_CMD);
     form->SetAttribute("method", "get");
     form->SetAttribute("enctype", "text/plain");
     form->SetAttribute("id", "form");
+    auto input = form->AddInput();
+    input->SetAttribute("name", "id");
+    input->SetAttribute("type", "hidden");
+    input->SetAttribute("value", fmt::format("{}", item->Id));
+    input = form->AddInput();
+    input->SetAttribute("name", "format");
+    input->SetAttribute("type", "hidden");
+    input->SetAttribute("value", item->Date.GetFormat());
 
     auto div = form->AddDivision();
     table = div->AddTable();
@@ -899,53 +912,68 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, bool
         htmlRow->AddTableCell(fmt::format("{}", item->Id));
 
         cell = htmlRow->AddTableCell();
-        auto input = cell->AddInput();
+        input = cell->AddInput();
         input->SetAttribute("name", "Category");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "rule mono");
+        input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->Category);
+        input->SetAttribute("onchange", "submitSettings('form')");
+        
 
         cell = htmlRow->AddTableCell();
         input = cell->AddInput();
         input->SetAttribute("name", "PayerPayee");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "rule mono");
+        input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->PayerPayee);
+        input->SetAttribute("onchange", "submitSettings('form')");
 
         cell = htmlRow->AddTableCell();
         input = cell->AddInput();
         input->SetAttribute("name", "Description");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "rule mono");
+        input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->Description);
+        input->SetAttribute("onchange", "submitSettings('form')");
 
         cell = htmlRow->AddTableCell();
         input = cell->AddInput();
         input->SetAttribute("name", "Type");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "rule mono");
+        input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->Type);
+        input->SetAttribute("onchange", "submitSettings('form')");
 
         cell = htmlRow->AddTableCell();
         input = cell->AddInput();
         input->SetAttribute("name", "Date");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "rule mono");
+        input->SetAttribute("placeholder", item->Date.GetFormat());
         input->SetAttribute("value", item->Date.ToString());
+        input->SetAttribute("onchange", "submitSettings('form')");
 
         cell = htmlRow->AddTableCell();
         input = cell->AddInput();
         input->SetAttribute("name", "Account");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "rule mono");
+        input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->Account);
+        input->SetAttribute("onchange", "submitSettings('form')");
 
         cell = htmlRow->AddTableCell();
         input = cell->AddInput();
         input->SetAttribute("name", "Value");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "rule mono");
+        input->SetAttribute("placeholder", "0.00");
         input->SetAttribute("value", item->Value.ToString());
+        input->SetAttribute("onchange", "submitSettings('form')");
     }
 
     if (!item->Issues.empty() || item->References.empty())
@@ -1008,7 +1036,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, bool
     cell->SetAttribute("style", "width: 50%;");
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
-    auto input = cell->AddInput();
+    input = cell->AddInput();
     input->SetAttribute("id", "filter");
     input->SetAttribute("type", "text");
     input->SetAttribute("placeholder", "Filter...");
