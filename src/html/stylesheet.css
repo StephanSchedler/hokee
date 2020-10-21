@@ -241,7 +241,24 @@ textarea {
   padding: 5px;
 }
 
+input::-webkit-input-placeholder {
+  color: #888;
+  }
+   
+  input:-moz-placeholder { /* Firefox 18- */
+  color: #888;  
+  }
+   
+  input::-moz-placeholder {  /* Firefox 19+ */
+  color: #888;  
+  }
+   
+  input:-ms-input-placeholder {  
+  color: #888;  
+  }
+
 input[type=text], textarea {
+  color: black;
   width: 100%;
   font-size: medium;
   border: 1px solid #333;
@@ -304,15 +321,29 @@ label {
   display: block;
 }
 
-@keyframes blink-bg {
+@keyframes blink-success-kf {
   0% {background-color: white;}
   50% {background-color: #CFC;}
   100% {background-color: white;}
 }
 
-.blink-once {
+.blink-success {
   background-color: white;
-  animation-name: blink-bg;
+  animation-name: blink-success-kf;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: 1;
+}
+
+@keyframes blink-failed-kf {
+  0% {background-color: white;}
+  50% {background-color: #FCC;}
+  100% {background-color: white;}
+}
+
+.blink-failed {
+  background-color: white;
+  animation-name: blink-failed-kf;
   animation-duration: 0.5s;
   animation-timing-function: ease-in-out;
   animation-iteration-count: 1;

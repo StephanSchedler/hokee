@@ -7,7 +7,7 @@
 
 namespace hokee
 {
-CsvValue::CsvValue(const std::string& value, const std::string& file, int lineCounter)
+CsvValue::CsvValue(const std::string& value, const std::string& file, int lineCounter, bool validate)
     : _string{value}
 {
     // Fix value
@@ -42,13 +42,14 @@ CsvValue::CsvValue(const std::string& value, const std::string& file, int lineCo
     try
     {
         _value = std::stod(_string);
+        _string = fmt::format("{:.2f}", _value);
     }
     catch (const std::exception& e)
     {
         throw InternalException(__FILE__, __LINE__,
                                 fmt::format("Could not convert '{}' to 'double'. ({})", _string, e.what()));
     }
-    if (_string != fmt::format("{:.2f}", _value))
+    if (validate && _string != fmt::format("{:.2f}", _value))
     {
         throw UserException(
             fmt::format("Could not parse converted value {} != stod({})", _string, fmt::format("{:.2f}", _value)),

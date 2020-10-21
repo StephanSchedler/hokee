@@ -12,7 +12,7 @@ class CsvDate
     int _month{-1};
     int _day{-1};
     std::string _dateStr{};
-    std::string _formatStr{};
+    std::string _formatStr="dd.mm.yyyy";
 
   public:
     CsvDate() = default;
