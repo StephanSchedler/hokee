@@ -113,6 +113,18 @@ void HtmlElement::AddText(const std::string& text)
     _elements.push_back(std::make_unique<HtmlText>(text));
 }
 
+HtmlElement* HtmlElement::AddSelect()
+{
+    return AddElement("select", "");
+}
+
+HtmlElement* HtmlElement::AddOption(const std::string& text)
+{
+    auto elem = AddElement("option", text);
+    elem->SetAttribute("value", text);
+    return elem;
+}
+
 HtmlElement* HtmlElement::AddBody(const std::string& text)
 {
     return AddElement("body", text);

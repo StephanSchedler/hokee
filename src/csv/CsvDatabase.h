@@ -6,6 +6,7 @@
 
 #include <array>
 #include <atomic>
+#include <vector>
 
 namespace hokee
 {
@@ -36,6 +37,7 @@ class CsvDatabase
     void Load(const fs::path& inputDirectory, const fs::path& ruleSetFile);
     int NewRule(int id);
     int DeleteRule(int id);
+    std::vector<std::string> GetCategories() const;
     
     std::atomic<size_t> ProgressMax{100};
     std::atomic<size_t> ProgressValue{0};

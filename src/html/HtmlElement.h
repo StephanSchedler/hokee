@@ -39,6 +39,9 @@ class HtmlElement : public IPrintable
                            int height);
     void AddHyperlinkImage(const std::string& link, const std::string& title, const std::string& src, int size);
 
+    HtmlElement* AddSelect();
+    HtmlElement* AddOption(const std::string& text = "");
+
     HtmlElement* AddBody(const std::string& text = "");
     HtmlElement* AddBold(const std::string& text = "");
     HtmlElement* AddDivision(const std::string& text = "");

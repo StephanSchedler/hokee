@@ -187,14 +187,8 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
     main->AddHeading(2, "Summary");
 
     // Determine (used) Categories
-    std::vector<std::string> categories{""};
-    for (auto& rule : database.Rules)
-    {
-        if (std::find(categories.begin(), categories.end(), rule->Category) == categories.end())
-        {
-            categories.push_back(rule->Category);
-        }
-    }
+    std::vector<std::string> categories = database.GetCategories();
+    categories.insert(categories.begin(), "");
 
     // Sort data
     int minYear = 3000;
@@ -898,79 +892,116 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
 
     auto div = form->AddDivision();
     table = div->AddTable();
-    table->SetAttribute("class", "rule mar-20");
-    AddItemTableHeader(table);
 
     if (isItem)
     {
+        table->SetAttribute("class", "rule mar-20");
+        AddItemTableHeader(table);
         AddItemTableRow(table, item.get());
     }
     else
     {
-        auto htmlRow = table->AddTableRow();
-
-        htmlRow->AddTableCell(fmt::format("{}", item->Id));
-
-        cell = htmlRow->AddTableCell();
-        input = cell->AddInput();
-        input->SetAttribute("name", "Category");
-        input->SetAttribute("type", "text");
-        input->SetAttribute("class", "rule mono");
-        input->SetAttribute("placeholder", "...");
-        input->SetAttribute("value", item->Category);
-        input->SetAttribute("onchange", "submitSettings('form')");
+        table->SetAttribute("class", "form mar-20");
         
+        auto row2 = table->AddTableRow();
+        cell = row2->AddTableCell();
+        cell->SetAttribute("class", "form fill");
+        auto label = cell->AddLabel("Category");
+        label->SetAttribute("class", "marb-20");
 
-        cell = htmlRow->AddTableCell();
-        input = cell->AddInput();
+        auto select = label->AddSelect();
+        select->SetAttribute("class", "form mono");
+        select->SetAttribute("onchange", "submitSettings('form')");
+        select->SetAttribute("name", "Category");
+
+        std::vector<std::string> categories = database.GetCategories();
+        for (auto& cat : categories)
+        {
+            auto option = select->AddOption(cat);
+            if (item->Category == cat)
+            {
+                option->SetAttribute("selected", "");
+            }
+        }
+        auto option = select->AddOption("--------------------");
+        option->SetAttribute("disabled", "");
+        select->AddOption("New category...");
+        select->AddOption("New ignore category...");
+
+        row2 = table->AddTableRow();
+        cell = row2->AddTableCell();
+        cell->SetAttribute("class", "form fill");
+        label = cell->AddLabel("Payer/Payee (text)");
+        label->SetAttribute("class", "marb-20");
+        input = label->AddInput();
         input->SetAttribute("name", "PayerPayee");
         input->SetAttribute("type", "text");
-        input->SetAttribute("class", "rule mono");
+        input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->PayerPayee);
         input->SetAttribute("onchange", "submitSettings('form')");
 
-        cell = htmlRow->AddTableCell();
-        input = cell->AddInput();
+        row2 = table->AddTableRow();
+        cell = row2->AddTableCell();
+        cell->SetAttribute("class", "form fill");
+        label = cell->AddLabel("Description (text)");
+        label->SetAttribute("class", "marb-20");
+        input = label->AddInput();
         input->SetAttribute("name", "Description");
         input->SetAttribute("type", "text");
-        input->SetAttribute("class", "rule mono");
+        input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->Description);
         input->SetAttribute("onchange", "submitSettings('form')");
 
-        cell = htmlRow->AddTableCell();
-        input = cell->AddInput();
+        row2 = table->AddTableRow();
+        cell = row2->AddTableCell();
+        cell->SetAttribute("class", "form fill");
+        label = cell->AddLabel("Type (text)");
+        label->SetAttribute("class", "marb-20");
+        input = label->AddInput();
         input->SetAttribute("name", "Type");
         input->SetAttribute("type", "text");
-        input->SetAttribute("class", "rule mono");
+        input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->Type);
         input->SetAttribute("onchange", "submitSettings('form')");
 
-        cell = htmlRow->AddTableCell();
-        input = cell->AddInput();
+        row2 = table->AddTableRow();
+        cell = row2->AddTableCell();
+        cell->SetAttribute("class", "form fill");
+        label = cell->AddLabel(fmt::format("Date ({})", item->Date.GetFormat()));
+        label->SetAttribute("class", "marb-20");
+        input = label->AddInput();
         input->SetAttribute("name", "Date");
         input->SetAttribute("type", "text");
-        input->SetAttribute("class", "rule mono");
+        input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", item->Date.GetFormat());
         input->SetAttribute("value", item->Date.ToString());
         input->SetAttribute("onchange", "submitSettings('form')");
 
-        cell = htmlRow->AddTableCell();
-        input = cell->AddInput();
+        row2 = table->AddTableRow();
+        cell = row2->AddTableCell();
+        cell->SetAttribute("class", "form fill");
+        label = cell->AddLabel("Account (text)");
+        label->SetAttribute("class", "marb-20");
+        input = label->AddInput();
         input->SetAttribute("name", "Account");
         input->SetAttribute("type", "text");
-        input->SetAttribute("class", "rule mono");
+        input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->Account);
         input->SetAttribute("onchange", "submitSettings('form')");
 
-        cell = htmlRow->AddTableCell();
-        input = cell->AddInput();
+        row2 = table->AddTableRow();
+        cell = row2->AddTableCell();
+        cell->SetAttribute("class", "form fill");
+        label = cell->AddLabel("Value (number)");
+        label->SetAttribute("class", "marb-20");
+        input = label->AddInput();
         input->SetAttribute("name", "Value");
         input->SetAttribute("type", "text");
-        input->SetAttribute("class", "rule mono");
+        input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "0.00");
         input->SetAttribute("value", item->Value.ToString());
         input->SetAttribute("onchange", "submitSettings('form')");
