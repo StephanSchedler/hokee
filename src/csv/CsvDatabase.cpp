@@ -93,6 +93,7 @@ std::vector<std::string> CsvDatabase::GetCategories() const
             categories.push_back(rule->Category);
         }
     }
+    std::sort(categories.begin(), categories.end());
     return categories;
 }
 
@@ -167,7 +168,6 @@ void CsvDatabase::MatchRules()
         }
     }
 
-    Unassigned.clear();
     for (auto& row : Data)
     {
         if (row->References.size() == 0)
@@ -179,6 +179,8 @@ void CsvDatabase::MatchRules()
             Assigned.push_back(row);
         }
     }
+    
+    CheckRules();
 }
 
 void CsvDatabase::Load(const fs::path& inputDirectory, const fs::path& ruleSetFile)
@@ -238,7 +240,6 @@ void CsvDatabase::Load(const fs::path& inputDirectory, const fs::path& ruleSetFi
     Sort(Data);
     LoadRules(ruleSetFile);
     MatchRules();
-    CheckRules();
     Utils::PrintInfo("Finished loading.");
 }
 } // namespace hokee
