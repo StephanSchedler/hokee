@@ -14,7 +14,6 @@ namespace hokee
 class CsvDatabase
 {
     void LoadRules(const fs::path& ruleSetFile);
-    void MatchRules();
     void CheckRules();
     void Sort(CsvTable& csvData);
 
@@ -35,6 +34,7 @@ class CsvDatabase
     CsvDatabase& operator=(CsvDatabase&&) = delete;
 
     void Load(const fs::path& inputDirectory, const fs::path& ruleSetFile);
+    void MatchRules();
     int NewRule(int id);
     int DeleteRule(int id);
     std::vector<std::string> GetCategories() const;

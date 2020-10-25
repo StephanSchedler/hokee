@@ -101,7 +101,7 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     auto reload = AddButton(row, "", "Reload CSV Data", "48-sign-sync.png", "Reload");
     reload->SetAttribute("onclick", fmt::format("reload('{}')", RELOAD_CMD));
     body->AddScript("reload.js");
-    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
+    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-exit.png", "Exit");
 }
 
 HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
@@ -348,7 +348,7 @@ std::string HtmlGenerator::GetErrorPage(int errorCode, const std::string& errorM
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-envelope-letter.png", "Get&nbsp;Support");
     AddButton(row, SETTINGS_HTML, "Open Settings File", "48-cogs.png", "Settings");
     AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
-    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
+    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-exit.png", "Exit");
 
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
@@ -670,7 +670,7 @@ std::string HtmlGenerator::GetEmptyInputPage()
     AddButton(row, COPY_SAMPLES_CMD, "Copy Samples", "48-box-in.png", "Copy&nbsp;Samples");
     AddButton(row, SETTINGS_HTML, "Open Settings", "48-cogs.png", "Open&nbsp;Settings");
     AddButton(row, RELOAD_CMD, "Reload CSV Data", "48-sign-sync.png", "Reload");
-    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-error.png", "Exit", "hue-200");
+    AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-exit.png", "Exit");
 
     cell = row->AddTableCell("&nbsp;");
     cell->SetAttribute("class", "nav fill");
@@ -791,61 +791,60 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         cell = row->AddTableCell();
         cell->AddImage("48-floppy.png", "Save Rules", 40);
         cell->SetAttribute("class", "form link");
-        cell->SetAttribute("onclick", "submitSettings('form')");
-        body->AddScript("submitSettings.js");
+        cell->SetAttribute("onclick", "submitRule('form')");
+        body->AddScript("submitRule.js");
     }
 
-    if (database.Unassigned.HasItem(id))
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    int prevId = database.Unassigned.PrevItem(id);
+    if (prevId >= 0)
     {
-        int prevId = database.Unassigned.PrevItem(id);
-        if (prevId >= 0)
-        {
-            cell = row->AddTableCell();
-            cell->SetAttribute("class", "form hue-220");
-            std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, prevId);
-            cell->AddHyperlinkImage(link, "Previous Warning", "48-sign-left.png", 38);
-        }
-        int nextId = database.Unassigned.NextItem(id);
-        if (nextId >= 0)
-        {
-            cell = row->AddTableCell();
-            cell->SetAttribute("class", "form hue-220");
-            std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
-            cell->AddHyperlinkImage(link, "Next Warning", "48-sign-right.png", 38);
-        }
-        else
-        {
-            cell = row->AddTableCell();
-            cell->SetAttribute("class", "form");
-            auto div = cell->AddDivision();
-            div->SetAttribute("style", "width: 38px;");
-        }
+        std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, prevId);
+        cell->AddHyperlinkImage(link, "Previous Warning", "48-sign-left-y.png", 38);
     }
-    if (database.Issues.HasItem(id))
+    else
     {
-        int prevId = database.Issues.PrevItem(id);
-        if (prevId >= 0)
-        {
-            cell = row->AddTableCell();
-            cell->SetAttribute("class", "form hue-180");
-            std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, prevId);
-            cell->AddHyperlinkImage(link, "Previous Error", "48-sign-left.png", 38);
-        }
-        int nextId = database.Issues.NextItem(id);
-        if (nextId >= 0)
-        {
-            cell = row->AddTableCell();
-            cell->SetAttribute("class", "form hue-180");
-            std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
-            cell->AddHyperlinkImage(link, "Next Error", "48-sign-right.png", 38);
-        }
-        else
-        {
-            cell = row->AddTableCell();
-            cell->SetAttribute("class", "form");
-            auto div = cell->AddDivision();
-            div->SetAttribute("style", "width: 38px;");
-        }
+        cell->AddImage("48-sign-left-g.png", "No Warnings", 38);
+    }
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    int nextId = database.Unassigned.NextItem(id);
+    if (nextId >= 0)
+    {
+        std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
+        cell->AddHyperlinkImage(link, "Next Warning", "48-sign-right-y.png", 38);
+    }
+    else
+    {
+        cell->AddImage("48-sign-right-g.png", "No Warnings", 38);
+    }
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    prevId = database.Issues.PrevItem(id);
+    if (prevId >= 0)
+    {
+        std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, prevId);
+        cell->AddHyperlinkImage(link, "Previous Error", "48-sign-left-r.png", 38);
+    }
+    else
+    {
+        cell->AddImage("48-sign-left-g.png", "No Errors", 38);
+    }
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+    nextId = database.Issues.NextItem(id);
+    if (nextId >= 0)
+    {
+        std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
+        cell->AddHyperlinkImage(link, "Next Error", "48-sign-right-r.png", 38);
+    }
+    else
+    {
+        cell->AddImage("48-sign-right-g.png", "No Errors", 38);
     }
 
     table = main->AddTable();
@@ -902,96 +901,113 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
     else
     {
         table->SetAttribute("class", "form mar-20");
-        
+
         auto row2 = table->AddTableRow();
         cell = row2->AddTableCell();
         cell->SetAttribute("class", "form fill");
         auto label = cell->AddLabel("Category");
-        label->SetAttribute("class", "marb-20");
+        label->SetAttribute("class", "marb-5");
 
         auto select = label->AddSelect();
         select->SetAttribute("class", "form mono");
-        select->SetAttribute("onchange", "submitSettings('form')");
+        select->SetAttribute("onchange", "submitRule('form')");
         select->SetAttribute("name", "Category");
+        select->SetAttribute("id", "Category");
 
+        auto option = select->AddOption("NEW CATEGORY...");
+        if (item->Category.empty())
+        {
+            option->SetAttribute("selected", "");
+        }
+        select->AddOption("NEW IGNORE CATEGORY...");
         std::vector<std::string> categories = database.GetCategories();
+        if (!categories.empty())
+        {
+            option = select->AddOption("--------------------");
+            option->SetAttribute("disabled", "");
+        }
         for (auto& cat : categories)
         {
-            auto option = select->AddOption(cat);
-            if (item->Category == cat)
+            option = select->AddOption(cat);
+            if (item->Category == cat && !cat.empty())
             {
                 option->SetAttribute("selected", "");
             }
         }
-        auto option = select->AddOption("--------------------");
-        option->SetAttribute("disabled", "");
-        select->AddOption("New category...");
-        select->AddOption("New ignore category...");
 
         row2 = table->AddTableRow();
         cell = row2->AddTableCell();
         cell->SetAttribute("class", "form fill");
-        label = cell->AddLabel("Payer/Payee (text)");
-        label->SetAttribute("class", "marb-20");
+        label = cell->AddLabel("Payer/Payee (text*)");
+        label->SetAttribute("class", "marb-5");
         input = label->AddInput();
         input->SetAttribute("name", "PayerPayee");
+        input->SetAttribute("id", "PayerPayee");
+        input->SetAttribute("onmousedown", "insertSelectedText(event)");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->PayerPayee);
-        input->SetAttribute("onchange", "submitSettings('form')");
+        input->SetAttribute("onchange", "submitRule('form')");
 
         row2 = table->AddTableRow();
         cell = row2->AddTableCell();
         cell->SetAttribute("class", "form fill");
-        label = cell->AddLabel("Description (text)");
-        label->SetAttribute("class", "marb-20");
+        label = cell->AddLabel("Description (text*)");
+        label->SetAttribute("class", "marb-5");
         input = label->AddInput();
         input->SetAttribute("name", "Description");
+        input->SetAttribute("id", "Description");
+        input->SetAttribute("onmousedown", "insertSelectedText(event)");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->Description);
-        input->SetAttribute("onchange", "submitSettings('form')");
+        input->SetAttribute("onchange", "submitRule('form')");
 
         row2 = table->AddTableRow();
         cell = row2->AddTableCell();
         cell->SetAttribute("class", "form fill");
-        label = cell->AddLabel("Type (text)");
-        label->SetAttribute("class", "marb-20");
+        label = cell->AddLabel("Type (text*)");
+        label->SetAttribute("class", "marb-5");
         input = label->AddInput();
         input->SetAttribute("name", "Type");
+        input->SetAttribute("id", "Type");
+        input->SetAttribute("onmousedown", "insertSelectedText(event)");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->Type);
-        input->SetAttribute("onchange", "submitSettings('form')");
+        input->SetAttribute("onchange", "submitRule('form')");
 
         row2 = table->AddTableRow();
         cell = row2->AddTableCell();
         cell->SetAttribute("class", "form fill");
         label = cell->AddLabel(fmt::format("Date ({})", item->Date.GetFormat()));
-        label->SetAttribute("class", "marb-20");
+        label->SetAttribute("class", "marb-5");
         input = label->AddInput();
         input->SetAttribute("name", "Date");
+        input->SetAttribute("id", "Date");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", item->Date.GetFormat());
         input->SetAttribute("value", item->Date.ToString());
-        input->SetAttribute("onchange", "submitSettings('form')");
+        input->SetAttribute("onchange", "submitRule('form')");
 
         row2 = table->AddTableRow();
         cell = row2->AddTableCell();
         cell->SetAttribute("class", "form fill");
-        label = cell->AddLabel("Account (text)");
-        label->SetAttribute("class", "marb-20");
+        label = cell->AddLabel("Account (text*)");
+        label->SetAttribute("class", "marb-5");
         input = label->AddInput();
         input->SetAttribute("name", "Account");
+        input->SetAttribute("id", "Account");
+        input->SetAttribute("onmousedown", "insertSelectedText(event)");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->Account);
-        input->SetAttribute("onchange", "submitSettings('form')");
+        input->SetAttribute("onchange", "submitRule('form')");
 
         row2 = table->AddTableRow();
         cell = row2->AddTableCell();
@@ -1000,11 +1016,13 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         label->SetAttribute("class", "marb-20");
         input = label->AddInput();
         input->SetAttribute("name", "Value");
+        input->SetAttribute("id", "Value");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "0.00");
         input->SetAttribute("value", item->Value.ToString());
-        input->SetAttribute("onchange", "submitSettings('form')");
+        input->SetAttribute("onchange", "submitRule('form')");
+        form->AddDivision("*Right click to delete unselected text");
     }
 
     if (!item->Issues.empty() || item->References.empty())

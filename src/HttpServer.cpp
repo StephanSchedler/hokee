@@ -285,15 +285,13 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
         if (req.params.find("saved") != req.params.end())
         {
             flag = 1;
-        } 
+        }
         else if (req.params.find("failed") != req.params.end())
         {
             flag = -1;
         }
 
-        SetContent(req, res,
-                   HtmlGenerator::GetItemPage(_database, id, flag),
-                   CONTENT_TYPE_HTML);
+        SetContent(req, res, HtmlGenerator::GetItemPage(_database, id, flag), CONTENT_TYPE_HTML);
         return;
     }
 
@@ -540,7 +538,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                 throw InternalException(__FILE__, __LINE__, "Could not get request parameter 'id'.");
             }
             std::string dateFormat = GetParam(req.params, "format", HtmlGenerator::SAVE_RULE_CMD);
-            if (id.empty())
+            if (dateFormat.empty())
             {
                 throw InternalException(__FILE__, __LINE__, "Could not get request parameter 'format'.");
             }
@@ -581,7 +579,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             rule->Type = value;
             value = GetParam(req.params, "Value", HtmlGenerator::SAVE_RULE_CMD);
             auto valueBackup = rule->Value;
-            try 
+            try
             {
                 rule->Value = CsvValue(value, "???", -1, false);
             }
@@ -592,7 +590,9 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             }
 
             CsvWriter::Write(ruleSetFile, _database.Rules);
-            res.set_redirect((fmt::format("{}?id={}&{}", HtmlGenerator::ITEM_HTML, id, success ? "saved" : "failed").c_str()));
+            _database.MatchRules();
+            res.set_redirect(
+                (fmt::format("{}?id={}&{}", HtmlGenerator::ITEM_HTML, id, success ? "saved" : "failed").c_str()));
         }
         catch (const std::exception& e)
         {
@@ -621,13 +621,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          _errorStatus = 500;
                          _errorMessage = e.what();
-            res.set_redirect(HtmlGenerator::INDEX_HTML);
+                         res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                      catch (...)
                      {
                          _errorStatus = 500;
                          _errorMessage = "Could not save file";
-            res.set_redirect(HtmlGenerator::INDEX_HTML);
+                         res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                  });
 
@@ -708,13 +708,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          _errorStatus = 500;
                          _errorMessage = e.what();
-            res.set_redirect(HtmlGenerator::INDEX_HTML);
+                         res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                      catch (...)
                      {
                          _errorStatus = 500;
                          _errorMessage = "Could not exit";
-            res.set_redirect(HtmlGenerator::INDEX_HTML);
+                         res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                  });
 
@@ -736,13 +736,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          _errorStatus = 500;
                          _errorMessage = e.what();
-            res.set_redirect(HtmlGenerator::INDEX_HTML);
+                         res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                      catch (...)
                      {
                          _errorStatus = 500;
                          _errorMessage = "Could not restart";
-            res.set_redirect(HtmlGenerator::INDEX_HTML);
+                         res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                  });
 
@@ -761,7 +761,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                              res.status = 500;
                              _errorMessage = fmt::format("Could not copy folder '{}' to '{}' ({})", src.string(),
                                                          dest.string(), ec.message());
-            res.set_redirect(HtmlGenerator::INDEX_HTML);
+                             res.set_redirect(HtmlGenerator::INDEX_HTML);
                              return;
                          }
 
@@ -774,7 +774,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                              res.status = 500;
                              _errorMessage = fmt::format("Could not copy file '{}' to '{}' ({})", src.string(),
                                                          dest.string(), ec.message());
-            res.set_redirect(HtmlGenerator::INDEX_HTML);
+                             res.set_redirect(HtmlGenerator::INDEX_HTML);
                              return;
                          }
 
@@ -784,13 +784,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          _errorStatus = 500;
                          _errorMessage = e.what();
-            res.set_redirect(HtmlGenerator::INDEX_HTML);
+                         res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                      catch (...)
                      {
                          _errorStatus = 500;
                          _errorMessage = "Could not copy samples";
-            res.set_redirect(HtmlGenerator::INDEX_HTML);
+                         res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                  });
 
@@ -952,13 +952,13 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                      {
                          _errorStatus = 500;
                          _errorMessage = e.what();
-            res.set_redirect(HtmlGenerator::INDEX_HTML);
+                         res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                      catch (...)
                      {
                          _errorStatus = 500;
                          _errorMessage = "Could not open input folder";
-            res.set_redirect(HtmlGenerator::INDEX_HTML);
+                         res.set_redirect(HtmlGenerator::INDEX_HTML);
                      }
                  });
 

@@ -91,6 +91,10 @@ table.form, th.form, td.form, tr.form {
   margin-bottom: 20px;
 }
 
+.marb-5 {
+  margin-bottom: 5px;
+}
+
 .mar-5 {
   margin-top: 5px;
 }
@@ -257,8 +261,12 @@ input::-webkit-input-placeholder {
   color: #888;  
   }
 
+select {
+  padding: 5px;
+}
+
 input[type=text], textarea, select {
-  color: black;
+  color: #35F;
   width: 100%;
   font-size: medium;
   border: 1px solid #333;
