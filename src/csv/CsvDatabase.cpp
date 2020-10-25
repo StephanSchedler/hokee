@@ -83,6 +83,19 @@ void CsvDatabase::CheckRules()
     }
 }
 
+std::vector<std::string> CsvDatabase::GetCategories() const
+{
+    std::vector<std::string> categories;
+    for (auto& rule : Rules)
+    {
+        if (std::find(categories.begin(), categories.end(), rule->Category) == categories.end())
+        {
+            categories.push_back(rule->Category);
+        }
+    }
+    return categories;
+}
+
 int CsvDatabase::DeleteRule(int id)
 {
     Data.DeleteItem(id);
