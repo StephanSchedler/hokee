@@ -52,7 +52,7 @@ void CsvDatabase::CheckRules()
             {
                 Issues.push_back(rule1);
             }
-            rule1->Issues.push_back("ERROR: Rule category must not be empty!");
+            rule1->Issues.push_back("ERROR: Category must not be empty!");
         }
 
         if (rule1->References.size() == 0)
@@ -169,8 +169,20 @@ void CsvDatabase::MatchRules()
     // Match rules
     for (auto& rule : Rules)
     {
+        // ToLower
+        rule->Account = Utils::ToLower(rule->Account);
+        rule->Category = Utils::ToLower(rule->Category);
+        rule->Description = Utils::ToLower(rule->Description);
+        rule->Payer = Utils::ToLower(rule->Payer);
+        rule->Payee = Utils::ToLower(rule->Payee);
+        rule->PayerPayee = Utils::ToLower(rule->PayerPayee);
+        rule->Type = Utils::ToLower(rule->Type);
+
+        // reset
         rule->Issues.clear();
         rule->References.clear();
+
+        // match
         for (auto& row : Data)
         {
             row->Match(rule);
