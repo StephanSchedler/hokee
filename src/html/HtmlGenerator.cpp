@@ -910,15 +910,10 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
 
         auto select = label->AddSelect();
         select->SetAttribute("class", "form mono");
-        select->SetAttribute("onchange", "submitRule('form')");
         select->SetAttribute("name", "Category");
         select->SetAttribute("id", "Category");
 
         auto option = select->AddOption("NEW CATEGORY...");
-        if (item->Category.empty())
-        {
-            option->SetAttribute("selected", "");
-        }
         select->AddOption("NEW IGNORE CATEGORY...");
         std::vector<std::string> categories = database.GetCategories();
         if (!categories.empty())
@@ -929,7 +924,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         for (auto& cat : categories)
         {
             option = select->AddOption(cat);
-            if (item->Category == cat && !cat.empty())
+            if (item->Category == cat)
             {
                 option->SetAttribute("selected", "");
             }
@@ -948,8 +943,6 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->PayerPayee);
-        input->SetAttribute("onchange", "submitRule('form')");
-
         row2 = table->AddTableRow();
         cell = row2->AddTableCell();
         cell->SetAttribute("class", "form fill");
@@ -963,7 +956,6 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->Description);
-        input->SetAttribute("onchange", "submitRule('form')");
 
         row2 = table->AddTableRow();
         cell = row2->AddTableCell();
@@ -978,7 +970,6 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->Type);
-        input->SetAttribute("onchange", "submitRule('form')");
 
         row2 = table->AddTableRow();
         cell = row2->AddTableCell();
@@ -992,7 +983,6 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", item->Date.GetFormat());
         input->SetAttribute("value", item->Date.ToString());
-        input->SetAttribute("onchange", "submitRule('form')");
 
         row2 = table->AddTableRow();
         cell = row2->AddTableCell();
@@ -1007,7 +997,6 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->Account);
-        input->SetAttribute("onchange", "submitRule('form')");
 
         row2 = table->AddTableRow();
         cell = row2->AddTableCell();
@@ -1021,7 +1010,6 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "0.00");
         input->SetAttribute("value", item->Value.ToString());
-        input->SetAttribute("onchange", "submitRule('form')");
         form->AddDivision("*Right click to delete unselected text");
     }
 
@@ -1082,7 +1070,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         cell->AddHeading(3, "Item(s):");
     }
 
-    cell->SetAttribute("style", "width: 50%;");
+    cell->SetAttribute("style", "width: 100%;");
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
     input = cell->AddInput();

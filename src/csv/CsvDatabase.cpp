@@ -46,6 +46,15 @@ void CsvDatabase::CheckRules()
 
     for (auto& rule1 : Rules)
     {
+        if (rule1->Category.empty())
+        {
+            if (rule1->Issues.size() == 0)
+            {
+                Issues.push_back(rule1);
+            }
+            rule1->Issues.push_back("ERROR: Rule category must not be empty!");
+        }
+
         if (rule1->References.size() == 0)
         {
             if (rule1->Issues.size() == 0)
