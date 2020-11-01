@@ -858,7 +858,8 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             }
             Utils::PrintInfo(fmt::format("Create new Rule based on id {}", id));
             int nextId = _database.NewRule(id);
-            std::string url = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
+            _database.MatchRules();
+            std::string url = fmt::format("{}?id={}&saved", HtmlGenerator::ITEM_HTML, nextId);
             CsvWriter::Write(ruleSetFile, _database.Rules);
             res.set_redirect(url.c_str());
         }

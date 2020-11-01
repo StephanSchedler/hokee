@@ -39,6 +39,5 @@ function insertSelectedText(event)
     {
         event.currentTarget.value = event.currentTarget.value.substring(event.currentTarget.selectionStart,
             event.currentTarget.selectionEnd);
-        submitRule("form");
     }
 }
