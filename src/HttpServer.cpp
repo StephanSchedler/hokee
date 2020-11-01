@@ -860,7 +860,7 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             int nextId = _database.NewRule(id);
             _database.MatchRules();
             CsvWriter::Write(ruleSetFile, _database.Rules);
-            
+
             std::string url = fmt::format("{}?id={}&saved", HtmlGenerator::ITEM_HTML, nextId);
             res.set_redirect(url.c_str());
         }
@@ -908,8 +908,9 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                 {
                     url = HtmlGenerator::INDEX_HTML;
                 }
+                _database.MatchRules();
                 CsvWriter::Write(ruleSetFile, _database.Rules);
-                res.set_redirect(url.c_str());
+                res.set_redirect(url + "&saved");
             }
             else if (!file.empty())
             {

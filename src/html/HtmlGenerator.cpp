@@ -694,7 +694,7 @@ std::string HtmlGenerator::GetProgressPage(size_t value, size_t max)
     auto head = AddHtmlHead(&html);
     auto meta = head->AddMeta();
     meta->SetAttribute("http-equiv", "refresh");
-    meta->SetAttribute("content", "1");
+    meta->SetAttribute("content", "0.5");
 
     auto body = html.AddBody();
     auto main = body->AddMain();
