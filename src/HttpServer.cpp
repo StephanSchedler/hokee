@@ -589,8 +589,8 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
                 rule->Value = valueBackup;
             }
 
-            CsvWriter::Write(ruleSetFile, _database.Rules);
             _database.MatchRules();
+            CsvWriter::Write(ruleSetFile, _database.Rules);
             res.set_redirect(
                 (fmt::format("{}?id={}&{}", HtmlGenerator::ITEM_HTML, id, success ? "saved" : "failed").c_str()));
         }
@@ -859,8 +859,9 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
             Utils::PrintInfo(fmt::format("Create new Rule based on id {}", id));
             int nextId = _database.NewRule(id);
             _database.MatchRules();
-            std::string url = fmt::format("{}?id={}&saved", HtmlGenerator::ITEM_HTML, nextId);
             CsvWriter::Write(ruleSetFile, _database.Rules);
+            
+            std::string url = fmt::format("{}?id={}&saved", HtmlGenerator::ITEM_HTML, nextId);
             res.set_redirect(url.c_str());
         }
         catch (const std::exception& e)

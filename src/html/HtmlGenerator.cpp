@@ -875,147 +875,9 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         cell->AddHyperlinkImage(link, "Open corresponding format file", "48-wrench-screwdriver.png", 38);
     }
 
-    auto form = main->AddForm();
-    form->SetAttribute("action", HtmlGenerator::SAVE_RULE_CMD);
-    form->SetAttribute("method", "get");
-    form->SetAttribute("enctype", "text/plain");
-    form->SetAttribute("id", "form");
-    auto input = form->AddInput();
-    input->SetAttribute("name", "id");
-    input->SetAttribute("type", "hidden");
-    input->SetAttribute("value", fmt::format("{}", item->Id));
-    input = form->AddInput();
-    input->SetAttribute("name", "format");
-    input->SetAttribute("type", "hidden");
-    input->SetAttribute("value", item->Date.GetFormat());
-
-    auto div = form->AddDivision();
-    table = div->AddTable();
-
-    if (isItem)
-    {
-        table->SetAttribute("class", "rule mar-20");
-        AddItemTableHeader(table);
-        AddItemTableRow(table, item.get());
-    }
-    else
-    {
-        table->SetAttribute("class", "form mar-20");
-
-        auto row2 = table->AddTableRow();
-        cell = row2->AddTableCell();
-        cell->SetAttribute("class", "form fill");
-        auto label = cell->AddLabel("Category");
-        label->SetAttribute("class", "marb-5");
-
-        auto select = label->AddSelect();
-        select->SetAttribute("class", "form mono");
-        select->SetAttribute("name", "Category");
-        select->SetAttribute("id", "Category");
-
-        auto option = select->AddOption("NEW CATEGORY...");
-        select->AddOption("NEW IGNORE CATEGORY...");
-        std::vector<std::string> categories = database.GetCategories();
-        if (!categories.empty())
-        {
-            option = select->AddOption("--------------------");
-            option->SetAttribute("disabled", "");
-        }
-        for (auto& cat : categories)
-        {
-            option = select->AddOption(cat);
-            if (item->Category == cat)
-            {
-                option->SetAttribute("selected", "");
-            }
-        }
-
-        row2 = table->AddTableRow();
-        cell = row2->AddTableCell();
-        cell->SetAttribute("class", "form fill");
-        label = cell->AddLabel("Payer/Payee (text*)");
-        label->SetAttribute("class", "marb-5");
-        input = label->AddInput();
-        input->SetAttribute("name", "PayerPayee");
-        input->SetAttribute("id", "PayerPayee");
-        input->SetAttribute("onmousedown", "insertSelectedText(event)");
-        input->SetAttribute("type", "text");
-        input->SetAttribute("class", "form mono");
-        input->SetAttribute("placeholder", "...");
-        input->SetAttribute("value", item->PayerPayee);
-        row2 = table->AddTableRow();
-        cell = row2->AddTableCell();
-        cell->SetAttribute("class", "form fill");
-        label = cell->AddLabel("Description (text*)");
-        label->SetAttribute("class", "marb-5");
-        input = label->AddInput();
-        input->SetAttribute("name", "Description");
-        input->SetAttribute("id", "Description");
-        input->SetAttribute("onmousedown", "insertSelectedText(event)");
-        input->SetAttribute("type", "text");
-        input->SetAttribute("class", "form mono");
-        input->SetAttribute("placeholder", "...");
-        input->SetAttribute("value", item->Description);
-
-        row2 = table->AddTableRow();
-        cell = row2->AddTableCell();
-        cell->SetAttribute("class", "form fill");
-        label = cell->AddLabel("Type (text*)");
-        label->SetAttribute("class", "marb-5");
-        input = label->AddInput();
-        input->SetAttribute("name", "Type");
-        input->SetAttribute("id", "Type");
-        input->SetAttribute("onmousedown", "insertSelectedText(event)");
-        input->SetAttribute("type", "text");
-        input->SetAttribute("class", "form mono");
-        input->SetAttribute("placeholder", "...");
-        input->SetAttribute("value", item->Type);
-
-        row2 = table->AddTableRow();
-        cell = row2->AddTableCell();
-        cell->SetAttribute("class", "form fill");
-        label = cell->AddLabel(fmt::format("Date ({})", item->Date.GetFormat()));
-        label->SetAttribute("class", "marb-5");
-        input = label->AddInput();
-        input->SetAttribute("name", "Date");
-        input->SetAttribute("id", "Date");
-        input->SetAttribute("type", "text");
-        input->SetAttribute("class", "form mono");
-        input->SetAttribute("placeholder", item->Date.GetFormat());
-        input->SetAttribute("value", item->Date.ToString());
-
-        row2 = table->AddTableRow();
-        cell = row2->AddTableCell();
-        cell->SetAttribute("class", "form fill");
-        label = cell->AddLabel("Account (text*)");
-        label->SetAttribute("class", "marb-5");
-        input = label->AddInput();
-        input->SetAttribute("name", "Account");
-        input->SetAttribute("id", "Account");
-        input->SetAttribute("onmousedown", "insertSelectedText(event)");
-        input->SetAttribute("type", "text");
-        input->SetAttribute("class", "form mono");
-        input->SetAttribute("placeholder", "...");
-        input->SetAttribute("value", item->Account);
-
-        row2 = table->AddTableRow();
-        cell = row2->AddTableCell();
-        cell->SetAttribute("class", "form fill");
-        label = cell->AddLabel("Value (number)");
-        label->SetAttribute("class", "marb-20");
-        input = label->AddInput();
-        input->SetAttribute("name", "Value");
-        input->SetAttribute("id", "Value");
-        input->SetAttribute("type", "text");
-        input->SetAttribute("class", "form mono");
-        input->SetAttribute("placeholder", "0.00");
-        input->SetAttribute("value", item->Value.ToString());
-        form->AddDivision("*Right click to delete unselected text");
-    }
-
     if (!item->Issues.empty() || item->References.empty())
     {
-        main->AddHeading(3, "Issues:");
+        //main->AddHeading(3, "Issues:");
         table = main->AddTable();
         table->SetAttribute("class", "err mar-20");
 
@@ -1046,6 +908,151 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         }
     }
 
+    auto form = main->AddForm();
+    form->SetAttribute("action", HtmlGenerator::SAVE_RULE_CMD);
+    form->SetAttribute("method", "get");
+    form->SetAttribute("enctype", "text/plain");
+    form->SetAttribute("id", "form");
+    auto input = form->AddInput();
+    input->SetAttribute("name", "id");
+    input->SetAttribute("type", "hidden");
+    input->SetAttribute("value", fmt::format("{}", item->Id));
+    input = form->AddInput();
+    input->SetAttribute("name", "format");
+    input->SetAttribute("type", "hidden");
+    input->SetAttribute("value", item->Date.GetFormat());
+
+    auto div = form->AddDivision();
+    table = div->AddTable();
+
+    if (isItem)
+    {
+        table->SetAttribute("class", "rule mar-20");
+        AddItemTableHeader(table);
+        AddItemTableRow(table, item.get());
+    }
+    else
+    {
+        table->SetAttribute("class", "form mar-20");
+
+        auto row2 = table->AddTableRow();
+        cell = row2->AddTableCell();
+        cell->SetAttribute("class", "form fill");
+        cell->SetAttribute("colspan", "2");
+        auto label = cell->AddLabel("Category");
+        label->SetAttribute("class", "marb-5");
+
+        auto select = label->AddSelect();
+        select->SetAttribute("class", "form mono");
+        select->SetAttribute("name", "Category");
+        select->SetAttribute("id", "Category");
+        select->SetAttribute("onchange", "submitRule('form')");
+
+        auto option = select->AddOption("NEW CATEGORY...");
+        select->AddOption("NEW IGNORE CATEGORY...");
+        std::vector<std::string> categories = database.GetCategories();
+        if (!categories.empty())
+        {
+            option = select->AddOption("--------------------");
+            option->SetAttribute("disabled", "");
+        }
+        for (auto& cat : categories)
+        {
+            option = select->AddOption(cat);
+            if (item->Category == cat)
+            {
+                option->SetAttribute("selected", "");
+            }
+        }
+
+        row2 = table->AddTableRow();
+        cell = row2->AddTableCell();
+        cell->SetAttribute("class", "form");
+        cell->SetAttribute("style", "width:75%");
+        label = cell->AddLabel("Payer/Payee (text*)");
+        label->SetAttribute("class", "marb-5");
+        input = label->AddInput();
+        input->SetAttribute("name", "PayerPayee");
+        input->SetAttribute("id", "PayerPayee");
+        input->SetAttribute("onmousedown", "insertSelectedText(event)");
+        input->SetAttribute("type", "text");
+        input->SetAttribute("class", "form mono");
+        input->SetAttribute("placeholder", "...");
+        input->SetAttribute("value", item->PayerPayee);
+        
+        cell = row2->AddTableCell();
+        cell->SetAttribute("class", "form");
+        cell->SetAttribute("style", "width:25%");
+        label = cell->AddLabel(fmt::format("Date ({})", item->Date.GetFormat()));
+        label->SetAttribute("class", "marb-5");
+        input = label->AddInput();
+        input->SetAttribute("name", "Date");
+        input->SetAttribute("id", "Date");
+        input->SetAttribute("type", "text");
+        input->SetAttribute("class", "form mono");
+        input->SetAttribute("placeholder", item->Date.GetFormat());
+        input->SetAttribute("value", item->Date.ToString());
+
+        row2 = table->AddTableRow();
+        cell = row2->AddTableCell();
+        cell->SetAttribute("class", "form");
+        cell->SetAttribute("style", "width:75%");
+        label = cell->AddLabel("Description (text*)");
+        label->SetAttribute("class", "marb-5");
+        input = label->AddInput();
+        input->SetAttribute("name", "Description");
+        input->SetAttribute("id", "Description");
+        input->SetAttribute("onmousedown", "insertSelectedText(event)");
+        input->SetAttribute("type", "text");
+        input->SetAttribute("class", "form mono");
+        input->SetAttribute("placeholder", "...");
+        input->SetAttribute("value", item->Description);
+        
+        cell = row2->AddTableCell();
+        cell->SetAttribute("class", "form");
+        cell->SetAttribute("style", "width:25%");
+        label = cell->AddLabel("Account (text*)");
+        label->SetAttribute("class", "marb-5");
+        input = label->AddInput();
+        input->SetAttribute("name", "Account");
+        input->SetAttribute("id", "Account");
+        input->SetAttribute("onmousedown", "insertSelectedText(event)");
+        input->SetAttribute("type", "text");
+        input->SetAttribute("class", "form mono");
+        input->SetAttribute("placeholder", "...");
+        input->SetAttribute("value", item->Account);
+
+        row2 = table->AddTableRow();
+        cell = row2->AddTableCell();
+        cell->SetAttribute("class", "form");
+        cell->SetAttribute("style", "width:75%");
+        label = cell->AddLabel("Type (text*)");
+        label->SetAttribute("class", "marb-20");
+        input = label->AddInput();
+        input->SetAttribute("name", "Type");
+        input->SetAttribute("id", "Type");
+        input->SetAttribute("onmousedown", "insertSelectedText(event)");
+        input->SetAttribute("type", "text");
+        input->SetAttribute("class", "form mono");
+        input->SetAttribute("placeholder", "...");
+        input->SetAttribute("value", item->Type);
+
+        cell = row2->AddTableCell();
+        cell->SetAttribute("class", "form");
+        cell->SetAttribute("style", "width:25%");
+        label = cell->AddLabel("Value (number)");
+        label->SetAttribute("class", "marb-20");
+        input = label->AddInput();
+        input->SetAttribute("name", "Value");
+        input->SetAttribute("id", "Value");
+        input->SetAttribute("type", "text");
+        input->SetAttribute("class", "form mono");
+        input->SetAttribute("placeholder", "0.00");
+        input->SetAttribute("value", item->Value.ToString());
+        
+        form->AddDivision("*Right click to delete unselected text");
+    }
+
     table = main->AddTable();
     table->SetAttribute("class", "form mar-20");
     row = table->AddTableRow();
@@ -1069,9 +1076,10 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         cell->SetAttribute("class", "form");
         cell->AddHeading(3, "Item(s):");
     }
+    cell->SetAttribute("style", "width: 50%;");
 
-    cell->SetAttribute("style", "width: 100%;");
     cell = row->AddTableCell();
+    cell->SetAttribute("style", "width: 50%;");
     cell->SetAttribute("class", "form");
     input = cell->AddInput();
     input->SetAttribute("id", "filter");

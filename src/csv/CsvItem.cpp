@@ -16,10 +16,10 @@ void CsvItem::Match(const std::shared_ptr<CsvItem>& rule)
 {
     bool match = rule->Date.GetYear() < 0 || Date.ToString() == rule->Date.ToString();
     match = match && (rule->Value.ToString().empty() || Value.ToString() == rule->Value.ToString());
-    match = match && Type.find(rule->Type) != std::string::npos;
-    match = match && PayerPayee.find(rule->PayerPayee) != std::string::npos;
-    match = match && Account.find(rule->Account) != std::string::npos;
-    match = match && Description.find(rule->Description) != std::string::npos;
+    match = match && Utils::ToLower(Type).find(rule->Type) != std::string::npos;
+    match = match && Utils::ToLower(PayerPayee).find(rule->PayerPayee) != std::string::npos;
+    match = match && Utils::ToLower(Account).find(rule->Account) != std::string::npos;
+    match = match && Utils::ToLower(Description).find(rule->Description) != std::string::npos;
 
     if (match)
     {
