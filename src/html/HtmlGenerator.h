@@ -38,17 +38,17 @@ class HtmlGenerator
     static constexpr const char* SUPPORT_HTML = "support.html";
     static constexpr const char* EDIT_HTML = "edit.html";
     static constexpr const char* SETTINGS_HTML = "settings.html";
-    static constexpr const char* EXIT_CMD = "exit";
-    static constexpr const char* DELETE_CMD = "delete";
-    static constexpr const char* NEW_CMD = "new";
-    static constexpr const char* BACKUP_CMD = "backup";
-    static constexpr const char* RESTORE_CMD = "restore";
-    static constexpr const char* SAVE_CMD = "save";
-    static constexpr const char* SAVE_RULE_CMD = "save-rule";
-    static constexpr const char* RELOAD_CMD = "reload";
-    static constexpr const char* COPY_SAMPLES_CMD = "copy-samples";
-    static constexpr const char* OPEN_CMD = "open";
-    static constexpr const char* INPUT_CMD = "input";
+    static constexpr const char* EXIT_CMD = "exit.cmd";
+    static constexpr const char* DELETE_CMD = "delete.cmd";
+    static constexpr const char* NEW_CMD = "new.cmd";
+    static constexpr const char* BACKUP_CMD = "backup.cmd";
+    static constexpr const char* RESTORE_CMD = "restore.cmd";
+    static constexpr const char* SAVE_CMD = "save.cmd";
+    static constexpr const char* SAVE_RULE_CMD = "save-rule.cmd";
+    static constexpr const char* RELOAD_CMD = "reload.cmd";
+    static constexpr const char* COPY_SAMPLES_CMD = "copy-samples.cmd";
+    static constexpr const char* OPEN_CMD = "open.cmd";
+    static constexpr const char* INPUT_CMD = "input.cmd";
 
     static std::string GetBackupPage(const CsvDatabase& database, const fs::path& ruleSetFile);
     static std::string GetHelpPage(const CsvDatabase& database);
