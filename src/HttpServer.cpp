@@ -225,7 +225,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     // all.html
     if (req.path == std::string("/") + HtmlGenerator::ALL_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "All items", _database.Data),
+        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "All items", _database.Data, 0),
                    CONTENT_TYPE_HTML);
         return;
     }
@@ -233,7 +233,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     // assigned.html
     if (req.path == std::string("/") + HtmlGenerator::ASSIGNED_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "Assigned items", _database.Assigned),
+        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "Assigned items", _database.Assigned, 0),
                    CONTENT_TYPE_HTML);
         return;
     }
@@ -241,7 +241,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     // unassigned.html
     if (req.path == std::string("/") + HtmlGenerator::UNASSIGNED_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "Unassigned items", _database.Unassigned),
+        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "Unassigned items", _database.Unassigned, 0),
                    CONTENT_TYPE_HTML);
         return;
     }
@@ -256,14 +256,15 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
     // rules.html
     if (req.path == std::string("/") + HtmlGenerator::RULES_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "Rules", _database.Rules), CONTENT_TYPE_HTML);
+        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "Rules", _database.Rules, 0),
+                   CONTENT_TYPE_HTML);
         return;
     }
 
     // issues.html
     if (req.path == std::string("/") + HtmlGenerator::ISSUES_HTML)
     {
-        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "Issues", _database.Issues),
+        SetContent(req, res, HtmlGenerator::GetTablePage(_database, "Issues", _database.Issues, 0),
                    CONTENT_TYPE_HTML);
         return;
     }
@@ -332,6 +333,12 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
             monthStr = "0";
         }
         const int month = std::stoi(monthStr);
+        std::string filterStr = GetParam(req.params, "filter", HtmlGenerator::ITEMS_HTML);
+        if (filterStr.empty())
+        {
+            filterStr = "0";
+        }
+        const int filter = std::stoi(filterStr);
         const std::string cat = GetParam(req.params, "category", HtmlGenerator::ITEMS_HTML);
 
         CsvTable data{};
@@ -340,7 +347,11 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
             if (year == item->Date.GetYear() && (month == 0 || month == item->Date.GetMonth())
                 && (cat == "" || cat == item->Category))
             {
-                data.push_back(item);
+                if (filter == 0 || (filter < 0 && item->Value.ToDouble() < 0)
+                    || (filter > 0 && item->Value.ToDouble() >= 0))
+                {
+                    data.push_back(item);
+                }
             }
         }
 
@@ -349,7 +360,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
         {
             name = fmt::format("{}: {}", year, cat);
         }
-        SetContent(req, res, HtmlGenerator::GetTablePage(_database, name, data), CONTENT_TYPE_HTML);
+        SetContent(req, res, HtmlGenerator::GetTablePage(_database, name, data, filter), CONTENT_TYPE_HTML);
         return;
     }
 

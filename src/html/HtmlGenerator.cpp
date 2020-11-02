@@ -31,10 +31,12 @@ HtmlElement* HtmlGenerator::AddButton(HtmlElement* tableRow, const std::string& 
     return cell;
 }
 
-void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& database)
+HtmlElement* HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& database)
 {
-    auto div = body->AddDivision();
-    div->SetAttribute("class", "box nav");
+    auto box = body->AddDivision();
+    box->SetAttribute("class", "nav");
+    auto div = box->AddDivision();
+    div->SetAttribute("class", "box");
 
     auto table = div->AddTable();
     table->SetAttribute("class", "nav");
@@ -102,6 +104,8 @@ void HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvDatabase& da
     reload->SetAttribute("onclick", fmt::format("reload('{}')", RELOAD_CMD));
     body->AddScript("reload.js");
     AddButton(row, EXIT_CMD, "Stop hokee", "48-sign-exit.png", "Exit");
+
+    return box;
 }
 
 HtmlElement* HtmlGenerator::AddHtmlHead(HtmlElement* html)
@@ -222,8 +226,8 @@ void AddSummaryRow(HtmlElement* table, int rowCount, int month, int year,
 
         cell = row->AddTableCell();
         cell->SetAttribute("class", cellStyle);
-        cell->SetAttribute("onclick", fmt::format("window.location='{}?year={}&amp;month={}&amp;category={}';",
-                                                  HtmlGenerator::ITEMS_HTML, year, month, cat));
+        cell->SetAttribute("onclick", fmt::format("window.location='{}?year={}&amp;month={}&amp;category={}&amp;filter={}';",
+                                                  HtmlGenerator::ITEMS_HTML, year, month, cat, filter));
         cell->AddText(fmt::format("{:.2f}&euro;", sum));
     }
 }
@@ -235,36 +239,42 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
 
     auto body = html.AddBody();
     body->AddScript("filterSummary.js");
-    AddNavigationHeader(body, database);
+    auto box = AddNavigationHeader(body, database);
 
-    auto main = body->AddMain();
-    main->SetAttribute("class", "pad-100");
-
-    auto table = main->AddTable();
-    table->SetAttribute("class", "form");
+    auto table = box->AddTable();
+    table->SetAttribute("class", "form nav");
     auto row = table->AddTableRow();
     row->SetAttribute("class", "form");
     auto cell = row->AddTableCell();
     cell->SetAttribute("class", "form fill");
-    cell->AddHeading(2, "Summary");
+    cell->AddDivision("&nbsp;");
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
 
     cell = row->AddTableCell();
-    cell->AddImage("48-shield-ok.png", "Show Profit", 40);
     cell->SetAttribute("class", "form link");
-    cell->SetAttribute("onclick", "filterSummary('summary', 'profit')");
+    auto div = cell->AddDivision();
+    div->SetAttribute("class", "box");
+    div->AddImage("48-shield-ok.png", "Show Profit", 40);
+    div->SetAttribute("onclick", "filterSummary('summary', 'profit')");
 
     cell = row->AddTableCell();
-    cell->AddImage("48-shield.png", "Show Sum", 40);
     cell->SetAttribute("class", "form link");
-    cell->SetAttribute("onclick", "filterSummary('summary', 'sum')");
+    div = cell->AddDivision();
+    div->SetAttribute("class", "box");
+    div->AddImage("48-shield.png", "Show Sum", 40);
+    div->SetAttribute("onclick", "filterSummary('summary', 'sum')");
 
     cell = row->AddTableCell();
-    cell->AddImage("48-shield-error.png", "Show Expenses", 40);
     cell->SetAttribute("class", "form link");
-    cell->SetAttribute("onclick", "filterSummary('summary', 'expenses')");
+    div = cell->AddDivision();
+    div->SetAttribute("class", "box");
+    div->AddImage("48-shield-error.png", "Show Expenses", 40);
+    div->SetAttribute("onclick", "filterSummary('summary', 'expenses')");
 
+    auto main = body->AddMain();
+    main->SetAttribute("class", "pad-100");
+    main->AddHeading(2, "Summary");
 
     // Determine (used) Categories
     std::vector<std::string> categories = database.GetCategories();
@@ -313,9 +323,18 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
     return html.ToString();
 }
 
-std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, const std::string& title,
-                                        const CsvTable& data)
+std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, std::string title,
+                                        const CsvTable& data, int filter)
 {
+    if (filter < 0)
+    {
+        title += " (Expenses)";
+    }
+    else if (filter > 0)
+    {
+        title += " (Profit)";
+    }
+
     HtmlElement html;
     AddHtmlHead(&html);
 
