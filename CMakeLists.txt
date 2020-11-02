@@ -143,6 +143,7 @@ configure_file(third_party/small-n-flat/png/48/safe.png ${PROJECT_BINARY_DIR}/ht
 configure_file(third_party/small-n-flat/png/48/shield.png ${PROJECT_BINARY_DIR}/html/images/48-shield.png COPYONLY)
 configure_file(third_party/small-n-flat/png/48/shield-ok.png ${PROJECT_BINARY_DIR}/html/images/48-shield-ok.png COPYONLY)
 configure_file(third_party/small-n-flat/png/48/shield-error.png ${PROJECT_BINARY_DIR}/html/images/48-shield-error.png COPYONLY)
+configure_file(third_party/small-n-flat/png/48/shield-warning.png ${PROJECT_BINARY_DIR}/html/images/48-shield-warning.png COPYONLY)
 configure_file(third_party/small-n-flat/png/96/box.png ${PROJECT_BINARY_DIR}/html/images/96-box.png COPYONLY)
 configure_file(third_party/small-n-flat/png/96/sign-ban.png ${PROJECT_BINARY_DIR}/html/images/96-sign-ban.png COPYONLY)
 
