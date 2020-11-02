@@ -45,7 +45,6 @@ HtmlElement* HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvData
     AddButton(row, INDEX_HTML, "Show Summary", "48-file-excel.png", "Summary &nbsp;");
     AddButton(row, ALL_HTML, "Show All Items", "48-search.png", fmt::format("Items ({})", database.Data.size()));
     AddButton(row, RULES_HTML, "Show Rules", "48-file-exe.png", fmt::format("Rules ({})", database.Rules.size()));
-    AddButton(row, BACKUP_HTML, "Backup Rules", "48-safe.png", "Backup &nbsp;");
 
     auto cell = row->AddTableCell();
     cell->SetAttribute("class", std::string("nav"));
@@ -54,34 +53,34 @@ HtmlElement* HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvData
 
     if (database.Unassigned.size() == 0 && database.Issues.size() == 0)
     {
-        AddButton(row, ASSIGNED_HTML, "Show Assigned Items", "48-sign-check.png",
+        AddButton(row, ASSIGNED_HTML, "Show Assigned Items", "48-shield-ok.png",
                   fmt::format("Assigned ({})", database.Assigned.size()));
     }
     else
     {
-        AddButton(row, ASSIGNED_HTML, "Show Assigned Items", "48-sign-check.png",
+        AddButton(row, ASSIGNED_HTML, "Show Assigned Items", "48-shield-ok.png",
                   fmt::format("Assigned ({})", database.Assigned.size()), "gray");
     }
 
     if (database.Unassigned.size() == 0)
     {
-        AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-warning.png",
+        AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-shield-warning.png",
                   fmt::format("Warnings ({})", database.Unassigned.size()), "gray");
     }
     else
     {
-        AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-sign-warning.png",
+        AddButton(row, UNASSIGNED_HTML, "Show Unassigned Items", "48-shield-warning.png",
                   fmt::format("Warnings ({})", database.Unassigned.size()));
     }
 
     if (database.Issues.size() == 0)
     {
-        AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-error.png",
+        AddButton(row, ISSUES_HTML, "Show Issues", "48-shield-error.png",
                   fmt::format("Errors ({})", database.Issues.size()), "gray");
     }
     else
     {
-        AddButton(row, ISSUES_HTML, "Show Issues", "48-sign-error.png",
+        AddButton(row, ISSUES_HTML, "Show Issues", "48-shield-error.png",
                   fmt::format("Errors ({})", database.Issues.size()));
     }
 
@@ -98,6 +97,7 @@ HtmlElement* HtmlGenerator::AddNavigationHeader(HtmlElement* body, const CsvData
 
     AddButton(row, SETTINGS_HTML, "Open Settings File", "48-cogs.png", "Settings");
     AddButton(row, SUPPORT_HTML, "Generate Support Mail", "48-profile.png", "Support");
+    AddButton(row, BACKUP_HTML, "Backup Rules", "48-safe.png", "Backup");
     AddButton(row, INPUT_CMD, "Open Input Folder", "48-folder.png", "Input");
     AddButton(row, HELP_HTML, "Open Online Help", "48-sign-question.png", "Help");
     auto reload = AddButton(row, "", "Reload CSV Data", "48-sign-sync.png", "Reload");
@@ -195,7 +195,6 @@ void AddSummaryRow(HtmlElement* table, int rowCount, int month, int year,
         name = fmt::format("{}", year);
     }
 
-
     auto cell = row->AddTableCell(name);
     cell->SetAttribute("class", "item");
     for (auto& cat : categories)
@@ -226,8 +225,9 @@ void AddSummaryRow(HtmlElement* table, int rowCount, int month, int year,
 
         cell = row->AddTableCell();
         cell->SetAttribute("class", cellStyle);
-        cell->SetAttribute("onclick", fmt::format("window.location='{}?year={}&amp;month={}&amp;category={}&amp;filter={}';",
-                                                  HtmlGenerator::ITEMS_HTML, year, month, cat, filter));
+        cell->SetAttribute("onclick",
+                           fmt::format("window.location='{}?year={}&amp;month={}&amp;category={}&amp;filter={}';",
+                                       HtmlGenerator::ITEMS_HTML, year, month, cat, filter));
         cell->AddText(fmt::format("{:.2f}&euro;", sum));
     }
 }
@@ -242,7 +242,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
     auto box = AddNavigationHeader(body, database);
 
     auto table = box->AddTable();
-    table->SetAttribute("class", "form nav");
+    table->SetAttribute("class", "form");
     auto row = table->AddTableRow();
     row->SetAttribute("class", "form");
     auto cell = row->AddTableCell();
@@ -255,21 +255,21 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
     cell->SetAttribute("class", "form link");
     auto div = cell->AddDivision();
     div->SetAttribute("class", "box");
-    div->AddImage("48-shield-ok.png", "Show Profit", 40);
+    div->AddImage("48-sign-add.png", "Show Profit", 40);
     div->SetAttribute("onclick", "filterSummary('summary', 'profit')");
 
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form link");
     div = cell->AddDivision();
     div->SetAttribute("class", "box");
-    div->AddImage("48-shield.png", "Show Sum", 40);
+    div->AddImage("48-sign-b.png", "Show Sum", 40);
     div->SetAttribute("onclick", "filterSummary('summary', 'sum')");
 
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form link");
     div = cell->AddDivision();
     div->SetAttribute("class", "box");
-    div->AddImage("48-shield-error.png", "Show Expenses", 40);
+    div->AddImage("48-sign-delete.png", "Show Expenses", 40);
     div->SetAttribute("onclick", "filterSummary('summary', 'expenses')");
 
     auto main = body->AddMain();
@@ -323,16 +323,16 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
     return html.ToString();
 }
 
-std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, std::string title,
-                                        const CsvTable& data, int filter)
+std::string HtmlGenerator::GetTablePage(const CsvDatabase& database, std::string title, const CsvTable& data,
+                                        int filter)
 {
     if (filter < 0)
     {
-        title += " (Expenses)";
+        title += " (-)";
     }
     else if (filter > 0)
     {
-        title += " (Profit)";
+        title += " (+)";
     }
 
     HtmlElement html;
@@ -518,34 +518,37 @@ std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs:
     AddHtmlHead(&html);
 
     auto body = html.AddBody();
-    AddNavigationHeader(body, database);
+    auto box = AddNavigationHeader(body, database);
 
-    auto main = body->AddMain();
-    main->SetAttribute("class", "pad-100");
-
-    auto form = main->AddForm();
-    form->SetAttribute("action", "mailto:schedler@paderborn.com");
-    form->SetAttribute("method", "post");
-    form->SetAttribute("enctype", "text/plain");
-    form->SetAttribute("id", "form");
-    auto table = form->AddTable();
+    auto table = box->AddTable();
     table->SetAttribute("class", "form");
     auto row = table->AddTableRow();
     row->SetAttribute("class", "form");
     auto cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
-    cell->AddHeading(2, "Generate&nbsp;Support&nbsp;Mail");
+    cell->AddDivision("&nbsp;");
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form fill");
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
 
     cell = row->AddTableCell();
-    cell->AddImage("48-envelope-letter.png", "Submit", 40);
     cell->SetAttribute("class", "form link");
-    cell->SetAttribute("onclick", "submitMail('form')");
+    auto div = cell->AddDivision();
+    div->SetAttribute("class", "box");
+    div->AddImage("48-envelope-letter.png", "Submit", 40);
+    div->SetAttribute("onclick", "submitMail('form')");
     body->AddScript("submitMail.js");
 
+    auto main = body->AddMain();
+    main->SetAttribute("class", "pad-100");
+    main->AddHeading(2, "Generate&nbsp;Support&nbsp;Mail");
+
+    auto form = main->AddForm();
+    form->SetAttribute("action", "mailto:schedler@paderborn.com");
+    form->SetAttribute("method", "post");
+    form->SetAttribute("enctype", "text/plain");
+    form->SetAttribute("id", "form");
     std::string mail = Utils::GenerateSupportMail(ruleSetFile, inputDir);
     auto label = form->AddLabel("Fill the section below and send it to schedler@paderborn.com");
     label->SetAttribute("class", "mar-20");
@@ -645,32 +648,35 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     {
         body->SetAttribute("class", "blink-success");
     }
-    AddNavigationHeader(body, database);
+    auto box = AddNavigationHeader(body, database);
+
+    auto table = box->AddTable();
+    table->SetAttribute("class", "form");
+    auto row = table->AddTableRow();
+    row->SetAttribute("class", "form");
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("class", "form fill");
+    cell->AddDivision("&nbsp;");
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form link");
+    auto div = cell->AddDivision();
+    div->SetAttribute("class", "box");
+    div->AddImage("48-floppy.png", "Save Settings", 40);
+    div->SetAttribute("onclick", "submitSettings('form')");
+    body->AddScript("submitSettings.js");
 
     auto main = body->AddMain();
     main->SetAttribute("class", "pad-100");
+    main->AddHeading(2, "Settings");
 
     auto form = main->AddForm();
     form->SetAttribute("action", HtmlGenerator::SETTINGS_HTML);
     form->SetAttribute("method", "get");
     form->SetAttribute("enctype", "text/plain");
     form->SetAttribute("id", "form");
-
-    auto table = form->AddTable();
-    table->SetAttribute("class", "form");
-    auto row = table->AddTableRow();
-    row->SetAttribute("class", "form");
-    auto cell = row->AddTableCell();
-    cell->SetAttribute("class", "form fill");
-    cell->AddHeading(2, "Settings");
-    cell = row->AddTableCell();
-    cell->SetAttribute("class", "form");
-
-    cell = row->AddTableCell();
-    cell->AddImage("48-floppy.png", "Save Settings", 40);
-    cell->SetAttribute("class", "form link");
-    cell->SetAttribute("onclick", "submitSettings('form')");
-    body->AddScript("submitSettings.js");
 
     table = form->AddTable();
     table->SetAttribute("class", "form");
@@ -824,92 +830,110 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
     {
         body->SetAttribute("class", "blink-failed");
     }
-    AddNavigationHeader(body, database);
+    auto box = AddNavigationHeader(body, database);
 
-    auto main = body->AddMain();
-    main->SetAttribute("class", "pad-100");
-
-    auto table = main->AddTable();
+    auto table = box->AddTable();
     table->SetAttribute("class", "form");
     auto row = table->AddTableRow();
     row->SetAttribute("class", "form");
 
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("class", "form fill");
+
     if (!isItem)
     {
-        auto cell = row->AddTableCell();
+        cell = row->AddTableCell();
+        cell->SetAttribute("class", "form link");
+        auto div = cell->AddDivision();
+        div->SetAttribute("class", "box");
+        div->AddImage("48-floppy.png", "Save Rules", 40);
+        div->SetAttribute("onclick", "submitRule('form')");
+        body->AddScript("submitRule.js");
+    }
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form link");
+    auto div = cell->AddDivision();
+    div->SetAttribute("class", "box");
+    int prevId = database.Unassigned.PrevItem(id);
+    if (prevId >= 0)
+    {
+        std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, prevId);
+        div->AddHyperlinkImage(link, "Previous Warning", "48-sign-left-y.png", 38);
+    }
+    else
+    {
+        div->AddImage("48-sign-left-g.png", "No Warnings", 38);
+    }
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form link");
+    div = cell->AddDivision();
+    div->SetAttribute("class", "box");
+    int nextId = database.Unassigned.NextItem(id);
+    if (nextId >= 0)
+    {
+        std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
+        div->AddHyperlinkImage(link, "Next Warning", "48-sign-right-y.png", 38);
+    }
+    else
+    {
+        div->AddImage("48-sign-right-g.png", "No Warnings", 38);
+    }
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form link");
+    div = cell->AddDivision();
+    div->SetAttribute("class", "box");
+    prevId = database.Issues.PrevItem(id);
+    if (prevId >= 0)
+    {
+        std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, prevId);
+        div->AddHyperlinkImage(link, "Previous Error", "48-sign-left-r.png", 38);
+    }
+    else
+    {
+        div->AddImage("48-sign-left-g.png", "No Errors", 38);
+    }
+
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form link");
+    div = cell->AddDivision();
+    div->SetAttribute("class", "box");
+    nextId = database.Issues.NextItem(id);
+    if (nextId >= 0)
+    {
+        std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
+        div->AddHyperlinkImage(link, "Next Error", "48-sign-right-r.png", 38);
+    }
+    else
+    {
+        div->AddImage("48-sign-right-g.png", "No Errors", 38);
+    }
+
+    auto main = body->AddMain();
+    main->SetAttribute("class", "pad-100");
+
+    table = main->AddTable();
+    table->SetAttribute("class", "form");
+    row = table->AddTableRow();
+    row->SetAttribute("class", "form");
+
+    if (!isItem)
+    {
+        cell = row->AddTableCell();
         cell->AddImage("48-sign-delete.png", "Delete this rule", 38);
         cell->SetAttribute("class", "form link");
         cell->SetAttribute("onclick", fmt::format("deleteRule('{}', '{}')", DELETE_CMD, id));
         body->AddScript("deleteRule.js");
     }
 
-    auto cell = row->AddTableCell();
+    cell = row->AddTableCell();
     cell->SetAttribute("class", "form");
     cell->AddHeading(2, title);
 
     cell = row->AddTableCell();
     cell->SetAttribute("class", "form fill");
-
-    if (!isItem)
-    {
-        cell = row->AddTableCell();
-        cell->AddImage("48-floppy.png", "Save Rules", 40);
-        cell->SetAttribute("class", "form link");
-        cell->SetAttribute("onclick", "submitRule('form')");
-        body->AddScript("submitRule.js");
-    }
-
-    cell = row->AddTableCell();
-    cell->SetAttribute("class", "form");
-    int prevId = database.Unassigned.PrevItem(id);
-    if (prevId >= 0)
-    {
-        std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, prevId);
-        cell->AddHyperlinkImage(link, "Previous Warning", "48-sign-left-y.png", 38);
-    }
-    else
-    {
-        cell->AddImage("48-sign-left-g.png", "No Warnings", 38);
-    }
-
-    cell = row->AddTableCell();
-    cell->SetAttribute("class", "form");
-    int nextId = database.Unassigned.NextItem(id);
-    if (nextId >= 0)
-    {
-        std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
-        cell->AddHyperlinkImage(link, "Next Warning", "48-sign-right-y.png", 38);
-    }
-    else
-    {
-        cell->AddImage("48-sign-right-g.png", "No Warnings", 38);
-    }
-
-    cell = row->AddTableCell();
-    cell->SetAttribute("class", "form");
-    prevId = database.Issues.PrevItem(id);
-    if (prevId >= 0)
-    {
-        std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, prevId);
-        cell->AddHyperlinkImage(link, "Previous Error", "48-sign-left-r.png", 38);
-    }
-    else
-    {
-        cell->AddImage("48-sign-left-g.png", "No Errors", 38);
-    }
-
-    cell = row->AddTableCell();
-    cell->SetAttribute("class", "form");
-    nextId = database.Issues.NextItem(id);
-    if (nextId >= 0)
-    {
-        std::string link = fmt::format("{}?id={}", HtmlGenerator::ITEM_HTML, nextId);
-        cell->AddHyperlinkImage(link, "Next Error", "48-sign-right-r.png", 38);
-    }
-    else
-    {
-        cell->AddImage("48-sign-right-g.png", "No Errors", 38);
-    }
 
     table = main->AddTable();
     table->SetAttribute("class", "form");
@@ -986,7 +1010,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
     input->SetAttribute("type", "hidden");
     input->SetAttribute("value", item->Date.GetFormat());
 
-    auto div = form->AddDivision();
+    div = form->AddDivision();
     table = div->AddTable();
 
     if (isItem)
