@@ -174,17 +174,97 @@ void HtmlGenerator::AddSummaryTableHeader(HtmlElement* table, const std::vector<
     }
 }
 
+void AddSummaryRow(HtmlElement* table, int rowCount, int month, int year,
+                   std::map<int, std::map<int, std::map<std::string, CsvTable>>>& sortedTables,
+                   const std::vector<std::string>& categories, int filter, const std::string& title)
+{
+    auto row = table->AddTableRow();
+    row->SetAttribute("title", title);
+    if (title != "sum")
+    {
+        row->SetAttribute("style", "display: none;");
+    }
+    std::string name = fmt::format("{}.{}", month, year);
+    if (month == 0)
+    {
+        row->SetAttribute("class", "year");
+        name = fmt::format("{}", year);
+    }
+
+
+    auto cell = row->AddTableCell(name);
+    cell->SetAttribute("class", "item");
+    for (auto& cat : categories)
+    {
+        double sum = 0;
+        for (auto& item : sortedTables[year][month][cat])
+        {
+            if ((!item->Category.empty() && item->Category.back() == '!') && cat != item->Category)
+            {
+                continue;
+            }
+            const double value = item->Value.ToDouble();
+            if ((filter == 0) || (filter >= 0 && value >= 0) || (filter < 0 && value < 0))
+            {
+                sum += value;
+            }
+        }
+
+        std::string cellStyle = "link";
+        if (sum > 0)
+        {
+            cellStyle += fmt::format(" pos pos-bg{}", rowCount % 2);
+        }
+        if (sum < 0)
+        {
+            cellStyle += fmt::format(" neg neg-bg{}", rowCount % 2);
+        }
+
+        cell = row->AddTableCell();
+        cell->SetAttribute("class", cellStyle);
+        cell->SetAttribute("onclick", fmt::format("window.location='{}?year={}&amp;month={}&amp;category={}';",
+                                                  HtmlGenerator::ITEMS_HTML, year, month, cat));
+        cell->AddText(fmt::format("{:.2f}&euro;", sum));
+    }
+}
+
 std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
 {
     HtmlElement html;
     AddHtmlHead(&html);
 
     auto body = html.AddBody();
+    body->AddScript("filterSummary.js");
     AddNavigationHeader(body, database);
 
     auto main = body->AddMain();
     main->SetAttribute("class", "pad-100");
-    main->AddHeading(2, "Summary");
+
+    auto table = main->AddTable();
+    table->SetAttribute("class", "form");
+    auto row = table->AddTableRow();
+    row->SetAttribute("class", "form");
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("class", "form fill");
+    cell->AddHeading(2, "Summary");
+    cell = row->AddTableCell();
+    cell->SetAttribute("class", "form");
+
+    cell = row->AddTableCell();
+    cell->AddImage("48-shield-ok.png", "Show Profit", 40);
+    cell->SetAttribute("class", "form link");
+    cell->SetAttribute("onclick", "filterSummary('summary', 'profit')");
+
+    cell = row->AddTableCell();
+    cell->AddImage("48-shield.png", "Show Sum", 40);
+    cell->SetAttribute("class", "form link");
+    cell->SetAttribute("onclick", "filterSummary('summary', 'sum')");
+
+    cell = row->AddTableCell();
+    cell->AddImage("48-shield-error.png", "Show Expenses", 40);
+    cell->SetAttribute("class", "form link");
+    cell->SetAttribute("onclick", "filterSummary('summary', 'expenses')");
+
 
     // Determine (used) Categories
     std::vector<std::string> categories = database.GetCategories();
@@ -213,7 +293,8 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
         }
     }
 
-    auto table = main->AddTable();
+    table = main->AddTable();
+    table->SetAttribute("id", "summary");
     table->SetAttribute("class", "item mar-20");
 
     int rowCount = 0;
@@ -224,45 +305,9 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
         for (int month = 0; month <= 12; ++month)
         {
             rowCount++;
-            auto row = table->AddTableRow();
-            std::string name = fmt::format("{}.{}", month, year);
-            if (month == 0)
-            {
-                row->SetAttribute("class", "year");
-                name = fmt::format("{}", year);
-            }
-
-            auto cell = row->AddTableCell(name);
-            cell->SetAttribute("class", "item");
-            for (auto& cat : categories)
-            {
-                double sum = 0;
-                for (auto& item : sortedTables[year][month][cat])
-                {
-                    if ((!item->Category.empty() && item->Category.back() == '!') && cat != item->Category)
-                    {
-                        continue;
-                    }
-                    sum += item->Value.ToDouble();
-                }
-
-                std::string cellStyle = "link";
-                if (sum > 0)
-                {
-                    cellStyle += fmt::format(" pos pos-bg{}", rowCount % 2);
-                }
-                if (sum < 0)
-                {
-                    cellStyle += fmt::format(" neg neg-bg{}", rowCount % 2);
-                }
-
-                cell = row->AddTableCell();
-                cell->SetAttribute("class", cellStyle);
-                cell->SetAttribute("onclick",
-                                   fmt::format("window.location='{}?year={}&amp;month={}&amp;category={}';",
-                                               ITEMS_HTML, year, month, cat));
-                cell->AddText(fmt::format("{:.2f}&euro;", sum));
-            }
+            AddSummaryRow(table, rowCount, month, year, sortedTables, categories, 0, "sum");
+            AddSummaryRow(table, rowCount, month, year, sortedTables, categories, +1, "profit");
+            AddSummaryRow(table, rowCount, month, year, sortedTables, categories, -1, "expenses");
         }
     }
     return html.ToString();
@@ -877,7 +922,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
 
     if (!item->Issues.empty() || item->References.empty())
     {
-        //main->AddHeading(3, "Issues:");
+        // main->AddHeading(3, "Issues:");
         table = main->AddTable();
         table->SetAttribute("class", "err mar-20");
 
@@ -979,7 +1024,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->PayerPayee);
-        
+
         cell = row2->AddTableCell();
         cell->SetAttribute("class", "form");
         cell->SetAttribute("style", "width:25%");
@@ -1007,7 +1052,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
         input->SetAttribute("value", item->Description);
-        
+
         cell = row2->AddTableCell();
         cell->SetAttribute("class", "form");
         cell->SetAttribute("style", "width:25%");
@@ -1049,7 +1094,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "0.00");
         input->SetAttribute("value", item->Value.ToString());
-        
+
         form->AddDivision("*Right click to delete unselected text");
     }
 
