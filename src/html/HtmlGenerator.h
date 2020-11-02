@@ -11,7 +11,7 @@ namespace hokee
 class HtmlGenerator
 {
     static HtmlElement* AddHtmlHead(HtmlElement* html);
-    static void AddNavigationHeader(HtmlElement* body, const CsvDatabase& database);
+    static HtmlElement* AddNavigationHeader(HtmlElement* body, const CsvDatabase& database);
     static void AddSummaryTableHeader(HtmlElement* table, const std::vector<std::string>& categories);
     static void AddItemTableHeader(HtmlElement* table);
     static void AddItemTableRow(HtmlElement* table, CsvItem* row);
@@ -60,7 +60,7 @@ class HtmlGenerator
     static std::string GetItemPage(const CsvDatabase& database, int id, int flag);
     static std::string GetEditPage(const CsvDatabase& database, const fs::path& file, bool saved);
     static std::string GetSettingsPage(const CsvDatabase& database, const fs::path& file, bool saved);
-    static std::string GetTablePage(const CsvDatabase& database, const std::string& title, const CsvTable& data);
+    static std::string GetTablePage(const CsvDatabase& database, std::string title, const CsvTable& data, int filter);
 
     static std::string GetEmptyInputPage();
 
