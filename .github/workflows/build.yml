@@ -30,7 +30,7 @@ jobs:
       - name: Run tests
         run: |
           cd build
-          hokee-test
+          ctest
       - name: Run CPack
         if: ${{ matrix.config == 'Release' }}
         run: |

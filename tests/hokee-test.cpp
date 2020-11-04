@@ -61,7 +61,7 @@ bool FormatTest()
     }
 
     // Check results
-    const int64_t expectedHash = -198114973815180800;
+    const int64_t expectedHash = -5141767414987726848;
     if (hash != expectedHash)
     {
         Utils::PrintError(fmt::format("Computed hash {} does not match expeted hash {} !", hash, expectedHash));
@@ -73,14 +73,14 @@ bool FormatTest()
         Utils::PrintError(fmt::format("Computed sum {} does not match expeted sum {} !", sum, expectedSum));
         success = false;
     }
-    const int64_t expectedAssignedSize = 56;
+    const int64_t expectedAssignedSize = 57;
     if (database->Assigned.size() != expectedAssignedSize)
     {
         Utils::PrintError(fmt::format("Number of assigned items {} does not match expeted count {} !",
                                       database->Assigned.size(), expectedAssignedSize));
         success = false;
     }
-    const int64_t expectedUnassignedSize = 5;
+    const int64_t expectedUnassignedSize = 4;
     if (database->Unassigned.size() != expectedUnassignedSize)
     {
         Utils::PrintError(fmt::format("Number of unassigned items {} does not match expeted count {} !",
@@ -191,7 +191,7 @@ bool RuleTest()
     }
 
     // Check results
-    const int64_t expectedHash = -198114973815180800;
+    const int64_t expectedHash = -5141767414987726848;
     if (hash != expectedHash)
     {
         Utils::PrintError(fmt::format("Computed hash {} does not match expeted hash {} !", hash, expectedHash));
@@ -203,14 +203,14 @@ bool RuleTest()
         Utils::PrintError(fmt::format("Computed sum {} does not match expeted sum {} !", sum, expectedSum));
         success = false;
     }
-    const int64_t expectedAssignedSize = 56;
+    const int64_t expectedAssignedSize = 57;
     if (database->Assigned.size() != expectedAssignedSize)
     {
         Utils::PrintError(fmt::format("Number of assigned items {} does not match expeted count {} !",
                                       database->Assigned.size(), expectedAssignedSize));
         success = false;
     }
-    const int64_t expectedUnassignedSize = 5;
+    const int64_t expectedUnassignedSize = 4;
     if (database->Unassigned.size() != expectedUnassignedSize)
     {
         Utils::PrintError(fmt::format("Number of unassigned items {} does not match expeted count {} !",
