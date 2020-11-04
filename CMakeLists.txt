@@ -178,3 +178,7 @@ install(FILES tests/test_data/DEF/Account_123456790_2020.csv DESTINATION ./test_
 install(FILES tests/test_data/DEF/format.ini DESTINATION ./test_data/input2/DEF)
 
 install(FILES tests/test_data/index.html DESTINATION ./test_data/html_test)
+
+# Tests
+enable_testing()
+add_test(hokee-test hokee-test)
