@@ -264,12 +264,12 @@ int main()
     int failed = result - tests * 100;
     if (failed == 0)
     {
-        Utils::PrintInfo(" => ALL TEST PASSED");
+        Utils::PrintInfo(" => ALL TESTS PASSED");
     }
     else
     {
         Utils::PrintError(fmt::format("=> {}/{} TESTS FAILED", failed, tests));
     }
 
-    return result;
+    return failed;
 }
