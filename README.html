@@ -1,15 +1,65 @@
-<h1 id="hokee---automated-housekeeping-book">hokee - Automated HOuseKEEping Book</h1>
-<p>TODO: short description</p>
-<h2 id="exemplary-html-report">Exemplary HTML Report</h2>
-<p><a href="http://stephanschedler.github.io/hokee"><img src="https://repository-images.githubusercontent.com/270410626/7366c480-cb92-11ea-98b1-908f059a0013" alt="Summary Page"></a>
-<strong>(click image to view report)</strong></p>
+<h1 id="hokee---automated-housekeeping-book">hokee - Automated Housekeeping Book</h1>
+<p><code>hokee</code> is a account book software that parses CSV account transaction data to automatically categorize all your income and expenses.</p>
+<p><img src="https://repository-images.githubusercontent.com/270410626/7366c480-cb92-11ea-98b1-908f059a0013" alt="Summary Page"></p>
+<p>The hokee budget book is perfect for everyone who wants to have a summary over income and expenses without time-consuming manual accounting. Simply download CSV account transaction data from you online bank account, create simple rules for unkown items, done.</p>
+<h2 id="online-demo-report">Online Demo Report</h2>
+<p>Try the link below, to view an exemplary report generated for some simple dummy data.</p>
 <blockquote>
-<p>Note that this is a static html report. Dynamic content (such as editing files) does not work!</p>
+<p>Note that this is a <strong>static</strong> demo, i.e. you cannot modify rules or data.</p>
 </blockquote>
-<h2 id="motivation">Motivation</h2>
-<h2 id="how-to-start">How To Start</h2>
+<p><a href="http://stephanschedler.github.io/hokee">Static Online Demo</a></p>
+<h2 id="os-support">OS Support</h2>
+<table>
+<thead>
+<tr>
+<th>Operating System</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows 10</td>
+<td>stable</td>
+</tr>
+<tr>
+<td>Ubuntu 18.04</td>
+<td>unstable (untested)</td>
+</tr>
+<tr>
+<td>MAC</td>
+<td>unstable (untested)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="quick-start">Quick Start</h2>
+<ul>
+<li>Download <a href="https://github.com/StephanSchedler/hokee/releases">latest release</a></li>
+<li>Extract binaries
+<ul>
+<li>Windows:  <a href="https://www.7-zip.org/download.html">7zip</a></li>
+<li>Ubuntu/Mac:  &quot;<code>tar -xf hokee_os.tar</code>&quot;</li>
+</ul>
+</li>
+<li>Start <code>bin/hokee</code>
+<ul>
+<li>Copy sample data</li>
+<li>Try to fix all warnings and errors</li>
+</ul>
+</li>
+</ul>
+<h2 id="how-to-configure-your-own-csv-data">How to configure your own CSV data</h2>
+<ul>
+<li>Download CSV account transaction data from your online bank account and copy CSV file(s) to a new directory in the input folder</li>
+<li>Copy format.ini from sample input directory to the new folder and adjust the content to the format of your downloaded CSV file(s).
+<blockquote>
+<p>This is the hardest part, I know. However, it is not that hard, and you have to do it just once. Note also, that there are some more format samples in hokee's testdata.</p>
+</blockquote>
+</li>
+<li>Delete the sample data in the input folder</li>
+<li>Delete all existing rules</li>
+<li>(Re-)start <code>bin/hokee</code></li>
+</ul>
 <h3 id="normal-mode">Normal Mode</h3>
-<h3 id="interactive-mode">Interactive Mode</h3>
 <h3 id="command-line-switches">Command Line Switches</h3>
 <h3 id="support">Support</h3>
 <h2 id="configure-hokee">Configure Hokee</h2>

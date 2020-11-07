@@ -181,4 +181,4 @@ install(FILES tests/test_data/index.html DESTINATION ./test_data/html_test)
 
 # Tests
 enable_testing()
-add_test(hokee-test hokee-test)
+add_test(NAME hokee-test COMMAND hokee-test)
