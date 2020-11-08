@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<!-- Mirrored from localhost/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 08 Nov 2020 19:48:57 GMT -->
+<head>
+    <title>hokee</title>
+    <meta name="hokee" content="Summary"/>
+    <meta charset="UTF-8"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png"/>
+    <link rel="mask-icon" href="safari-pinned-tab.html" color="#5bbad5"/>
+    <link rel="stylesheet" href="stylesheet.css"/>
+  </head>
+  <body>
+    <script src="filterSummary.js"> </script>
+    <div class="nav">
+      <div class="box">
+        <table class="nav">
+          <tr>
+            <td class="nav link " onclick="window.location='index-2.html'" title="Show Summary">
+              <img src="48-file-excel.png" title="Show Summary" width="42" height="42"/>
+              Summary &nbsp;
+            </td>
+            <td class="nav link " onclick="window.location='all.html'" title="Show All Items">
+              <img src="48-search.png" title="Show All Items" width="42" height="42"/>
+              Items (61)
+            </td>
+            <td class="nav link " onclick="window.location='rules.html'" title="Show Rules">
+              <img src="48-file-exe.png" title="Show Rules" width="42" height="42"/>
+              Rules (8)
+            </td>
+            <td class="nav">
+              <div style="width: 24px;"/>
+            </td>
+            <td class="nav link gray" onclick="window.location='assigned.html'" title="Show Assigned Items">
+              <img src="48-shield-ok.png" title="Show Assigned Items" width="42" height="42"/>
+              Assigned (57)
+            </td>
+            <td class="nav link " onclick="window.location='unassigned.html'" title="Show Unassigned Items">
+              <img src="48-shield-warning.png" title="Show Unassigned Items" width="42" height="42"/>
+              Warnings (4)
+            </td>
+            <td class="nav link " onclick="window.location='issues.html'" title="Show Issues">
+              <img src="48-shield-error.png" title="Show Issues" width="42" height="42"/>
+              Errors (5)
+            </td>
+            <td class="nav fill">&nbsp;</td>
+            <td class="nav">
+              <b>hookee</b>
+              1.0.0
+            </td>
+            <td class="nav fill">&nbsp;</td>
+            <td class="nav link " onclick="window.location='settings.html'" title="Open Settings File">
+              <img src="48-cogs.png" title="Open Settings File" width="42" height="42"/>
+              Settings
+            </td>
+            <td class="nav link " onclick="window.location='support.html'" title="Generate Support Mail">
+              <img src="48-profile.png" title="Generate Support Mail" width="42" height="42"/>
+              Support
+            </td>
+            <td class="nav link " onclick="window.location='backup.html'" title="Backup Rules">
+              <img src="48-safe.png" title="Backup Rules" width="42" height="42"/>
+              Backup
+            </td>
+            <td class="nav link " onclick="window.location='http://localhost/input.cmd'" title="Open Input Folder">
+              <img src="48-folder.png" title="Open Input Folder" width="42" height="42"/>
+              Input
+            </td>
+            <td class="nav link " onclick="window.location='help.html'" title="Open Online Help">
+              <img src="48-sign-question.png" title="Open Online Help" width="42" height="42"/>
+              Help
+            </td>
+            <td class="nav link " title="Reload CSV Data" onclick="reload('reload.cmd')">
+              <img src="48-sign-sync.png" title="Reload CSV Data" width="42" height="42"/>
+              Reload
+            </td>
+            <td class="nav link " onclick="window.location='http://localhost/exit.cmd'" title="Stop hokee">
+              <img src="48-sign-exit.png" title="Stop hokee" width="42" height="42"/>
+              Exit
+            </td>
+          </tr>
+        </table>
+      </div>
+      <table class="form">
+        <tr class="form">
+          <td class="form fill">
+            <div>&nbsp;</div>
+          </td>
+          <td class="form"/>
+          <td class="form link">
+            <div class="box" onclick="filterSummary('summary', 'profit')">
+              <img src="48-sign-add.png" title="Show Profit" width="40" height="40"/>
+            </div>
+          </td>
+          <td class="form link">
+            <div class="box" onclick="filterSummary('summary', 'sum')">
+              <img src="48-sign-b.png" title="Show Sum" width="40" height="40"/>
+            </div>
+          </td>
+          <td class="form link">
+            <div class="box" onclick="filterSummary('summary', 'expenses')">
+              <img src="48-sign-delete.png" title="Show Expenses" width="40" height="40"/>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <script src="reload.js"> </script>
+    <main class="pad-100">
+      <h2>Summary</h2>
+      <table id="summary" class="item mar-20">
+        <tr>
+          <th>Date</th>
+          <th>*</th>
+          <th>insurance</th>
+          <th>online</th>
+          <th>rent</th>
+          <th>salary</th>
+          <th>shopping</th>
+        </tr>
+        <tr title="sum" class="year">
+          <td class="item">2020</td>
+          <td class="link neg neg-bg1" onclick="window.location='itemsb1c9.html?year=2020&amp;month=0&amp;category=&amp;filter=0';">
+            -50828.04&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items4df4.html?year=2020&amp;month=0&amp;category=insurance&amp;filter=0';">
+            -653.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items93d7.html?year=2020&amp;month=0&amp;category=online&amp;filter=0';">
+            -264.47&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='itemsf7c9.html?year=2020&amp;month=0&amp;category=rent&amp;filter=0';">
+            -8730.00&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='itemsde96.html?year=2020&amp;month=0&amp;category=salary&amp;filter=0';">
+            24051.04&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items443d.html?year=2020&amp;month=0&amp;category=shopping&amp;filter=0';">
+            -3367.59&euro;
+          </td>
+        </tr>
+        <tr title="profit" style="display: none;" class="year">
+          <td class="item">2020</td>
+          <td class="link pos pos-bg1" onclick="window.location='items1ede.html?year=2020&amp;month=0&amp;category=&amp;filter=1';">
+            26527.55&euro;
+          </td>
+          <td class="link" onclick="window.location='items007d.html?year=2020&amp;month=0&amp;category=insurance&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items3adc.html?year=2020&amp;month=0&amp;category=online&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsc7a4.html?year=2020&amp;month=0&amp;category=rent&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='items6625.html?year=2020&amp;month=0&amp;category=salary&amp;filter=1';">
+            24051.04&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='items9bd4.html?year=2020&amp;month=0&amp;category=shopping&amp;filter=1';">
+            7.39&euro;
+          </td>
+        </tr>
+        <tr title="expenses" style="display: none;" class="year">
+          <td class="item">2020</td>
+          <td class="link neg neg-bg1" onclick="window.location='itemsda57.html?year=2020&amp;month=0&amp;category=&amp;filter=-1';">
+            -77355.59&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='itemsb26d.html?year=2020&amp;month=0&amp;category=insurance&amp;filter=-1';">
+            -653.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items7a0e.html?year=2020&amp;month=0&amp;category=online&amp;filter=-1';">
+            -264.47&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items48b2.html?year=2020&amp;month=0&amp;category=rent&amp;filter=-1';">
+            -8730.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items6280.html?year=2020&amp;month=0&amp;category=salary&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='itemsbbbb.html?year=2020&amp;month=0&amp;category=shopping&amp;filter=-1';">
+            -3374.98&euro;
+          </td>
+        </tr>
+        <tr title="sum">
+          <td class="item">1.2020</td>
+          <td class="link pos pos-bg0" onclick="window.location='items2452.html?year=2020&amp;month=1&amp;category=&amp;filter=0';">
+            178.71&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items13bd.html?year=2020&amp;month=1&amp;category=insurance&amp;filter=0';">
+            -653.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items51b1.html?year=2020&amp;month=1&amp;category=online&amp;filter=0';">
+            -120.99&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='itemsa6d2.html?year=2020&amp;month=1&amp;category=rent&amp;filter=0';">
+            -720.00&euro;
+          </td>
+          <td class="link pos pos-bg0" onclick="window.location='itemsd035.html?year=2020&amp;month=1&amp;category=salary&amp;filter=0';">
+            1920.92&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='itemsce9c.html?year=2020&amp;month=1&amp;category=shopping&amp;filter=0';">
+            -248.22&euro;
+          </td>
+        </tr>
+        <tr title="profit" style="display: none;">
+          <td class="item">1.2020</td>
+          <td class="link pos pos-bg0" onclick="window.location='itemsb1e8.html?year=2020&amp;month=1&amp;category=&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsbf7c.html?year=2020&amp;month=1&amp;category=insurance&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items3fd6.html?year=2020&amp;month=1&amp;category=online&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items671d.html?year=2020&amp;month=1&amp;category=rent&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link pos pos-bg0" onclick="window.location='itemsbb7a.html?year=2020&amp;month=1&amp;category=salary&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='itemse8d1.html?year=2020&amp;month=1&amp;category=shopping&amp;filter=1';">
+            0.00&euro;
+          </td>
+        </tr>
+        <tr title="expenses" style="display: none;">
+          <td class="item">1.2020</td>
+          <td class="link neg neg-bg0" onclick="window.location='items49bc.html?year=2020&amp;month=1&amp;category=&amp;filter=-1';">
+            -1742.21&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items7036.html?year=2020&amp;month=1&amp;category=insurance&amp;filter=-1';">
+            -653.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items9644.html?year=2020&amp;month=1&amp;category=online&amp;filter=-1';">
+            -120.99&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='itemsa4c5.html?year=2020&amp;month=1&amp;category=rent&amp;filter=-1';">
+            -720.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items0a97.html?year=2020&amp;month=1&amp;category=salary&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items69bb.html?year=2020&amp;month=1&amp;category=shopping&amp;filter=-1';">
+            -248.22&euro;
+          </td>
+        </tr>
+        <tr title="sum">
+          <td class="item">2.2020</td>
+          <td class="link neg neg-bg1" onclick="window.location='items704d.html?year=2020&amp;month=2&amp;category=&amp;filter=0';">
+            -63241.19&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsb5fd.html?year=2020&amp;month=2&amp;category=insurance&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items4cb0.html?year=2020&amp;month=2&amp;category=online&amp;filter=0';">
+            -99.99&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='itemsf4f7.html?year=2020&amp;month=2&amp;category=rent&amp;filter=0';">
+            -720.00&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='items22d9.html?year=2020&amp;month=2&amp;category=salary&amp;filter=0';">
+            1920.92&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items2b64.html?year=2020&amp;month=2&amp;category=shopping&amp;filter=0';">
+            -342.14&euro;
+          </td>
+        </tr>
+        <tr title="profit" style="display: none;">
+          <td class="item">2.2020</td>
+          <td class="link pos pos-bg1" onclick="window.location='items3349.html?year=2020&amp;month=2&amp;category=&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='items9482.html?year=2020&amp;month=2&amp;category=insurance&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsc67d.html?year=2020&amp;month=2&amp;category=online&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items5dbd.html?year=2020&amp;month=2&amp;category=rent&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='items3867.html?year=2020&amp;month=2&amp;category=salary&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='items391b.html?year=2020&amp;month=2&amp;category=shopping&amp;filter=1';">
+            0.00&euro;
+          </td>
+        </tr>
+        <tr title="expenses" style="display: none;">
+          <td class="item">2.2020</td>
+          <td class="link neg neg-bg1" onclick="window.location='items58fe.html?year=2020&amp;month=2&amp;category=&amp;filter=-1';">
+            -65162.11&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsc64f.html?year=2020&amp;month=2&amp;category=insurance&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='itemsa61e.html?year=2020&amp;month=2&amp;category=online&amp;filter=-1';">
+            -99.99&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items1489.html?year=2020&amp;month=2&amp;category=rent&amp;filter=-1';">
+            -720.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items5545.html?year=2020&amp;month=2&amp;category=salary&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items5e8a.html?year=2020&amp;month=2&amp;category=shopping&amp;filter=-1';">
+            -342.14&euro;
+          </td>
+        </tr>
+        <tr title="sum">
+          <td class="item">3.2020</td>
+          <td class="link pos pos-bg0" onclick="window.location='items727f.html?year=2020&amp;month=3&amp;category=&amp;filter=0';">
+            800.51&euro;
+          </td>
+          <td class="link" onclick="window.location='items307f.html?year=2020&amp;month=3&amp;category=insurance&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items5cfb.html?year=2020&amp;month=3&amp;category=online&amp;filter=0';">
+            -43.49&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items9498.html?year=2020&amp;month=3&amp;category=rent&amp;filter=0';">
+            -720.00&euro;
+          </td>
+          <td class="link pos pos-bg0" onclick="window.location='items4a41.html?year=2020&amp;month=3&amp;category=salary&amp;filter=0';">
+            1920.92&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items3c20.html?year=2020&amp;month=3&amp;category=shopping&amp;filter=0';">
+            -356.92&euro;
+          </td>
+        </tr>
+        <tr title="profit" style="display: none;">
+          <td class="item">3.2020</td>
+          <td class="link pos pos-bg0" onclick="window.location='itemsdffc.html?year=2020&amp;month=3&amp;category=&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='items3e16.html?year=2020&amp;month=3&amp;category=insurance&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items085c.html?year=2020&amp;month=3&amp;category=online&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items5c0d.html?year=2020&amp;month=3&amp;category=rent&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link pos pos-bg0" onclick="window.location='itemsc045.html?year=2020&amp;month=3&amp;category=salary&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='items9b91.html?year=2020&amp;month=3&amp;category=shopping&amp;filter=1';">
+            0.00&euro;
+          </td>
+        </tr>
+        <tr title="expenses" style="display: none;">
+          <td class="item">3.2020</td>
+          <td class="link neg neg-bg0" onclick="window.location='itemsd08d.html?year=2020&amp;month=3&amp;category=&amp;filter=-1';">
+            -1120.41&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsf406.html?year=2020&amp;month=3&amp;category=insurance&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items3547.html?year=2020&amp;month=3&amp;category=online&amp;filter=-1';">
+            -43.49&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='itemsc9f0.html?year=2020&amp;month=3&amp;category=rent&amp;filter=-1';">
+            -720.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsc167.html?year=2020&amp;month=3&amp;category=salary&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='itemsf3a7.html?year=2020&amp;month=3&amp;category=shopping&amp;filter=-1';">
+            -356.92&euro;
+          </td>
+        </tr>
+        <tr title="sum">
+          <td class="item">4.2020</td>
+          <td class="link pos pos-bg1" onclick="window.location='items73b1.html?year=2020&amp;month=4&amp;category=&amp;filter=0';">
+            803.15&euro;
+          </td>
+          <td class="link" onclick="window.location='itemse932.html?year=2020&amp;month=4&amp;category=insurance&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsaf3b.html?year=2020&amp;month=4&amp;category=online&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items15f1.html?year=2020&amp;month=4&amp;category=rent&amp;filter=0';">
+            -730.00&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='itemsfc0d.html?year=2020&amp;month=4&amp;category=salary&amp;filter=0';">
+            1920.92&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='itemscd41.html?year=2020&amp;month=4&amp;category=shopping&amp;filter=0';">
+            -387.77&euro;
+          </td>
+        </tr>
+        <tr title="profit" style="display: none;">
+          <td class="item">4.2020</td>
+          <td class="link pos pos-bg1" onclick="window.location='items3cbe.html?year=2020&amp;month=4&amp;category=&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='items740e.html?year=2020&amp;month=4&amp;category=insurance&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items9f14.html?year=2020&amp;month=4&amp;category=online&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsaeeb.html?year=2020&amp;month=4&amp;category=rent&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='items05df.html?year=2020&amp;month=4&amp;category=salary&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='items10b9.html?year=2020&amp;month=4&amp;category=shopping&amp;filter=1';">
+            0.00&euro;
+          </td>
+        </tr>
+        <tr title="expenses" style="display: none;">
+          <td class="item">4.2020</td>
+          <td class="link neg neg-bg1" onclick="window.location='items2006.html?year=2020&amp;month=4&amp;category=&amp;filter=-1';">
+            -1117.77&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsd04e.html?year=2020&amp;month=4&amp;category=insurance&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items8062.html?year=2020&amp;month=4&amp;category=online&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items53fb.html?year=2020&amp;month=4&amp;category=rent&amp;filter=-1';">
+            -730.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsccd3.html?year=2020&amp;month=4&amp;category=salary&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items8451.html?year=2020&amp;month=4&amp;category=shopping&amp;filter=-1';">
+            -387.77&euro;
+          </td>
+        </tr>
+        <tr title="sum">
+          <td class="item">5.2020</td>
+          <td class="link pos pos-bg0" onclick="window.location='items248f.html?year=2020&amp;month=5&amp;category=&amp;filter=0';">
+            801.35&euro;
+          </td>
+          <td class="link" onclick="window.location='items4e21.html?year=2020&amp;month=5&amp;category=insurance&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items48e6.html?year=2020&amp;month=5&amp;category=online&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items9aaf.html?year=2020&amp;month=5&amp;category=rent&amp;filter=0';">
+            -730.00&euro;
+          </td>
+          <td class="link pos pos-bg0" onclick="window.location='itemsfc60.html?year=2020&amp;month=5&amp;category=salary&amp;filter=0';">
+            1920.92&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items311e.html?year=2020&amp;month=5&amp;category=shopping&amp;filter=0';">
+            -256.39&euro;
+          </td>
+        </tr>
+        <tr title="profit" style="display: none;">
+          <td class="item">5.2020</td>
+          <td class="link pos pos-bg0" onclick="window.location='items4e22.html?year=2020&amp;month=5&amp;category=&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='items4e3b.html?year=2020&amp;month=5&amp;category=insurance&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items2172.html?year=2020&amp;month=5&amp;category=online&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items044c.html?year=2020&amp;month=5&amp;category=rent&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link pos pos-bg0" onclick="window.location='items5c99.html?year=2020&amp;month=5&amp;category=salary&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='items5ecc.html?year=2020&amp;month=5&amp;category=shopping&amp;filter=1';">
+            0.00&euro;
+          </td>
+        </tr>
+        <tr title="expenses" style="display: none;">
+          <td class="item">5.2020</td>
+          <td class="link neg neg-bg0" onclick="window.location='items0efc.html?year=2020&amp;month=5&amp;category=&amp;filter=-1';">
+            -1119.57&euro;
+          </td>
+          <td class="link" onclick="window.location='items9809.html?year=2020&amp;month=5&amp;category=insurance&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items1c08.html?year=2020&amp;month=5&amp;category=online&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='itemsca37.html?year=2020&amp;month=5&amp;category=rent&amp;filter=-1';">
+            -730.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items3681.html?year=2020&amp;month=5&amp;category=salary&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items41cb.html?year=2020&amp;month=5&amp;category=shopping&amp;filter=-1';">
+            -256.39&euro;
+          </td>
+        </tr>
+        <tr title="sum">
+          <td class="item">6.2020</td>
+          <td class="link pos pos-bg1" onclick="window.location='itemsd4b7.html?year=2020&amp;month=6&amp;category=&amp;filter=0';">
+            1004.71&euro;
+          </td>
+          <td class="link" onclick="window.location='items1a47.html?year=2020&amp;month=6&amp;category=insurance&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items421d.html?year=2020&amp;month=6&amp;category=online&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='itemsee63.html?year=2020&amp;month=6&amp;category=rent&amp;filter=0';">
+            -730.00&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='items3aff.html?year=2020&amp;month=6&amp;category=salary&amp;filter=0';">
+            1920.92&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='itemsd228.html?year=2020&amp;month=6&amp;category=shopping&amp;filter=0';">
+            -186.21&euro;
+          </td>
+        </tr>
+        <tr title="profit" style="display: none;">
+          <td class="item">6.2020</td>
+          <td class="link pos pos-bg1" onclick="window.location='itemsaaa8.html?year=2020&amp;month=6&amp;category=&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='items7985.html?year=2020&amp;month=6&amp;category=insurance&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items992e.html?year=2020&amp;month=6&amp;category=online&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsd37b.html?year=2020&amp;month=6&amp;category=rent&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='items636f.html?year=2020&amp;month=6&amp;category=salary&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='items9fd0.html?year=2020&amp;month=6&amp;category=shopping&amp;filter=1';">
+            0.00&euro;
+          </td>
+        </tr>
+        <tr title="expenses" style="display: none;">
+          <td class="item">6.2020</td>
+          <td class="link neg neg-bg1" onclick="window.location='items9057.html?year=2020&amp;month=6&amp;category=&amp;filter=-1';">
+            -916.21&euro;
+          </td>
+          <td class="link" onclick="window.location='items6491.html?year=2020&amp;month=6&amp;category=insurance&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsb43e.html?year=2020&amp;month=6&amp;category=online&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items6973.html?year=2020&amp;month=6&amp;category=rent&amp;filter=-1';">
+            -730.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsb145.html?year=2020&amp;month=6&amp;category=salary&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items6715.html?year=2020&amp;month=6&amp;category=shopping&amp;filter=-1';">
+            -186.21&euro;
+          </td>
+        </tr>
+        <tr title="sum">
+          <td class="item">7.2020</td>
+          <td class="link pos pos-bg0" onclick="window.location='itemscc76.html?year=2020&amp;month=7&amp;category=&amp;filter=0';">
+            856.84&euro;
+          </td>
+          <td class="link" onclick="window.location='items3a67.html?year=2020&amp;month=7&amp;category=insurance&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemse624.html?year=2020&amp;month=7&amp;category=online&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items2e9d.html?year=2020&amp;month=7&amp;category=rent&amp;filter=0';">
+            -730.00&euro;
+          </td>
+          <td class="link pos pos-bg0" onclick="window.location='itemsd45c.html?year=2020&amp;month=7&amp;category=salary&amp;filter=0';">
+            1920.92&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items5b19.html?year=2020&amp;month=7&amp;category=shopping&amp;filter=0';">
+            -334.08&euro;
+          </td>
+        </tr>
+        <tr title="profit" style="display: none;">
+          <td class="item">7.2020</td>
+          <td class="link pos pos-bg0" onclick="window.location='items8464.html?year=2020&amp;month=7&amp;category=&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsfd16.html?year=2020&amp;month=7&amp;category=insurance&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items3378.html?year=2020&amp;month=7&amp;category=online&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsce0d.html?year=2020&amp;month=7&amp;category=rent&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link pos pos-bg0" onclick="window.location='itemsa0e5.html?year=2020&amp;month=7&amp;category=salary&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsf2b0.html?year=2020&amp;month=7&amp;category=shopping&amp;filter=1';">
+            0.00&euro;
+          </td>
+        </tr>
+        <tr title="expenses" style="display: none;">
+          <td class="item">7.2020</td>
+          <td class="link neg neg-bg0" onclick="window.location='items2683.html?year=2020&amp;month=7&amp;category=&amp;filter=-1';">
+            -1064.08&euro;
+          </td>
+          <td class="link" onclick="window.location='items5125.html?year=2020&amp;month=7&amp;category=insurance&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items9954.html?year=2020&amp;month=7&amp;category=online&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='itemsf045.html?year=2020&amp;month=7&amp;category=rent&amp;filter=-1';">
+            -730.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items893c.html?year=2020&amp;month=7&amp;category=salary&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items787d.html?year=2020&amp;month=7&amp;category=shopping&amp;filter=-1';">
+            -334.08&euro;
+          </td>
+        </tr>
+        <tr title="sum">
+          <td class="item">8.2020</td>
+          <td class="link pos pos-bg1" onclick="window.location='items263d.html?year=2020&amp;month=8&amp;category=&amp;filter=0';">
+            853.60&euro;
+          </td>
+          <td class="link" onclick="window.location='items70c2.html?year=2020&amp;month=8&amp;category=insurance&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items4f02.html?year=2020&amp;month=8&amp;category=online&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items0665.html?year=2020&amp;month=8&amp;category=rent&amp;filter=0';">
+            -730.00&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='items33c5.html?year=2020&amp;month=8&amp;category=salary&amp;filter=0';">
+            1920.92&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items966c.html?year=2020&amp;month=8&amp;category=shopping&amp;filter=0';">
+            -337.32&euro;
+          </td>
+        </tr>
+        <tr title="profit" style="display: none;">
+          <td class="item">8.2020</td>
+          <td class="link pos pos-bg1" onclick="window.location='items497b.html?year=2020&amp;month=8&amp;category=&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsc47f.html?year=2020&amp;month=8&amp;category=insurance&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items1915.html?year=2020&amp;month=8&amp;category=online&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items872a.html?year=2020&amp;month=8&amp;category=rent&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='items6ec6.html?year=2020&amp;month=8&amp;category=salary&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsd240.html?year=2020&amp;month=8&amp;category=shopping&amp;filter=1';">
+            0.00&euro;
+          </td>
+        </tr>
+        <tr title="expenses" style="display: none;">
+          <td class="item">8.2020</td>
+          <td class="link neg neg-bg1" onclick="window.location='items67f9.html?year=2020&amp;month=8&amp;category=&amp;filter=-1';">
+            -1067.32&euro;
+          </td>
+          <td class="link" onclick="window.location='items3558.html?year=2020&amp;month=8&amp;category=insurance&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items42ef.html?year=2020&amp;month=8&amp;category=online&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items6885.html?year=2020&amp;month=8&amp;category=rent&amp;filter=-1';">
+            -730.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items8963.html?year=2020&amp;month=8&amp;category=salary&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='itemsc55a.html?year=2020&amp;month=8&amp;category=shopping&amp;filter=-1';">
+            -337.32&euro;
+          </td>
+        </tr>
+        <tr title="sum">
+          <td class="item">9.2020</td>
+          <td class="link pos pos-bg0" onclick="window.location='items98b6.html?year=2020&amp;month=9&amp;category=&amp;filter=0';">
+            1083.62&euro;
+          </td>
+          <td class="link" onclick="window.location='items45e4.html?year=2020&amp;month=9&amp;category=insurance&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items1681.html?year=2020&amp;month=9&amp;category=online&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='itemse4a2.html?year=2020&amp;month=9&amp;category=rent&amp;filter=0';">
+            -730.00&euro;
+          </td>
+          <td class="link pos pos-bg0" onclick="window.location='itemsabef.html?year=2020&amp;month=9&amp;category=salary&amp;filter=0';">
+            1920.92&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items38d1.html?year=2020&amp;month=9&amp;category=shopping&amp;filter=0';">
+            -107.30&euro;
+          </td>
+        </tr>
+        <tr title="profit" style="display: none;">
+          <td class="item">9.2020</td>
+          <td class="link pos pos-bg0" onclick="window.location='items4504.html?year=2020&amp;month=9&amp;category=&amp;filter=1';">
+            1928.31&euro;
+          </td>
+          <td class="link" onclick="window.location='items2438.html?year=2020&amp;month=9&amp;category=insurance&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items27c9.html?year=2020&amp;month=9&amp;category=online&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsbeb8.html?year=2020&amp;month=9&amp;category=rent&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link pos pos-bg0" onclick="window.location='items6005.html?year=2020&amp;month=9&amp;category=salary&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link pos pos-bg0" onclick="window.location='itemsa4f0.html?year=2020&amp;month=9&amp;category=shopping&amp;filter=1';">
+            7.39&euro;
+          </td>
+        </tr>
+        <tr title="expenses" style="display: none;">
+          <td class="item">9.2020</td>
+          <td class="link neg neg-bg0" onclick="window.location='items049a.html?year=2020&amp;month=9&amp;category=&amp;filter=-1';">
+            -844.69&euro;
+          </td>
+          <td class="link" onclick="window.location='items559d.html?year=2020&amp;month=9&amp;category=insurance&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsce79.html?year=2020&amp;month=9&amp;category=online&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items763f.html?year=2020&amp;month=9&amp;category=rent&amp;filter=-1';">
+            -730.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsa0b5.html?year=2020&amp;month=9&amp;category=salary&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items5669.html?year=2020&amp;month=9&amp;category=shopping&amp;filter=-1';">
+            -114.69&euro;
+          </td>
+        </tr>
+        <tr title="sum">
+          <td class="item">10.2020</td>
+          <td class="link pos pos-bg1" onclick="window.location='items961a.html?year=2020&amp;month=10&amp;category=&amp;filter=0';">
+            1022.94&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsc6a4.html?year=2020&amp;month=10&amp;category=insurance&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsaeb7.html?year=2020&amp;month=10&amp;category=online&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='itemse676.html?year=2020&amp;month=10&amp;category=rent&amp;filter=0';">
+            -730.00&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='items539d.html?year=2020&amp;month=10&amp;category=salary&amp;filter=0';">
+            1920.92&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items9398.html?year=2020&amp;month=10&amp;category=shopping&amp;filter=0';">
+            -167.98&euro;
+          </td>
+        </tr>
+        <tr title="profit" style="display: none;">
+          <td class="item">10.2020</td>
+          <td class="link pos pos-bg1" onclick="window.location='itemsfd16-2.html?year=2020&amp;month=10&amp;category=&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='items395a.html?year=2020&amp;month=10&amp;category=insurance&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items4711.html?year=2020&amp;month=10&amp;category=online&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsc143.html?year=2020&amp;month=10&amp;category=rent&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='itemsb662.html?year=2020&amp;month=10&amp;category=salary&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsddad.html?year=2020&amp;month=10&amp;category=shopping&amp;filter=1';">
+            0.00&euro;
+          </td>
+        </tr>
+        <tr title="expenses" style="display: none;">
+          <td class="item">10.2020</td>
+          <td class="link neg neg-bg1" onclick="window.location='itemscd54.html?year=2020&amp;month=10&amp;category=&amp;filter=-1';">
+            -897.98&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsb8b7.html?year=2020&amp;month=10&amp;category=insurance&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items0fc5.html?year=2020&amp;month=10&amp;category=online&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='itemsc085.html?year=2020&amp;month=10&amp;category=rent&amp;filter=-1';">
+            -730.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsba4f.html?year=2020&amp;month=10&amp;category=salary&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items9939.html?year=2020&amp;month=10&amp;category=shopping&amp;filter=-1';">
+            -167.98&euro;
+          </td>
+        </tr>
+        <tr title="sum">
+          <td class="item">11.2020</td>
+          <td class="link pos pos-bg0" onclick="window.location='itemsa055.html?year=2020&amp;month=11&amp;category=&amp;filter=0';">
+            2019.64&euro;
+          </td>
+          <td class="link" onclick="window.location='items8f1f.html?year=2020&amp;month=11&amp;category=insurance&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsba21.html?year=2020&amp;month=11&amp;category=online&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items9a96.html?year=2020&amp;month=11&amp;category=rent&amp;filter=0';">
+            -730.00&euro;
+          </td>
+          <td class="link pos pos-bg0" onclick="window.location='itemsdd16.html?year=2020&amp;month=11&amp;category=salary&amp;filter=0';">
+            2920.92&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='itemse57a.html?year=2020&amp;month=11&amp;category=shopping&amp;filter=0';">
+            -171.28&euro;
+          </td>
+        </tr>
+        <tr title="profit" style="display: none;">
+          <td class="item">11.2020</td>
+          <td class="link pos pos-bg0" onclick="window.location='items1546.html?year=2020&amp;month=11&amp;category=&amp;filter=1';">
+            2920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsaaa3.html?year=2020&amp;month=11&amp;category=insurance&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsa3d5.html?year=2020&amp;month=11&amp;category=online&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items2343.html?year=2020&amp;month=11&amp;category=rent&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link pos pos-bg0" onclick="window.location='items8f20.html?year=2020&amp;month=11&amp;category=salary&amp;filter=1';">
+            2920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='items4dc8.html?year=2020&amp;month=11&amp;category=shopping&amp;filter=1';">
+            0.00&euro;
+          </td>
+        </tr>
+        <tr title="expenses" style="display: none;">
+          <td class="item">11.2020</td>
+          <td class="link neg neg-bg0" onclick="window.location='itemsc2a2.html?year=2020&amp;month=11&amp;category=&amp;filter=-1';">
+            -901.28&euro;
+          </td>
+          <td class="link" onclick="window.location='items45ed.html?year=2020&amp;month=11&amp;category=insurance&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items878e.html?year=2020&amp;month=11&amp;category=online&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='items605a.html?year=2020&amp;month=11&amp;category=rent&amp;filter=-1';">
+            -730.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items78d3.html?year=2020&amp;month=11&amp;category=salary&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg0" onclick="window.location='itemsc8d3.html?year=2020&amp;month=11&amp;category=shopping&amp;filter=-1';">
+            -171.28&euro;
+          </td>
+        </tr>
+        <tr title="sum">
+          <td class="item">12.2020</td>
+          <td class="link pos pos-bg1" onclick="window.location='items0edb.html?year=2020&amp;month=12&amp;category=&amp;filter=0';">
+            2988.08&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsf403.html?year=2020&amp;month=12&amp;category=insurance&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items2b47.html?year=2020&amp;month=12&amp;category=online&amp;filter=0';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='itemsdbc0.html?year=2020&amp;month=12&amp;category=rent&amp;filter=0';">
+            -730.00&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='items5100.html?year=2020&amp;month=12&amp;category=salary&amp;filter=0';">
+            1920.92&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items2342.html?year=2020&amp;month=12&amp;category=shopping&amp;filter=0';">
+            -471.98&euro;
+          </td>
+        </tr>
+        <tr title="profit" style="display: none;">
+          <td class="item">12.2020</td>
+          <td class="link pos pos-bg1" onclick="window.location='itemsff9c.html?year=2020&amp;month=12&amp;category=&amp;filter=1';">
+            4390.04&euro;
+          </td>
+          <td class="link" onclick="window.location='items5d71.html?year=2020&amp;month=12&amp;category=insurance&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemscc96.html?year=2020&amp;month=12&amp;category=online&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='items8d2b.html?year=2020&amp;month=12&amp;category=rent&amp;filter=1';">
+            0.00&euro;
+          </td>
+          <td class="link pos pos-bg1" onclick="window.location='itemsc88f.html?year=2020&amp;month=12&amp;category=salary&amp;filter=1';">
+            1920.92&euro;
+          </td>
+          <td class="link" onclick="window.location='items4a15.html?year=2020&amp;month=12&amp;category=shopping&amp;filter=1';">
+            0.00&euro;
+          </td>
+        </tr>
+        <tr title="expenses" style="display: none;">
+          <td class="item">12.2020</td>
+          <td class="link neg neg-bg1" onclick="window.location='items10a8.html?year=2020&amp;month=12&amp;category=&amp;filter=-1';">
+            -1401.96&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsbdf2.html?year=2020&amp;month=12&amp;category=insurance&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsa056.html?year=2020&amp;month=12&amp;category=online&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items00a7.html?year=2020&amp;month=12&amp;category=rent&amp;filter=-1';">
+            -730.00&euro;
+          </td>
+          <td class="link" onclick="window.location='itemsc426.html?year=2020&amp;month=12&amp;category=salary&amp;filter=-1';">
+            0.00&euro;
+          </td>
+          <td class="link neg neg-bg1" onclick="window.location='items0f6b.html?year=2020&amp;month=12&amp;category=shopping&amp;filter=-1';">
+            -471.98&euro;
+          </td>
+        </tr>
+      </table>
+    </main>
+  </body>
+
+<!-- Mirrored from localhost/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 08 Nov 2020 19:49:59 GMT -->
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<!-- Mirrored from localhost/items.html?year=2020&month=6&category=insurance&filter=1 by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 08 Nov 2020 19:50:37 GMT -->
+<head>
+    <title>hokee</title>
+    <meta name="hokee" content="Summary"/>
+    <meta charset="UTF-8"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png"/>
+    <link rel="mask-icon" href="safari-pinned-tab.html" color="#5bbad5"/>
+    <link rel="stylesheet" href="stylesheet.css"/>
+  </head>
+  <body>
+    <div class="nav">
+      <div class="box">
+        <table class="nav">
+          <tr>
+            <td class="nav link " onclick="window.location='index-2.html'" title="Show Summary">
+              <img src="48-file-excel.png" title="Show Summary" width="42" height="42"/>
+              Summary &nbsp;
+            </td>
+            <td class="nav link " onclick="window.location='all.html'" title="Show All Items">
+              <img src="48-search.png" title="Show All Items" width="42" height="42"/>
+              Items (61)
+            </td>
+            <td class="nav link " onclick="window.location='rules.html'" title="Show Rules">
+              <img src="48-file-exe.png" title="Show Rules" width="42" height="42"/>
+              Rules (8)
+            </td>
+            <td class="nav">
+              <div style="width: 24px;"/>
+            </td>
+            <td class="nav link gray" onclick="window.location='assigned.html'" title="Show Assigned Items">
+              <img src="48-shield-ok.png" title="Show Assigned Items" width="42" height="42"/>
+              Assigned (57)
+            </td>
+            <td class="nav link " onclick="window.location='unassigned.html'" title="Show Unassigned Items">
+              <img src="48-shield-warning.png" title="Show Unassigned Items" width="42" height="42"/>
+              Warnings (4)
+            </td>
+            <td class="nav link " onclick="window.location='issues.html'" title="Show Issues">
+              <img src="48-shield-error.png" title="Show Issues" width="42" height="42"/>
+              Errors (5)
+            </td>
+            <td class="nav fill">&nbsp;</td>
+            <td class="nav">
+              <b>hookee</b>
+              1.0.0
+            </td>
+            <td class="nav fill">&nbsp;</td>
+            <td class="nav link " onclick="window.location='settings.html'" title="Open Settings File">
+              <img src="48-cogs.png" title="Open Settings File" width="42" height="42"/>
+              Settings
+            </td>
+            <td class="nav link " onclick="window.location='support.html'" title="Generate Support Mail">
+              <img src="48-profile.png" title="Generate Support Mail" width="42" height="42"/>
+              Support
+            </td>
+            <td class="nav link " onclick="window.location='backup.html'" title="Backup Rules">
+              <img src="48-safe.png" title="Backup Rules" width="42" height="42"/>
+              Backup
+            </td>
+            <td class="nav link " onclick="window.location='http://localhost/input.cmd'" title="Open Input Folder">
+              <img src="48-folder.png" title="Open Input Folder" width="42" height="42"/>
+              Input
+            </td>
+            <td class="nav link " onclick="window.location='help.html'" title="Open Online Help">
+              <img src="48-sign-question.png" title="Open Online Help" width="42" height="42"/>
+              Help
+            </td>
+            <td class="nav link " title="Reload CSV Data" onclick="reload('reload.cmd')">
+              <img src="48-sign-sync.png" title="Reload CSV Data" width="42" height="42"/>
+              Reload
+            </td>
+            <td class="nav link " onclick="window.location='http://localhost/exit.cmd'" title="Stop hokee">
+              <img src="48-sign-exit.png" title="Stop hokee" width="42" height="42"/>
+              Exit
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <script src="reload.js"> </script>
+    <main class="pad-100">
+      <table class="form">
+        <tr class="form">
+          <td class="form" style="width: 50%;">
+            <h2>6-2020: insurance (+)</h2>
+          </td>
+          <td class="form">
+            <input id="filter" type="text" placeholder="Filter..." title="Type in a string" oninput="filterTable('table', 'filter')" class="filter"/>
+          </td>
+        </tr>
+      </table>
+      <table id="table" class="item mar-20">
+        <tr>
+          <th>#</th>
+          <th>Category</th>
+          <th>Payer/Payee</th>
+          <th>Description</th>
+          <th>Type</th>
+          <th>Date</th>
+          <th>Account</th>
+          <th>Value</th>
+        </tr>
+      </table>
+    </main>
+    <script src="filterTable.js"> </script>
+  </body>
+
+<!-- Mirrored from localhost/items.html?year=2020&month=6&category=insurance&filter=1 by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 08 Nov 2020 19:50:37 GMT -->
+</html>
