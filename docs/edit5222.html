@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<!-- Mirrored from localhost/edit.html?file=C:\Users\Stephan\Documents\hokee\rules.csv.2020-11-02_22-32-28.backup by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 08 Nov 2020 19:50:43 GMT -->
+<head>
+    <title>hokee</title>
+    <meta name="hokee" content="Summary"/>
+    <meta charset="UTF-8"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png"/>
+    <link rel="mask-icon" href="safari-pinned-tab.html" color="#5bbad5"/>
+    <link rel="stylesheet" href="stylesheet.css"/>
+  </head>
+  <body>
+    <div class="nav">
+      <div class="box">
+        <table class="nav">
+          <tr>
+            <td class="nav link " onclick="window.location='index-2.html'" title="Show Summary">
+              <img src="48-file-excel.png" title="Show Summary" width="42" height="42"/>
+              Summary &nbsp;
+            </td>
+            <td class="nav link " onclick="window.location='all.html'" title="Show All Items">
+              <img src="48-search.png" title="Show All Items" width="42" height="42"/>
+              Items (61)
+            </td>
+            <td class="nav link " onclick="window.location='rules.html'" title="Show Rules">
+              <img src="48-file-exe.png" title="Show Rules" width="42" height="42"/>
+              Rules (8)
+            </td>
+            <td class="nav">
+              <div style="width: 24px;"/>
+            </td>
+            <td class="nav link gray" onclick="window.location='assigned.html'" title="Show Assigned Items">
+              <img src="48-shield-ok.png" title="Show Assigned Items" width="42" height="42"/>
+              Assigned (57)
+            </td>
+            <td class="nav link " onclick="window.location='unassigned.html'" title="Show Unassigned Items">
+              <img src="48-shield-warning.png" title="Show Unassigned Items" width="42" height="42"/>
+              Warnings (4)
+            </td>
+            <td class="nav link " onclick="window.location='issues.html'" title="Show Issues">
+              <img src="48-shield-error.png" title="Show Issues" width="42" height="42"/>
+              Errors (5)
+            </td>
+            <td class="nav fill">&nbsp;</td>
+            <td class="nav">
+              <b>hookee</b>
+              1.0.0
+            </td>
+            <td class="nav fill">&nbsp;</td>
+            <td class="nav link " onclick="window.location='settings.html'" title="Open Settings File">
+              <img src="48-cogs.png" title="Open Settings File" width="42" height="42"/>
+              Settings
+            </td>
+            <td class="nav link " onclick="window.location='support.html'" title="Generate Support Mail">
+              <img src="48-profile.png" title="Generate Support Mail" width="42" height="42"/>
+              Support
+            </td>
+            <td class="nav link " onclick="window.location='backup.html'" title="Backup Rules">
+              <img src="48-safe.png" title="Backup Rules" width="42" height="42"/>
+              Backup
+            </td>
+            <td class="nav link " onclick="window.location='http://localhost/input.cmd'" title="Open Input Folder">
+              <img src="48-folder.png" title="Open Input Folder" width="42" height="42"/>
+              Input
+            </td>
+            <td class="nav link " onclick="window.location='help.html'" title="Open Online Help">
+              <img src="48-sign-question.png" title="Open Online Help" width="42" height="42"/>
+              Help
+            </td>
+            <td class="nav link " title="Reload CSV Data" onclick="reload('reload.cmd')">
+              <img src="48-sign-sync.png" title="Reload CSV Data" width="42" height="42"/>
+              Reload
+            </td>
+            <td class="nav link " onclick="window.location='http://localhost/exit.cmd'" title="Stop hokee">
+              <img src="48-sign-exit.png" title="Stop hokee" width="42" height="42"/>
+              Exit
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <script src="reload.js"> </script>
+    <main class="pad-100">
+      <form action="http://localhost/save.cmd?file=C:\Users\Stephan\Documents\hokee\rules.csv.2020-11-02_22-32-28.backup" method="post" enctype="text/plain" id="form">
+        <table class="form">
+          <tr class="form">
+            <td class="form fill">
+              <h2>Edit&nbsp;File</h2>
+            </td>
+            <td class="form"/>
+            <td class="form link" onclick="submitFile('form')">
+              <img src="48-floppy.png" title="Save File" width="40" height="40"/>
+            </td>
+          </tr>
+        </table>
+        <table class="form">
+          <tr class="form">
+            <td class="form fill mono center">C:\Users\Stephan\Documents\hokee\rules.csv.2020-11-02_22-32-28.backup</td>
+            <td class="form">
+              <a href="http://localhost/open.cmd?folder=C:\Users\Stephan\Documents\hokee" title="Open folder"><img src="48-folder.png" title="Open folder" width="38" height="38"/></a>
+            </td>
+          </tr>
+        </table>
+        <table class="form">
+          <tr class="form"/>
+        </table>
+        <label>&nbsp;<textarea name="content" rows="20">Category;Payer/Payee;Description;Type;Date;Account;Value
+auto;adac;;;;;
+auto;aral ag;;;;;
+auto;autohaus;;;;;
+auto;avia;;;;;
+auto;beckmann mineral;;;;;
+auto;erdmann + domke;;;;;
+auto;esso deutschland;;;;;
+auto;esso station;;;;;
+auto;first stop;;;;;
+auto;franz kleine;;;;;
+auto;hem-admannshagen;;;;;
+auto;hem-stuhr;;;;;
+auto;jet-tank;;;;;
+auto;logpay financial services gmbh;;;;;
+auto;markant ts;;;;;
+auto;mobiel gmbh;;;;;
+auto;nordoel ts;;;;;
+auto;oil tank;;;;;
+auto;orlen deutschland gmbh;;;;;
+auto;parken;;;;;
+auto;q1;;;;;
+auto;ran wurzburg nbg;;;;;
+auto;reifendiscount;;;;;
+auto;sb tank;;;;;
+auto;sb zentralmarkt;;;;;
+auto;sb-zentralmarkt;;;;;
+auto;shell;;;;;
+auto;sparren tank;;;;;
+auto;star tst;;;;;
+auto;tamoil;;;;;
+auto;tankstelle;;;;;
+auto;total deutschland;;;;;
+auto;total- rostock;;;;;
+auto;total service station;;;;;
+auto;total-sb-station;;;;;
+auto;ts neubrandenburg;;;;;
+auto;vergoelst;;;;;
+auto;westfalen ag;;;;;
+auto;westfalen ts;;;;;
+auto;;autozentrum suedstadt gmbh;;;;
+bank;;habenzinsen;;;;
+bank;;ostseesparkasse;;;;
+bank;;rechnung sparkassen-card;;;;
+bank;;wertpapierertrag;wertpapiere;;;
+bank;;;depotgebuehren;;;
+bank;;;entgeltabschluss;;;
+bank;;;gutschr. scheckeinreichung;;;
+bank;;;zinsen/dividende;;;
+bank;;;zinsen/entgelt;;;
+bargeld;;;auszahlung;;;
+bargeld;;;autom.kartenentgeltbuchung;;;
+bargeld;;;bar kasse;;;
+bargeld;;;geldautomat;;;
+baumarkt;bauhaus;;;;;
+baumarkt;baumarkt;;;;;
+baumarkt;hbm paderborn;;;;;
+baumarkt;hornbach;;;;;
+baumarkt;obi gmbh;;;;;
+baumarkt;toom bm;;;;;
+baumarkt;;toom bm;;;;
+drogerie;dm fil;;;;;
+drogerie;drogerie;;;;;
+drogerie;eli- eine lose idee-gmbh;;;;;
+drogerie;gries deco company;;;;;
+drogerie;idee.creativmarkt;;;;;
+drogerie;nanu nana;;;;;
+drogerie;rossmann;;;;;
+einkaufen;aldi;;;;;
+einkaufen;aleco;;;;;
+sonstiges;apollo-optik;;;;;
+sonstiges;bike;;;;;
+einkaufen;bioladen;;;;;
+einkaufen;biomarkt;;;;;
+einkaufen;combi verbrauchermarkt;;;;;
+essen;denn s bio;;;;;
+einkaufen;deutsche post;;;;;
+einkaufen;edeka;;;;;
+einkaufen;fahrrad;;;;;
+einkaufen;galeria kaufhof;;;;;
+einkaufen;getraenke-paradies;;;;;
+einkaufen;goerigk;;;;;
+einkaufen;herbert meyer e.k.;;;;;
+einkaufen;ingolf volkmar schubert;;;;;
+einkaufen;karstadt;;;;;
+einkaufen;kaufland;;;;;
+einkaufen;lidl;;;;;
+einkaufen;loeckenhoff;;;;;
+einkaufen;marktkauf;;;;;
+einkaufen;martina schroeter;;;;;
+einkaufen;netto;;;;;
+einkaufen;neukauf;;;;;
+einkaufen;real;;;;;
+einkaufen;rewe;;;;;
+einkaufen;schlickeisen;;;;;
+einkaufen;tchibo;;;;;
+einkaufen;tedi;;;;;
+einkaufen;tegut;;;;;
+einkaufen;thomas lehr;;;;;
+einkaufen;tiger;;;;;
+einkaufen;verbraucherm_rkte salzkotten;;;;;
+einkaufen;verbrauchermaerkte salzkotten;;;;;
+einkaufen;westf. volksblatt paderborn;;;;;
+einkaufen;;abwa+spice gewrzhandelsgese;;;;
+einkaufen;;real;;;;
+elektronik;handy klinik;;;;;
+elektronik;maxtronic limited;;;;;
+elektronik;media mar;;;;;
+elektronik;saturn;;;;;
+elektronik;www.adobe.com;;;;;
+elektronik;;microsoft *storemsbill.info;;;;
+elektronik;;sony cashback;;;;
+essen;alex bremen;;;;;
+essen;alex paderborn;;;;;
+essen;alex rostock;;;;;
+essen;arndt heidereich;;;;;
+essen;autobahn;;;;;
+essen;autohof;;;;;
+essen;baeckerei;;;;;
+essen;bistro;;;;;
+essen;burger king;;;;;
+essen;burwitz;;;;;
+essen;celona paderborn;;;;;
+essen;china garden//rostock/de;;;;;
+essen;coffee;;;;;
+essen;espresso house;;;;;
+essen;gastronomie;;;;;
+essen;gaststaette;;;;;
+essen;goeken;;;;;
+essen;gwk porta westfalica;;;;;
+essen;hans im glueck;;;;;
+essen;heiderich pad kg;;;;;
+essen;kaiserpalast;;;;;
+essen;koe13 gmbh;;;;;
+essen;lange gmbh co.kg;;;;;
+essen;mcdonald s;;;;;
+essen;mcdonalds;;;;;
+essen;meatropolis;;;;;
+essen;nordsee;;;;;
+essen;osteria;;;;;
+essen;paulaner im rattenkrug;;;;;
+essen;portola;;;;;
+essen;rastanlage;;;;;
+essen;rasthaus;;;;;
+essen;raststaette;;;;;
+essen;rest.hasslhoehe west;;;;;
+essen;restaurant;;;;;
+essen;scharifi gmbh;;;;;
+essen;schiller braeu;;;;;
+essen;ssp deutschland gmbh;;;;;
+essen;subway;;;;;
+essen;tank+rast;;;;;
+essen;wellmann sievershage;;;;;
+essen;wetterau west;;;;;
+essen;;burger king;;;;
+essen;;china-rest;;;;
+essen;;laage;;18.01.2016;;
+essen;;lieferheld;;;;
+friseur;friseur;;;;;
+friseur;;friseur;;;;
+gehalt;bundesagentur f_r arbeit-se rvice-haus;;;;;
+gehalt;bundeskasse;elterngeld;;;;
+gehalt;dspace;;;;;
+gehalt;gunkel, kunzenbacher;;;;;
+gehalt;landeszentralkasse;entgelt;;;;
+gehalt;landeszentralkasse;;gutschrift;;;
+gehalt;;tgeltersatzleistung;;;;
+gesundheit;ahorn sport- u. freizeitclub;;;;;
+gesundheit;amedes;;;;;
+gesundheit;antje dobers;;;;;
+gesundheit;ap im ostseepark;;;;;
+gesundheit;apothe;;;;;
+gesundheit;bk paderborn;;;;;
+gesundheit;dr.dr.dr.niemann;;;;;
+gesundheit;drei hasen apoth;;;;;
+gesundheit;health;;;;;
+gesundheit;henning mehlhorn;;;;;
+gesundheit;klinikum;;;;;
+gesundheit;reinhard nieman;;;;;
+gesundheit;stefanie henkefend;;;;;
+gesundheit;viactiv;siehe brief;;;;
+gesundheit;;mcfit;;;;
+haustiere;das futterhaus;;;;;
+haustiere;dres. scholz-bornhorst;;;;;
+haustiere;fressnapf;;;;;
+haustiere;tierklinik;;;;;
+haustiere;tierrzliche gem;;;;;
+haustiere;tierrztliche gem;;;;;
+haustiere;top zoo;;;;;
+haustiere;topzoo;;;;;
+haustiere;zoohandel;;;;;
+ignorieren!;sandra schedler;ausgleich;;;;
+ignorieren!;sandra wagner;ausgleich;;;;
+ignorieren!;sandra wagner;miete;;;;
+ignorieren!;sandra wagner;taschengeld;;;;
+ignorieren!;schedler, stephan;taschengeld;;;;
+ignorieren!;stephan schedler;miete;;;;
+ignorieren!;stephan schedler;taschengeld;;;;
+ignorieren!;stephan schedler;;;15.05.2017;;
+ignorieren!;stephan schedler;;;02.05.2018;;
+ignorieren!;;;;;;0.00
+ignorieren!;;svwz+kreditkarte datum 22.08.2015, 12.46 uhr 1.tan 093790;;;;
+ignorieren!;;wertp.abrechn.;wertpapiere;;;
+kinder;baby smile fotografie;;;;;
+kinder;babymarkt.de;;;;;
+kinder;babyone;;;;;
+kinder;bs payone gmbh;;;;;
+gehalt;bundesagentur f_r arbeit - familienkasse;;;;;
+kinder;deutsche stammzellenbank;;;;;
+kinder;die kartenmacherrei gmbh;;;;;
+gehalt;familienkasse;kg333002fk165278;;;;
+kinder;hopps bunte stube;;;;;
+kinder;impuls soziales management;;;;;
+kinder;johannes-kindergarten;;;;;
+kinder;julia erfling;;;;;
+kinder;martin r_cker;;;;;
+kinder;mytoys.de;;;;;
+kinder;porsche ag;;;09.11.2016;;
+kinder;ringelreif;;;;;
+kinder;seracell pharma ag;;;;;
+kinder;simone sandner;musikgarten;;;;
+kinder;sophies welt;;;;;
+kinder;spiele max ag;;;;;
+kinder;theraline ek;;;;;
+kinder;tobias bozem;;;;;
+kinder;toys r us;;;;;
+kinder;toys world gmbh;;;;;
+kinder;wupatki;;;;;
+kinder;;babyone;;;;
+kinder;;delfish;;;;
+kinder;;kullertrulla;;;;
+kinder;;maxi cosi;;;;
+kinder;;play rostock;;;;
+kinder;;sophies welt;;;;
+kinder;;spielwiese michael schaefmerzig;;;;
+kinder;;stickerkid internetinternet;;;;
+kinder;;windeln.de;;;;
+kinder;;www.jako-o;;;;
+kleidung;bijou brigitte;;;;;
+kleidung;bijoubrigitte;;;;;
+kleidung;c&amp;a;;;;;
+kleidung;c+a;;;;;
+kleidung;ca//paderborn/de;;;;;
+kleidung;christ juweliere;;;;;
+kleidung;claires;;;;;
+kleidung;die verkleidungskiste;;;;;
+kleidung;engbers;;;;;
+kleidung;ernstings;;;;;
+kleidung;esprit;;;;;
+kleidung;h&amp;m;;;;;
+kleidung;h+m;;;;;
+kleidung;hunkemoeller;;;;;
+kleidung;intersport-citysp;;;;;
+kleidung;j.w.store;;;;;
+kleidung;jako-o;;;;;
+kleidung;modehaus nikolaus;;;;;
+kleidung;peek+cloppenburg;;;;;
+kleidung;pompadour brautmoden;;;;;
+kleidung;reno;;;;;
+kleidung;s.oliver;;;;;
+kleidung;schoeffel;;;;;
+kleidung;schuhe;;;;;
+kleidung;schuhhandel;;;;;
+kleidung;schuhhaus;;;;;
+kleidung;schuhpark;;;;;
+kleidung;sport luck gmbh;;;;;
+kleidung;sport-markt fuessen;;;;;
+kleidung;tamaris;;;;;
+kleidung;tk maxx;;;;;
+kleidung;wildling shoes;;;;;
+kleidung;zero filiale;;;;;
+kleidung;;reimashop.com;;;;
+kleidung;;wildling;;;;
+moebel;daenisches bettenla;;;;;
+moebel;finke;;;;;
+moebel;hoeffner;;;;;
+moebel;ikea;;;;;
+moebel;poco;;;;;
+moebel;roller gmbh;;;;;
+moebel;roseane ackesmann;;;;;
+nebenkosten;beamten-baugesellschaft bremen gmbh;;;;;
+nebenkosten;kabel deutschland;;;;;
+nebenkosten;karsten wiedmann;miete;;;;
+nebenkosten;karsten wiedmann;quartiertst;;;;
+nebenkosten;maingau energie;;;;;
+nebenkosten;rundfunk ard;;;;;
+nebenkosten;stadtwerke paderborn gmbh;;;;;
+nebenkosten;stadtwerke rostock ag;;;;;
+nebenkosten;swb vertrieb bremen;;;;;
+nebenkosten;telefonica germany gmbh;;;;;
+nebenkosten;unitymedia;;;;;
+nebenkosten;vattenfall;;;;;
+nebenkosten;vodafone;;;;;
+nebenkosten;wg union rostock;;;;;
+nebenkosten;wohnungsgenossenschaft;;;;;
+nebenkosten;wulf weritz;;;;;
+nebenkosten;;cashback dsl;;;;
+online;amazon;;;;;
+online;klarna;;;;;
+online;;amazon;;;;
+online;;bbc shop;;;;
+einkaufen;;deutsche post;;;;
+online;;hso*carsten benecke;;;;
+online;;microsoft hshannon;;;;
+online;;orwo net gmbh;;;;
+reisen;db automat;;;;;
+reisen;db vertrieb gmbh;;;;;
+reisen;fac flygbussarna airpo;;;;;
+reisen;golcher hof;;;;;
+reisen;hotel;;;;;
+reisen;ilse keller;anzahlung;;;;
+reisen;iz .jabateh alieu;;;;;
+reisen;landesbank hessen-thuringen girozentrale;;;31.03.2017;;
+reisen;landgasthof sommerau;;;;;
+reisen;lastschrift aus kartenzahlung;;;27.03.2017;;
+reisen;l&apos;tur gmbh;;;;;
+reisen;meinfernbus;;;;;
+reisen;natur u.umweltpark;;;;;
+reisen;natur- und umweltpark;;;;;
+reisen;olbrisch &amp; eschenbruch;;;;;
+reisen;radisson blu;;;;;
+reisen;schulte-goebel;;;;;
+reisen;transdev;;;;;
+reisen;wartburg-stiftung eisenach;;;;;
+reisen;zum jaegerheim;;;;;
+reisen;;chemnitz;;01.02.2016;;
+reisen;;chemnitz;;02.02.2016;;
+reisen;;europcar;;;;
+reisen;;hertz;;;;
+reisen;;ibis;;;;
+reisen;;intercityhotel;;;;
+sonstiges;andrea wagner;;;;;
+sonstiges;andreas burmeister;;;;;
+sonstiges;bank fuer sozialwirtschaft koeln;geburtstag;;;;
+sonstiges;barbel hagen;;;;;
+sonstiges;blumenwerkstatt;;;;;
+sonstiges;carolin renner;;;;;
+sonstiges;couponing house gmbh;;;;;
+sonstiges;dietmar schedler;;;;;
+sonstiges;gunda wagner;;;;;
+sonstiges;hemkon stoff gmbh detmold;;;13.05.2016;;
+sonstiges;jennifer schuetze-strumpf;;;;;
+sonstiges;jennifer strumpf;;;;;
+sonstiges;lisa brunner;;;;;
+sonstiges;lisa kerber;;;;;
+sonstiges;momox gmbh;;;;;
+sonstiges;neum_ller ingenieurb_ro;;;;;
+sonstiges;orwo;;;;;
+sonstiges;paschen;;;;;
+sonstiges;piet meinen blume;;;;;
+sonstiges;r. spindler;;;;;
+sonstiges;schedler;studium;;;;
+sonstiges;schedler;weihnachten;;;;
+sonstiges;sebastian breiter;;;;;
+sonstiges;sedruck kg;;;;;
+sonstiges;shaker verlag gmbh;;;;;
+sonstiges;spindler, roland u.renate;;;;;
+sonstiges;sylvia warnow;;;;;
+sonstiges;tamara schedler;geburstagsgeschenke;;;;
+sonstiges;tim wendland;;;;;
+sonstiges;torben gueldener aenne harms;;;;;
+sonstiges;universit_t rostock;r_ckmeldung;;;;
+sonstiges;verena kichhoff;;;;;
+sonstiges;verena neuhaus;;;;;
+sonstiges;westfalen therm;;;;;
+sonstiges;;auslagen;;;;
+sonstiges;;carmeq gmbh;;18.04.2016;;
+ignorieren!;;einzahlung;;;dkb;
+sonstiges;;fotopuzzle;;;;
+sonstiges;;geschenk mutti;;;;
+sonstiges;;jungesellinnenabschied;;;;
+sonstiges;;kapten &amp; son;;;;
+sonstiges;;mathworks;;;;
+sonstiges;;opa franz;;;;
+sonstiges;;r_ckzahlung nutzungsgeb_hren fernstudium;;;;
+sonstiges;;unitedartsgmbhkoeln;;;;
+sonstiges;;vistaprint;;;;
+sonstiges;;vorstellung iav;;;;
+sonstiges;;wirmachendruc;;;;
+steuern;amt gnoien;;;;;
+steuern;finanzamt;;;;;
+steuern;hansestadt rostock;;;;;
+steuern;kreis paderborn;;;;;
+steuern;landesjustizkasse chemnitz, 09109 chemnitz;;;;;
+steuern;paderborn 11//paderborn/de;;;;;
+steuern;stadt paderborn;;;;;
+steuern;stadtamt;;;;;
+steuern;steuerverwaltung nrw;;;;;
+steuern;;abgeltungsteuer;;;;
+steuern;;kfz-steuer;;;;
+steuern;;solidarit___tszuschlag;;;;
+unterhaltung;buchhandlung;;;;;
+unterhaltung;cineplex;;;;;
+unterhaltung;cinestar;;;;;
+unterhaltung;dvg meckenheim;;;;;
+unterhaltung;filmtheater;;;;;
+unterhaltung;hollmann buch + pre;;;;;
+unterhaltung;landesmuseum;;;;;
+unterhaltung;linnemann buecher;;;;;
+unterhaltung;thalia;;;;;
+unterhaltung;uci kinoplex gmbh;;;;;
+unterhaltung;;steamgames.com;;;;
+versicherung;alte leipziger;;;;;
+versicherung;arag se;;;;;
+versicherung;huk-coburg;;;;;
+versicherung;itzehoer vers;;;;;
+versicherung;syncro24;;;;;
+versicherung;vbl;;;;;
+versicherung;versicherung;;;;;
+gesundheit;viactiv;ostenerstatt;;;;
+gesundheit;rsg group gmbh;;;;;
+essen;arndt heiderich e. k.;;;;;
+essen;paderborn 1//paderborn/de;;;;;
+essen;lechtermann-pollmeier;;;;;
+kinder;smyths toys;;;;;
+unterhaltung;hnf//paderborn/de;;;;;
+essen;backstube austerschmidt;;;;;
+essen;dominos pizza;;;;;
+auto;jet dankt fuer ihren kauf;;;;;
+friseur;khair;;;;;
+sonstiges;books on demand;;;;;
+gesundheit;dr.med.;;;;;
+sonstiges;paderborn-marienloh//paderborn/de;;;;;
+sonstiges;kernidee;;;;;
+essen;etepetete;;;;;
+sonstiges;honig und honig gbr;;;;;
+sonstiges;goldschmiede honig;;;;;
+elektronik;getraenke-quelle;;;;;
+einkaufen;e center;;;;;
+ignorieren!;bayerische landesbank sorten und edelmetalle;;;;;
+essen;hofladen rudolphi;;;;;
+ignorieren!;;kontoauflosung;;;;
+auto;oil 240;;;;;
+essen;backfactory;;;;;
+einkaufen;wmf group gmbh;;;;;
+unterhaltung;vogelpark heiligenkirchen;;;;;
+reisen;;urlaub ferienhof;;;;
+unterhaltung;gartenschau bad lippspringe;;;;;
+haustiere;wehmhoener;meerschweinchen;;;;
+versicherung;landschaftliche brandkasse hannover;;;;;
+reisen;stiftung schloss eutin;;;;;
+gesundheit;bonifatius gmbh;;;;;
+sonstiges;blumen pfeifer;;;;;
+essen;meisterback;;;;;
+auto;aral paderborn;;;;;
+auto;aral eutin;;;;;
+sonstiges;;campuswerkc;;;;
+kleidung;;lieblinge;;;;
+einkaufen;;tchibo;;;;
+sonstiges;;wiltecwilda;;;;
+sonstiges;;orwonetgmbh;;;;
+sonstiges;;isimh;;;;
+kinder;;diebestenst;;;;
+online;;holgerabels;;;;
+essen;;toogoodtogo;;;;
+einkaufen;;otto gmbh;;;;
+sonstiges;;sonomainter;;;;
+sonstiges;;medpexversa;;;;
+online;paypal;;;04.05.2020;;
+drogerie;;dm drogerie;;;;
+einkaufen;;leguanogmbh;;;;
+kleidung;;ooshi gmbh;;;;
+gesundheit;;apotheke;;;;
+online;paypal;;;;;0.01
+kleidung;;hmhennesmau;;;;
+kinder;;geobra/lech;;;;
+kinder;;evereartheu;;;;
+online;;banasik;;;;
+bargeld;erste b a n k;;;;;
+reisen;schloss schoenbrunn;;;;;
+reisen;ibis;;;;;
+unterhaltung;museumsverband;;;;;
+essen;cafe;;;;;
+reisen;cat ticket;;;;;
+reisen;flughafe;;;;;
+einkaufen;hofer dankt;;;;;
+reisen;;booking.com;;;;
+sonstiges;;davidg;;;;
+essen;heiderich gmbh;;;;;
+</textarea></label>
+      </form>
+    </main>
+    <script src="submitFile.js"> </script>
+  </body>
+
+<!-- Mirrored from localhost/edit.html?file=C:\Users\Stephan\Documents\hokee\rules.csv.2020-11-02_22-32-28.backup by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 08 Nov 2020 19:50:43 GMT -->
+</html>
