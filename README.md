@@ -105,8 +105,8 @@ Usage: hokee [options] [path]
 Operating System | State
 -- | --
 Windows 10 | stable
-Ubuntu 18.04 | **unstable**
-Mac | **unstable**
+Ubuntu 18.04/20.04 | **unstable**
+macos | **unstable**
 
 ## 1.7. 3rdParty Dependencies 
 
