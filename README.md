@@ -1,4 +1,4 @@
-# 1. hokee - Automated Housekeeping Book
+# hokee - Automated Housekeeping Book
 
 ``hokee`` is a account book software that parses CSV account transaction data to automatically categorize all your income and expenses.
 
@@ -6,26 +6,26 @@
 
 The hokee budget book is perfect for everyone who wants to have a summary over income and expenses without time-consuming manual accounting. Simply download CSV account transaction data from you online bank account, create simple rules for unkown items, done.
 
-- [1. hokee - Automated Housekeeping Book](#1-hokee---automated-housekeeping-book)
-  - [1.1. Online Demo](#11-online-demo)
-  - [1.2. Quick Start](#12-quick-start)
-  - [1.3. How to start with your own CSV data](#13-how-to-start-with-your-own-csv-data)
-    - [1.3.1. CSV Format Description](#131-csv-format-description)
-    - [1.3.2. General Settings](#132-general-settings)
-  - [1.4. Support](#14-support)
-  - [1.5. Commandline Switches](#15-commandline-switches)
-  - [1.6. Supported Operating Systems](#16-supported-operating-systems)
-  - [1.7. 3rdParty Dependencies](#17-3rdparty-dependencies)
+- [hokee - Automated Housekeeping Book](#hokee---automated-housekeeping-book)
+  - [1. Online Demo](#1-online-demo)
+  - [2. Quick Start](#2-quick-start)
+  - [3. How to start with your own CSV data](#3-how-to-start-with-your-own-csv-data)
+    - [3.1. CSV Format Description](#31-csv-format-description)
+    - [3.2. General Settings](#32-general-settings)
+  - [4. Support](#4-support)
+  - [5. Commandline Switches](#5-commandline-switches)
+  - [6. Supported Operating Systems](#6-supported-operating-systems)
+  - [7. 3rdParty Dependencies](#7-3rdparty-dependencies)
 
-## 1.1. Online Demo
+## 1. Online Demo
 
 Try the link below, to view an exemplary report generated for some test data.
 
-> Note that this is a **static** demo, i.e. you cannot modify rules or data.
+> Note that this is a **STATIC** demo, i.e. you cannot modify rules or data.
 
-[Static Online Demo](http://stephanschedler.github.io/hokee)
+[Online Demo](http://stephanschedler.github.io/hokee/)
 
-## 1.2. Quick Start
+## 2. Quick Start
 
 - Download [latest release](https://github.com/StephanSchedler/hokee/releases) 
 - Extract binaries 
@@ -35,7 +35,7 @@ Try the link below, to view an exemplary report generated for some test data.
   - Click the copy icon, to copy test data to the input folder
   - Try to fix all warnings and errors in the test data
 
-## 1.3. How to start with your own CSV data
+## 3. How to start with your own CSV data
 
 - Download CSV account transaction data from your online bank account and copy CSV file(s) to a new directory in the input folder (blue folder icon in the navigation bar)
 - Copy ``format.ini`` from input directory ``ABC`` to the new folder and adjust the content to the format of your downloaded CSV file(s). 
@@ -44,7 +44,7 @@ Try the link below, to view an exemplary report generated for some test data.
 - Delete all existing rules. (Open a rule and click red delete icon.)
 - (Re-)start ``bin/hokee[.exe]``
 
-### 1.3.1. CSV Format Description
+### 3.1. CSV Format Description
 
 For the ``hokee`` to be able to understand your CSV data, you have to create a ``format.ini`` and copy into your the input folder of your CSV data.
 
@@ -71,7 +71,7 @@ Format option | Description
 > - Your CSV file may contain a single ``PayerPayee`` column, or separate ``Payer`` and ``Payee`` columns. If you have separate columns, either ``Payer`` or ``Payee`` should always be the ``AccountOwner`` and ``hokee`` will always try to combine data into a single ``PayerPayee`` field.
 > - Have a look into the test data folder of ``hokee``. There are samples for different format options.
 
-### 1.3.2. General Settings
+### 3.2. General Settings
 
 ``hokee`` does save settings in a settings file. Default location is ``$HOME/hokee/hokee.ini``. (Can be changed with commandline arguments.)
 
@@ -82,13 +82,13 @@ Setting | Description
 ``Browser`` | Commandlin of a browser, such as ``firefox``, ``chrome`` or ``edge``. (``hokee`` does use a browser to show a html report. This setting defines the commandline used to start the browser. The correct ``url`` will be appended by ``hokee``) 
 ``Explorer`` | This setting is used by ``hokee`` if you click to blue folder icon to open the ``InputDirectory`` or a parent folder of a file.
 
-## 1.4. Support
+## 4. Support
 
 If you need help or found a bug, click the support icon in the naviation bar to generate a email.
 
 > **Note**: This email does contain an anonymized version of your CSV data. If you do not want to submit that data, delete it manually before submitting the email.
 
-## 1.5. Commandline Switches
+## 5. Commandline Switches
 ```
 Usage: hokee [options] [path]
 
@@ -100,15 +100,15 @@ Usage: hokee [options] [path]
   -s,--support    - Generate anonymized support information.
 ```
 
-## 1.6. Supported Operating Systems
+## 6. Supported Operating Systems
 
 Operating System | State
 -- | --
 Windows 10 | stable
-Ubuntu 18.04/20.04 | **unstable**
-macos | **unstable**
+Ubuntu 18.04/20.04 | **not tested**
+macos | **not tested**
 
-## 1.7. 3rdParty Dependencies 
+## 7. 3rdParty Dependencies 
 
 Project | Type |Link | Description
 --- | --- | --- | ---

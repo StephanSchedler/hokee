@@ -246,13 +246,6 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
         return;
     }
 
-    // help.html
-    if (req.path == std::string("/") + HtmlGenerator::HELP_HTML)
-    {
-        SetContentAndSetCache(req, res, HtmlGenerator::GetHelpPage(_database), CONTENT_TYPE_HTML);
-        return;
-    }
-
     // rules.html
     if (req.path == std::string("/") + HtmlGenerator::RULES_HTML)
     {

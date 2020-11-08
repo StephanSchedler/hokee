@@ -494,23 +494,6 @@ std::string HtmlGenerator::GetBackupPage(const CsvDatabase& database, const fs::
     return html.ToString();
 }
 
-std::string HtmlGenerator::GetHelpPage(const CsvDatabase& database)
-{
-    HtmlElement html;
-    AddHtmlHead(&html);
-
-    auto body = html.AddBody();
-    AddNavigationHeader(body, database);
-
-    auto main = body->AddMain();
-    main->SetAttribute("class", "pad-100");
-
-    fs::path htmlPart = fs::current_path() / ".." / "html" / "README.html";
-    main->AddText(Utils::ReadFileContent(htmlPart));
-
-    return html.ToString();
-}
-
 std::string HtmlGenerator::GetSupportPage(const CsvDatabase& database, const fs::path& ruleSetFile,
                                           const fs::path& inputDir)
 {
