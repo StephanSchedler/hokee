@@ -26,11 +26,11 @@ class CsvFormat final : public CsvConfig
     int _account;
     int _value;
 
-    void InitializeProperties();
+    void InitializeProperties(const fs::path& file);
 
   public:
     CsvFormat() = delete;
-    CsvFormat(const std::unordered_map<std::string, std::string>& config, const fs::path file);
+    CsvFormat(const std::unordered_map<std::string, std::string>& config, const fs::path& file);
     CsvFormat(const fs::path& file);
 
     CsvFormat(const CsvFormat&) = default;
