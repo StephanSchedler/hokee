@@ -33,7 +33,7 @@ class HtmlGenerator
     static constexpr const char* ISSUES_HTML = "issues.html";
     static constexpr const char* ITEM_HTML = "item.html";
     static constexpr const char* ITEMS_HTML = "items.html";
-    static constexpr const char* HELP_HTML = "help.html";
+    static constexpr const char* HELP_HTML = "https://github.com/StephanSchedler/hokee/blob/master/README.md";
     static constexpr const char* BACKUP_HTML = "backup.html";
     static constexpr const char* SUPPORT_HTML = "support.html";
     static constexpr const char* EDIT_HTML = "edit.html";
@@ -51,7 +51,6 @@ class HtmlGenerator
     static constexpr const char* INPUT_CMD = "input.cmd";
 
     static std::string GetBackupPage(const CsvDatabase& database, const fs::path& ruleSetFile);
-    static std::string GetHelpPage(const CsvDatabase& database);
     static std::string GetProgressPage(size_t value, size_t max);
     static std::string GetSupportPage(const CsvDatabase& database, const fs::path& ruleSetFile,
                                       const fs::path& inputDir);

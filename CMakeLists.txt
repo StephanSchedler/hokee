@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2)
 project(hokee 
-    VERSION 1.0.0
+    VERSION 1.0.1
     DESCRIPTION "Automated Housekeeping Book"
     LANGUAGES CXX
 )
@@ -177,7 +177,6 @@ install(FILES tests/test_data/DEF/Account_123456790_2020.csv DESTINATION ./test_
 install(FILES tests/test_data/DEF/format.ini DESTINATION ./test_data/input2/DEF)
 
 install(FILES tests/test_data/index.html DESTINATION ./test_data/html_test)
-install(FILES README.html DESTINATION ./html)
 
 # Tests
 enable_testing()
