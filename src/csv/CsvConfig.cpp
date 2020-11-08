@@ -10,7 +10,7 @@
 
 namespace hokee
 {
-CsvConfig::CsvConfig(const std::unordered_map<std::string, std::string>& config, const fs::path file)
+CsvConfig::CsvConfig(const std::unordered_map<std::string, std::string>& config, const fs::path& file)
     : _file{file}
     , _config{config}
 {

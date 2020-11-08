@@ -7,18 +7,19 @@ namespace hokee
 CsvFormat::CsvFormat(const fs::path& file)
     : CsvConfig(file)
 {
-    InitializeProperties();
+    InitializeProperties(file);
 }
 
-CsvFormat::CsvFormat(const std::unordered_map<std::string, std::string>& config, const fs::path file)
+CsvFormat::CsvFormat(const std::unordered_map<std::string, std::string>& config, const fs::path& file)
     : CsvConfig(config, file)
 {
-    InitializeProperties();
+    InitializeProperties(file);
 }
 
-void CsvFormat::InitializeProperties()
+void CsvFormat::InitializeProperties(const fs::path& file)
 {
-    _formatName = GetString("FormatName");
+    _formatName = file.parent_path().filename().string();
+
     _accountOwner = GetString("AccountOwner");
     _columnNames = GetStrings("ColumnNames");
     _hasHeader = GetBool("HasHeader");

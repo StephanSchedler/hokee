@@ -31,10 +31,10 @@ Application::Application(int argc, const char* argv[])
             Utils::PrintInfo(fmt::format("hokee version {}", PROJECT_VERSION));
             Utils::PrintInfo(fmt::format("{} ({})", PROJECT_DESCRIPTION, PROJECT_HOMEPAGE_URL));
             Utils::PrintInfo("");
-            Utils::PrintInfo("usage: hokee [options] [path]");
+            Utils::PrintInfo("Usage: hokee [options] [path]");
             Utils::PrintInfo("");
             Utils::PrintInfo("  path            - Path to config file.");
-            Utils::PrintInfo("                    (default: ~/hokee/hokee.ini)");
+            Utils::PrintInfo("                    (default: $HOME/hokee/hokee.ini)");
             Utils::PrintInfo("  -v,--verbose    - Print trace infos to console.");
             Utils::PrintInfo("  --version       - Show version infos.");
             Utils::PrintInfo("  -h,--help       - Show this help.");

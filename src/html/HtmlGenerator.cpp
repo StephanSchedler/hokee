@@ -505,7 +505,7 @@ std::string HtmlGenerator::GetHelpPage(const CsvDatabase& database)
     auto main = body->AddMain();
     main->SetAttribute("class", "pad-100");
 
-    fs::path htmlPart = fs::current_path() / ".." / "html" / "help.html.part";
+    fs::path htmlPart = fs::current_path() / ".." / "html" / "README.html";
     main->AddText(Utils::ReadFileContent(htmlPart));
 
     return html.ToString();

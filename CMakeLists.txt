@@ -106,7 +106,6 @@ set(PROJECT_SOURCE_FILES
 
 # Images
 
-configure_file(README.html ${PROJECT_BINARY_DIR}/html/help.html.part COPYONLY)
 configure_file(src/html/stylesheet.css ${PROJECT_BINARY_DIR}/html/stylesheet.css COPYONLY)
 configure_file(src/html/reload.js ${PROJECT_BINARY_DIR}/html/reload.js COPYONLY)
 configure_file(src/html/filterTable.js ${PROJECT_BINARY_DIR}/html/filterTable.js COPYONLY)
@@ -178,6 +177,7 @@ install(FILES tests/test_data/DEF/Account_123456790_2020.csv DESTINATION ./test_
 install(FILES tests/test_data/DEF/format.ini DESTINATION ./test_data/input2/DEF)
 
 install(FILES tests/test_data/index.html DESTINATION ./test_data/html_test)
+install(FILES README.html DESTINATION ./html)
 
 # Tests
 enable_testing()
