@@ -914,6 +914,8 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
     auto main = body->AddMain();
     main->SetAttribute("class", "pad-100");
 
+    main->AddHeading(2, title);
+
     table = main->AddTable();
     table->SetAttribute("class", "form");
     row = table->AddTableRow();
@@ -927,17 +929,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         cell->SetAttribute("onclick", fmt::format("deleteRule('{}', '{}')", DELETE_CMD, id));
         body->AddScript("deleteRule.js");
     }
-
-    cell = row->AddTableCell();
-    cell->SetAttribute("class", "form");
-    cell->AddHeading(2, title);
-
-    cell = row->AddTableCell();
-    cell->SetAttribute("class", "form fill");
-
-    table = main->AddTable();
-    table->SetAttribute("class", "form");
-    row = table->AddTableRow();
+    
     row->SetAttribute("class", "form");
     cell = row->AddTableCell();
 
@@ -1141,8 +1133,20 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         form->AddDivision("*Right click to delete unselected text");
     }
 
+
+    if (isItem)
+    {
+        auto heading = main->AddHeading(3, "Rule(s):");
+        heading->SetAttribute("class", "mar-20");
+    }
+    else
+    {
+        auto heading = main->AddHeading(3, "Item(s):");
+        heading->SetAttribute("class", "mar-20");
+    }
+
     table = main->AddTable();
-    table->SetAttribute("class", "form mar-20");
+    table->SetAttribute("class", "form");
     row = table->AddTableRow();
     row->SetAttribute("class", "form");
     cell = row->AddTableCell();
@@ -1153,17 +1157,9 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         cell->SetAttribute("onclick", fmt::format("window.location='{}?id={}';", NEW_CMD, id));
 
         cell = row->AddTableCell();
-        cell->SetAttribute("class", "form");
-        cell->AddHeading(3, "Rule(s):");
-
-        cell = row->AddTableCell();
-        cell->SetAttribute("class", "form");
     }
-    else
-    {
-        cell->SetAttribute("class", "form");
-        cell->AddHeading(3, "Item(s):");
-    }
+    cell->SetAttribute("class", "form");
+    cell->AddText("&nbsp;");
     cell->SetAttribute("style", "width: 50%;");
 
     cell = row->AddTableCell();
