@@ -124,14 +124,8 @@ void Application::ReadSettings()
     {
         Utils::PrintWarning(
             fmt::format("Could not find rules. Create empty rules file {}", _ruleSetFile.string()));
-        std::vector<std::string> header{};
-        header.push_back("Categories:");
-        header.push_back("Categorie1;Categorie2;Ignore!");
-        header.push_back("");
-        header.push_back("Rules:");
-
+      
         CsvTable empty;
-        empty.SetCsvHeader(std::move(header));
         CsvWriter::Write(_ruleSetFile, empty);
     }
 }
