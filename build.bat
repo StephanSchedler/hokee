@@ -50,6 +50,8 @@ rm -r ../bin/* ../test_data/*
 call cmake --build . --config %1 --target install --parallel
 if %errorlevel% neq 0 exit /b %errorlevel%
 
+copy compile_commands.json ../
+
 echo ==== Run test(s) ====
 call ctest --output-on-failure
 if %errorlevel% neq 0 exit /b %errorlevel%

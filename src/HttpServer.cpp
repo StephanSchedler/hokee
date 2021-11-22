@@ -165,6 +165,12 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
             config.SetBrowser(value);
             save = true;
         }
+        value = GetParam(req.params, "Port", HtmlGenerator::SETTINGS_HTML);
+        if (!value.empty())
+        {
+            config.SetPort(value);
+            save = true;
+        }
         value = GetParam(req.params, "RuleSetFile", HtmlGenerator::SETTINGS_HTML);
         if (!value.empty())
         {
@@ -362,12 +368,12 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
 }
 
 HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile, const fs::path& configFile,
-                       const std::string& explorer)
+                       const Settings& settings)
     : _server{std::make_unique<httplib::Server>()}
     , _inputDirectory{inputDirectory}
     , _ruleSetFile{ruleSetFile}
     , _configFile{configFile}
-    , _explorer{explorer}
+    , _explorer{settings.GetExplorer()}
 {
     if (!_server->is_valid())
     {
@@ -985,6 +991,15 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         // Start LoadThread
         Load();
     }
+
+    if (settings.GetPort() == 0)
+    {
+        _port = _server->bind_to_any_port("0.0.0.0");
+    }
+    else {
+        _port = settings.GetPort();
+        _server->bind_to_port("0.0.0.0", _port);
+    }
 }
 
 HttpServer::~HttpServer()
@@ -1024,8 +1039,13 @@ void HttpServer::Load()
 
 int HttpServer::Run()
 {
-    _server->listen("localhost", 80);
+    _server->listen_after_bind();
     return _exitCode;
+}
+
+int HttpServer::GetPort() const
+{
+    return _port;
 }
 
 } // namespace hokee

@@ -23,9 +23,11 @@ mkdir -p build
 pushd build
 
 echo ==== Generate default build system ====
-cmake -DCMAKE_BUILD_TYPE=$1 -DCMAKE_INSTALL_PREFIX=.. ..
+cmake -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=$1 -DCMAKE_INSTALL_PREFIX=.. ..
 
 echo ==== Run build ====
 cmake --build . --config $1 --target install
+
+cp compile_commands.json ../
 
 popd

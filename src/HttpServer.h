@@ -1,6 +1,7 @@
 #pragma once
 
 #include "html/HtmlGenerator.h"
+#include "Settings.h"
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -37,6 +38,7 @@ class HttpServer
     std::unique_ptr<std::thread> _loadThread{nullptr};
     std::timed_mutex _databaseMutex{};
     int _exitCode{0};
+    int _port{0};
 
     void Load();
     void SetContent(const httplib::Request& req, httplib::Response& res, const std::string& content,
@@ -49,7 +51,7 @@ class HttpServer
   public:
     HttpServer() = delete;
     HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFile, const fs::path& configFile,
-               const std::string& explorer);
+               const Settings& settings);
     ~HttpServer();
 
     HttpServer(const HttpServer&) = delete;
@@ -58,6 +60,7 @@ class HttpServer
     HttpServer& operator=(HttpServer&&) = delete;
 
     int Run();
+    int GetPort() const;
 };
 
 } // namespace hokee

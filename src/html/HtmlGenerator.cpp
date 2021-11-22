@@ -686,7 +686,8 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     AddInputForm(table, "RuleSetFile", config.GetRuleSetFile().string(), "Rule definition file*:");
     AddInputForm(table, "Browser", config.GetBrowser(), "Webbrowser start command:");
     AddInputForm(table, "Explorer", config.GetExplorer(), "Fileexplorer start command:");
-
+    AddInputForm(table, "Port", std::to_string(config.GetPort()), "Http-Server port (0 == dynamic):");
+    
     main->AddParagraph(fmt::format("*Paths can be absolute or relative to \"{}\"", file.parent_path().string()));
 
     return html.ToString();
