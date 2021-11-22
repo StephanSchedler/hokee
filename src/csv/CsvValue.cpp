@@ -3,6 +3,8 @@
 #include "Utils.h"
 
 #include <cstdint>
+#include <string>
+#include <algorithm>
 #include <fmt/format.h>
 
 namespace hokee
@@ -55,7 +57,7 @@ CsvValue::CsvValue(const std::string& value, const std::string& file, int lineCo
             fmt::format("Could not parse converted value {} != stod({})", _string, fmt::format("{:.2f}", _value)),
             file, lineCounter);
     };
-};
+}
 
 std::ostream& operator<<(std::ostream& os, const CsvValue& value)
 {

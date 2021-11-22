@@ -165,11 +165,12 @@ void Application::Run()
             // Continue, HttpServer will show error page
         }
 
-        Utils::PrintInfo("Open browser...");
-        Utils::RunAsync(fmt::format("{} http://localhost", _config.GetBrowser()));
-
         Utils::PrintInfo("Start HttpServer...");
-        HttpServer httpServer(_inputDirectory, _ruleSetFile, _configFile, _config.GetExplorer());
+        HttpServer httpServer(_inputDirectory, _ruleSetFile, _configFile, _config);
+        
+        Utils::PrintInfo("Open browser...");
+        Utils::RunAsync(fmt::format("{} http://localhost:{}", _config.GetBrowser(), httpServer.GetPort()));
+        
         exitCode = httpServer.Run();
     }
 }

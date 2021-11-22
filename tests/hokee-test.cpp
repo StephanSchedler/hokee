@@ -9,6 +9,7 @@
 #include <exception>
 #include <iostream>
 #include <map>
+#include <functional>
 
 using namespace hokee;
 

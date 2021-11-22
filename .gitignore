@@ -33,6 +33,7 @@
 
 compile_commands.json
 /.clangd/
+/.cache/
 /bin/
 /build/
 /html/
