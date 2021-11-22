@@ -81,6 +81,7 @@ Setting | Description
 ``RuleSetFile`` | Path to the file that defines the rules used to assign items to categories. (relative to ``hokee.ini`` settings file.)
 ``Browser`` | Commandlin of a browser, such as ``firefox``, ``chrome`` or ``edge``. (``hokee`` does use a browser to show a html report. This setting defines the commandline used to start the browser. The correct ``url`` will be appended by ``hokee``) 
 ``Explorer`` | This setting is used by ``hokee`` if you click to blue folder icon to open the ``InputDirectory`` or a parent folder of a file.
+``Port`` | Port of the http server. ``0`` is equivalent to dynamic port allocation on startup.
 
 ## 4. Support
 
@@ -105,7 +106,7 @@ Usage: hokee [options] [path]
 Operating System | State
 -- | --
 Windows 10 | stable
-Ubuntu 18.04/20.04 | **not tested**
+Ubuntu 20.04 | stable
 macos | **not tested**
 
 ## 7. 3rdParty Dependencies 
