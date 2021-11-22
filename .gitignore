@@ -37,5 +37,6 @@ compile_commands.json
 /bin/
 /build/
 /html/
+/third_party/
 /third_party/build/
 /test_data/

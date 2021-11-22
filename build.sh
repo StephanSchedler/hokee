@@ -27,7 +27,9 @@ cmake -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=$1 -DCMAKE_I
 
 echo ==== Run build ====
 cmake --build . --config $1 --target install
-
 cp compile_commands.json ../
+
+echo ==== Run tests ====
+ctest --output-on-failure
 
 popd
