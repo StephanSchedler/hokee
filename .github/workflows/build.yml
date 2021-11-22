@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: seanmiddleditch/gha-setup-ninja@master
+#     - uses: seanmiddleditch/gha-setup-ninja@master
       - name: Run build
         run: bash build.sh ${{ matrix.config }}
       - name: Run tests

@@ -20,7 +20,7 @@ Settings::Settings()
     SetExplorer("nautilus");
     SetBrowser("firefox");
 #endif
-SetPort("12345");
+SetServerPort("12345");
 }
 
 Settings::Settings(const fs::path& file)
@@ -63,7 +63,7 @@ const std::string Settings::GetBrowser() const
     return GetString("Browser");
 }
 
-int Settings::GetPort() const
+int Settings::GetServerPort() const
 {
     std::string portString = GetString("Port");
     int port = 0;
@@ -72,7 +72,7 @@ int Settings::GetPort() const
     }
     catch (std::exception& e) 
     {
-        throw UserException(fmt::format("Could not convert Port config string '{}' to int", portString));
+        throw UserException(fmt::format("Could not convert Port config string '{}' to int. ({})", portString, e.what()));
     }
     return port;
 }
@@ -82,7 +82,7 @@ void Settings::SetBrowser(const std::string& value)
     SetString("Browser", value);
 }
 
-void Settings::SetPort(const std::string& value)
+void Settings::SetServerPort(const std::string& value)
 {
     SetString("Port", value);
 }

@@ -168,7 +168,7 @@ inline void HttpServer::HandleHtmlRequest(const httplib::Request& req, httplib::
         value = GetParam(req.params, "Port", HtmlGenerator::SETTINGS_HTML);
         if (!value.empty())
         {
-            config.SetPort(value);
+            config.SetServerPort(value);
             save = true;
         }
         value = GetParam(req.params, "RuleSetFile", HtmlGenerator::SETTINGS_HTML);
@@ -992,12 +992,12 @@ HttpServer::HttpServer(const fs::path& inputDirectory, const fs::path& ruleSetFi
         Load();
     }
 
-    if (settings.GetPort() == 0)
+    if (settings.GetServerPort() == 0)
     {
         _port = _server->bind_to_any_port("0.0.0.0");
     }
     else {
-        _port = settings.GetPort();
+        _port = settings.GetServerPort();
         _server->bind_to_port("0.0.0.0", _port);
     }
 }
