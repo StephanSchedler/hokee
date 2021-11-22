@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2)
 project(hokee 
-    VERSION 1.0.1
+    VERSION 1.0.2
     DESCRIPTION "Automated Housekeeping Book"
     LANGUAGES CXX
 )

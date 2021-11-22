@@ -19,13 +19,13 @@ class Settings final : public CsvConfig
     const fs::path GetRuleSetFile() const;
     const std::string GetExplorer() const;
     const std::string GetBrowser() const;
-    int GetPort() const;
+    int GetServerPort() const;
 
     void SetInputDirectory(const fs::path& value);
     void SetRuleSetFile(const fs::path& value);
     void SetExplorer(const std::string& value);
     void SetBrowser(const std::string& value);
-    void SetPort(const std::string& value);
+    void SetServerPort(const std::string& value);
 };
 
 } // namespace hokee
