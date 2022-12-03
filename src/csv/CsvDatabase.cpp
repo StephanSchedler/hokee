@@ -200,7 +200,7 @@ void CsvDatabase::MatchRules()
             Assigned.push_back(row);
         }
     }
-    
+
     CheckRules();
 }
 
@@ -214,11 +214,32 @@ void CsvDatabase::Load(const fs::path& inputDirectory, const fs::path& ruleSetFi
     Issues.clear();
 
     // detect number of file
-    ProgressValue = 0;
-    ProgressMax
-        = std::distance(fs::recursive_directory_iterator(inputDirectory), fs::recursive_directory_iterator{});
-    ProgressMax -= std::distance(fs::directory_iterator(inputDirectory), fs::directory_iterator{});
+    ProgressMax = 0;
+    for (const auto& dir : fs::directory_iterator(inputDirectory))
+    {
+        if (fs::is_directory(dir))
+        {
+            if (dir.path().filename().string().rfind(".", 0) == 0)
+            {
+                // Utils::PrintInfo(fmt::format("Skip hidden directory '{}':", dir.path().string()));
+                continue;
+            }
 
+            if (fs::is_empty(dir.path()))
+            {
+                // Utils::PrintInfo(fmt::format("Skip empty directory '{}':", dir.path().string()));
+                continue;
+            }
+            
+            for (const auto& file : fs::directory_iterator(dir.path()))
+            {
+                std::ignore = file;
+                ProgressMax++;
+            }
+        }
+    }
+
+    ProgressValue = 0;
     for (const auto& dir : fs::directory_iterator(inputDirectory))
     {
         if (fs::is_directory(dir))
@@ -244,12 +265,13 @@ void CsvDatabase::Load(const fs::path& inputDirectory, const fs::path& ruleSetFi
 
             for (const auto& file : fs::directory_iterator(dir.path()))
             {
+                ProgressValue++;
                 if (!fs::is_regular_file(file) || Utils::ToLower(file.path().filename().string()) == "format.ini")
                 {
                     continue;
                 }
                 Utils::PrintInfo(
-                    fmt::format("Parse '{}' {}/{}...", file.path().string(), ++ProgressValue, ProgressMax));
+                    fmt::format("Parse '{}' {}/{}...", file.path().string(), ProgressValue, ProgressMax));
 
                 std::unique_ptr<CsvParser> csvReader;
                 csvReader = std::make_unique<CsvParser>(file.path(), format);

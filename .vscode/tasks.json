@@ -131,7 +131,7 @@
       {
         "id": "Configuration",
         "type": "pickString",
-        "default": "Debug",
+        "default": "Release",
         "options": ["Debug", "Release"],
         "description": "Configuration"
       }
