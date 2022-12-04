@@ -68,13 +68,13 @@ void CsvConfig::SetInt(const std::string& key, int value)
     SetString(key, std::to_string(value));
 }
 
-const std::string CsvConfig::GetString(const std::string& key) const
+const std::string CsvConfig::GetString(const std::string& key, const std::string& defaultValue) const
 {
     auto item = _config.find(key);
     if (item == _config.end())
     {
-        throw UserException(
-            fmt::format("Missing property. Could not find property '{}'", key), _file);
+        Utils::PrintWarning(fmt::format("Could not find property '{}' in '{}'. Use default '{}'", key, _file.string(), defaultValue));
+        return defaultValue;
     }
     Utils::PrintTrace(fmt::format("Read setting {}='{}' from '{}'", key, item->second, _file.string()));
     return item->second;

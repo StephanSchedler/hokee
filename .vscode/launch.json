@@ -23,12 +23,12 @@
             "name": "hokee (win)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "hokee",
+            "program": "hokee.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin",
             "environment": [],
-            "externalConsole": true
+            "console": "externalTerminal"
         },
         {
             "name": "Attach to process",
@@ -45,7 +45,7 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin",
             "environment": [],
-            "externalConsole": false
+            "console": "internalConsole",
         },
         {
             "name": "html_test",
@@ -56,7 +56,7 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin",
             "environment": [],
-            "externalConsole": false
+            "console": "internalConsole",
         },
         {
             "name": "rules_add_test",
@@ -67,7 +67,7 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin",
             "environment": [],
-            "externalConsole": false
+            "console": "internalConsole",
         }
 
     ]

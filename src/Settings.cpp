@@ -65,7 +65,7 @@ const std::string Settings::GetBrowser() const
 
 int Settings::GetServerPort() const
 {
-    std::string portString = GetString("Port");
+    std::string portString = GetString("Port", "0");
     int port = 0;
     try {
         port = std::stoi(portString);

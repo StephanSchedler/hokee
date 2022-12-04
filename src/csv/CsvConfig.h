@@ -17,7 +17,7 @@ class CsvConfig
 
   protected:
 
-    const std::string GetString(const std::string& key) const;
+    const std::string GetString(const std::string& key, const std::string& defaultValue = "") const;
     const std::vector<std::string> GetStrings(const std::string& key) const;
     bool GetBool(const std::string& key) const;
     char GetChar(const std::string& key) const;
