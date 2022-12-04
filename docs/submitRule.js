@@ -32,12 +32,3 @@ function submitRule(formId)
     }
     document.getElementById(formId).submit();
 }
-
-function insertSelectedText(event)
-{
-    if (event.which == 3) 
-    {
-        event.currentTarget.value = event.currentTarget.value.substring(event.currentTarget.selectionStart,
-            event.currentTarget.selectionEnd);
-    }
-}
