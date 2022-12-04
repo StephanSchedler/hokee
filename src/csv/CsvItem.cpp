@@ -3,10 +3,27 @@
 #include <regex>
 #include <sstream>
 
-#define MATCH(a, b) ((b).empty() || std::regex_search(Utils::ToLower(a), std::regex(Utils::ToLower(b))))
-
 namespace hokee
 {
+void CsvItem::ToLower()
+{
+        this->Account = Utils::ToLower(this->Account);
+        this->Category = Utils::ToLower(this->Category);
+        this->Description = Utils::ToLower(this->Description);
+        this->Payer = Utils::ToLower(this->Payer);
+        this->Payee = Utils::ToLower(this->Payee);
+        this->PayerPayee = Utils::ToLower(this->PayerPayee);
+        this->Type = Utils::ToLower(this->Type);
+}
+
+void CsvItem::UpdateRegex()
+{
+        this->AccountRegex = std::regex(this->Account);
+        this->DescriptionRegex = std::regex(this->Description);
+        this->PayerPayeeRegex = std::regex(this->PayerPayee);
+        this->TypeRegex = std::regex(this->Type);
+}
+
 std::string CsvItem::ToString()
 {
     std::stringstream result;
@@ -18,17 +35,13 @@ std::string CsvItem::ToString()
 
 void CsvItem::Match(const std::shared_ptr<CsvItem>& rule)
 {
-    bool match = rule->Date.GetYear() < 0 || MATCH(Date.ToString(), rule->Date.ToString());
+    bool match = true;
+    match = match && (rule->PayerPayee.empty() || std::regex_search(PayerPayee, rule->PayerPayeeRegex));
+    match = match && (rule->Description.empty() || std::regex_search(Description, rule->DescriptionRegex));
+    match = match && (rule->Date.GetYear() < 0 || Date.ToString() == rule->Date.ToString());
+    match = match && (rule->Type.empty() || std::regex_search(Type, rule->TypeRegex));
+    match = match && (rule->Account.empty() || std::regex_search(Account, rule->AccountRegex));
     match = match && (rule->Value.ToString().empty() || Value.ToString() == rule->Value.ToString());
-    match = match && MATCH(Type, rule->Type);
-    match = match && MATCH(PayerPayee, rule->PayerPayee);
-    match = match && MATCH(Account, rule->Account);
-    match = match && MATCH(Description, rule->Description);
-
-    if ((Utils::ToLower(Value.ToString()).find(rule->Value.ToString()) != std::string::npos)
-        != MATCH(Value.ToString(), rule->Value.ToString()))
-        std::cout << (fmt::format("'{}','{}','{}'\n", MATCH(Value.ToString(), rule->Value.ToString()),
-                                  Utils::ToLower(Value.ToString()), rule->Value.ToString()));
 
     if (match)
     {

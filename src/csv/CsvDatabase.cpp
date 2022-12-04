@@ -167,16 +167,15 @@ void CsvDatabase::MatchRules()
     Unassigned.clear();
 
     // Match rules
+    for (auto& row : Data)
+    {
+        row->ToLower();
+    }
+
     for (auto& rule : Rules)
     {
-        // ToLower
-        rule->Account = Utils::ToLower(rule->Account);
-        rule->Category = Utils::ToLower(rule->Category);
-        rule->Description = Utils::ToLower(rule->Description);
-        rule->Payer = Utils::ToLower(rule->Payer);
-        rule->Payee = Utils::ToLower(rule->Payee);
-        rule->PayerPayee = Utils::ToLower(rule->PayerPayee);
-        rule->Type = Utils::ToLower(rule->Type);
+        rule->ToLower();
+        rule->UpdateRegex();
 
         // reset
         rule->Issues.clear();
