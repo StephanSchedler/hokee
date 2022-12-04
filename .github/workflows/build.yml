@@ -19,13 +19,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-20.04]
-        # config: [Debug, Release]
+        os: [windows-2022, macos-11, ubuntu-20.04]
         config: [Release]
 
     steps:
-      - uses: actions/checkout@v2
-#     - uses: seanmiddleditch/gha-setup-ninja@master
+      - name: Git checkout
+        uses: actions/checkout@v2
+      - name: Set up Visual Studio shell
+        if: ${{ matrix.os == 'windows-2022' }}
+        uses: egor-tensin/vs-shell@v2
+        with:
+          arch: x64
       - name: Run build
         run: bash build.sh ${{ matrix.config }}
       - name: Run tests

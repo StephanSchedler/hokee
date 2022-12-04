@@ -31,7 +31,13 @@ mkdir -p build
 pushd build
 
 echo ==== Generate default build system ====
-cmake -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=$TARGET -DCMAKE_INSTALL_PREFIX=.. ..
+NINJA_BIN=$(which ninja) || echo "Could not find ninja. Build with default..."
+CMAKE_OPTIONS=
+if [ -x "$NINJA_BIN" ] ; then
+      CMAKE_OPTIONS="-G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+fi
+cmake $CMAKE_OPTIONS -DCMAKE_BUILD_TYPE=$TARGET -DCMAKE_INSTALL_PREFIX=.. ..
+
 
 echo ==== Run build ====
 cmake --build . --config $TARGET --target install
