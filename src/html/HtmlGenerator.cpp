@@ -1038,7 +1038,6 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input = label->AddInput();
         input->SetAttribute("name", "PayerPayee");
         input->SetAttribute("id", "PayerPayee");
-        input->SetAttribute("onmousedown", "insertSelectedText(event)");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
@@ -1066,7 +1065,6 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input = label->AddInput();
         input->SetAttribute("name", "Description");
         input->SetAttribute("id", "Description");
-        input->SetAttribute("onmousedown", "insertSelectedText(event)");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
@@ -1080,7 +1078,6 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input = label->AddInput();
         input->SetAttribute("name", "Account");
         input->SetAttribute("id", "Account");
-        input->SetAttribute("onmousedown", "insertSelectedText(event)");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
@@ -1095,7 +1092,6 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input = label->AddInput();
         input->SetAttribute("name", "Type");
         input->SetAttribute("id", "Type");
-        input->SetAttribute("onmousedown", "insertSelectedText(event)");
         input->SetAttribute("type", "text");
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "...");
@@ -1113,8 +1109,6 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input->SetAttribute("class", "form mono");
         input->SetAttribute("placeholder", "0.00");
         input->SetAttribute("value", item->Value.ToString());
-
-        form->AddDivision("*Right click to delete unselected text");
     }
 
 
