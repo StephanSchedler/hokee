@@ -1033,7 +1033,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         cell = row2->AddTableCell();
         cell->SetAttribute("class", "form");
         cell->SetAttribute("style", "width:75%");
-        label = cell->AddLabel("Payer/Payee (text*)");
+        label = cell->AddLabel("Payer/Payee (Regex)");
         label->SetAttribute("class", "marb-5");
         input = label->AddInput();
         input->SetAttribute("name", "PayerPayee");
@@ -1061,7 +1061,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         cell = row2->AddTableCell();
         cell->SetAttribute("class", "form");
         cell->SetAttribute("style", "width:75%");
-        label = cell->AddLabel("Description (text*)");
+        label = cell->AddLabel("Description (Regex)");
         label->SetAttribute("class", "marb-5");
         input = label->AddInput();
         input->SetAttribute("name", "Description");
@@ -1075,7 +1075,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         cell = row2->AddTableCell();
         cell->SetAttribute("class", "form");
         cell->SetAttribute("style", "width:25%");
-        label = cell->AddLabel("Account (text*)");
+        label = cell->AddLabel("Account (Regex)");
         label->SetAttribute("class", "marb-5");
         input = label->AddInput();
         input->SetAttribute("name", "Account");
@@ -1090,7 +1090,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         cell = row2->AddTableCell();
         cell->SetAttribute("class", "form");
         cell->SetAttribute("style", "width:75%");
-        label = cell->AddLabel("Type (text*)");
+        label = cell->AddLabel("Type (Regex)");
         label->SetAttribute("class", "marb-20");
         input = label->AddInput();
         input->SetAttribute("name", "Type");
