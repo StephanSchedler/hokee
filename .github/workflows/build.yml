@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Git checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Visual Studio shell
         if: ${{ matrix.os == 'windows-2022' }}
         uses: egor-tensin/vs-shell@v2
@@ -47,7 +47,7 @@ jobs:
         with:
           age: '1 day'
       - name: Upload packages
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: ${{ matrix.config == 'Release' }}
         with:
           name: ${{ matrix.os }}-${{ matrix.config }}-packages
