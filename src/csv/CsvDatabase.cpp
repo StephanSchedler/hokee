@@ -12,6 +12,7 @@
 
 #include <chrono>
 #include <functional>
+#include <future>
 #include <memory>
 #include <regex>
 #include <sstream>
@@ -159,9 +160,6 @@ void CsvDatabase::LoadRules(const fs::path& ruleSetFile)
 
 void CsvDatabase::MatchRules()
 {
-    Utils::PrintInfo("Match rules...");
-    auto startTime = std::chrono::high_resolution_clock::now();
-
     // Clear rules
     for (auto& row : Data)
     {
@@ -171,28 +169,42 @@ void CsvDatabase::MatchRules()
     Assigned.clear();
     Unassigned.clear();
 
-    // Lower input
-    for (auto& row : Data)
+    // Prepare rules
+    for (auto& rule : Rules)
     {
-        row->ToLower();
-    }
-
-    // Match rules
-    for (uint64_t r = 0; r < Rules.size(); ++r)
-    {
-        auto& rule = Rules[r];
         rule->ToLower();
         rule->UpdateRegex();
 
         // reset
         rule->Issues.clear();
         rule->References.clear();
+    }
 
-        // match
-        for (auto& row : Data)
+    auto matchRulesToRowCallback = [this](const uint64_t r0, const uint64_t ri)
+    {
+        for (uint64_t r = r0; r < Data.size(); r += ri)
         {
-            row->Match(rule);
+            auto& row = Data[r];
+            row->ToLower();
+
+            for (auto& rule : Rules)
+            {
+                row->Match(rule);
+            }
         }
+    };
+
+    const uint64_t threadCount = std::thread::hardware_concurrency();
+    Utils::PrintInfo(fmt::format("Match rules... (with {} threads)", threadCount));
+    std::vector<std::future<void>> matchRulesFutures(threadCount);
+    for (uint64_t f = 0; f < matchRulesFutures.size(); ++f)
+    {
+        matchRulesFutures[f] = std::async(std::launch::async, matchRulesToRowCallback, f, threadCount);
+    }
+
+    for (uint64_t f = 0; f < matchRulesFutures.size(); ++f)
+    {
+        matchRulesFutures[f].get();
     }
 
     // Apply rules
@@ -207,11 +219,6 @@ void CsvDatabase::MatchRules()
             Assigned.push_back(row);
         }
     }
-    auto endTime = std::chrono::high_resolution_clock::now();
-    Utils::PrintInfo(fmt::format(
-        "Matched rules in {}ms",
-        static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime).count())
-            / 1000000));
 
     CheckRules();
 }
@@ -294,8 +301,7 @@ void CsvDatabase::Load(const fs::path& inputDirectory, const fs::path& ruleSetFi
 
     Sort(Data);
     LoadRules(ruleSetFile);
-    MatchRules();
-    MatchRules();
+
     MatchRules();
     Utils::PrintInfo("Finished loading.");
 }
