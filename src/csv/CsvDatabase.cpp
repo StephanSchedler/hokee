@@ -7,8 +7,10 @@
 #include "csv/CsvWriter.h"
 #include "html/HtmlGenerator.h"
 
+#include <fmt/core.h>
 #include <fmt/format.h>
 
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <regex>
@@ -157,7 +159,10 @@ void CsvDatabase::LoadRules(const fs::path& ruleSetFile)
 
 void CsvDatabase::MatchRules()
 {
-    // Reset Results
+    Utils::PrintInfo("Match rules...");
+    auto startTime = std::chrono::high_resolution_clock::now();
+
+    // Clear rules
     for (auto& row : Data)
     {
         row->Issues.clear();
@@ -166,14 +171,16 @@ void CsvDatabase::MatchRules()
     Assigned.clear();
     Unassigned.clear();
 
-    // Match rules
+    // Lower input
     for (auto& row : Data)
     {
         row->ToLower();
     }
 
-    for (auto& rule : Rules)
+    // Match rules
+    for (uint64_t r = 0; r < Rules.size(); ++r)
     {
+        auto& rule = Rules[r];
         rule->ToLower();
         rule->UpdateRegex();
 
@@ -188,6 +195,7 @@ void CsvDatabase::MatchRules()
         }
     }
 
+    // Apply rules
     for (auto& row : Data)
     {
         if (row->References.size() == 0)
@@ -199,6 +207,11 @@ void CsvDatabase::MatchRules()
             Assigned.push_back(row);
         }
     }
+    auto endTime = std::chrono::high_resolution_clock::now();
+    Utils::PrintInfo(fmt::format(
+        "Matched rules in {}ms",
+        static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime).count())
+            / 1000000));
 
     CheckRules();
 }
@@ -229,7 +242,7 @@ void CsvDatabase::Load(const fs::path& inputDirectory, const fs::path& ruleSetFi
                 // Utils::PrintInfo(fmt::format("Skip empty directory '{}':", dir.path().string()));
                 continue;
             }
-            
+
             for (const auto& file : fs::directory_iterator(dir.path()))
             {
                 std::ignore = file;
@@ -281,6 +294,8 @@ void CsvDatabase::Load(const fs::path& inputDirectory, const fs::path& ruleSetFi
 
     Sort(Data);
     LoadRules(ruleSetFile);
+    MatchRules();
+    MatchRules();
     MatchRules();
     Utils::PrintInfo("Finished loading.");
 }
