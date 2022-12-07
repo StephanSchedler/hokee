@@ -160,27 +160,74 @@ void HtmlGenerator::AddItemTableHeader(HtmlElement* table)
     row->AddTableHeaderCell("Value");
 }
 
-void HtmlGenerator::AddSummaryTableHeader(HtmlElement* table, const std::vector<std::string>& categories)
+void HtmlGenerator::AddSummaryTableHeader(HtmlElement* table, int minYear, int maxYear)
 {
     auto row = table->AddTableRow();
-    row->AddTableHeaderCell("Date");
-    row->AddTableHeaderCell("*");
 
-    for (size_t i = 1; i < categories.size(); ++i)
+    for (int year = minYear; year <= maxYear; ++year)
     {
-        std::string cat = categories[i];
-        if (!cat.empty() && cat.back() == '!')
+        std::string name = fmt::format("{}", year);
+        auto cell = row->AddTableHeaderCell(name);
+        cell->SetAttribute("class", "item");
+
+        for (int month = 1; month <= 12; ++month)
         {
-            // remove tailing "!"
-            cat.pop_back();
+            name = fmt::format("{:02}", month);
+
+            cell = row->AddTableHeaderCell(name);
+            cell->SetAttribute("class", "item");
         }
-        row->AddTableHeaderCell(cat);
+
+        row->SetAttribute("class", "year");
+        name = fmt::format("{}", year);
+        cell = row->AddTableHeaderCell(name);
+        cell->SetAttribute("class", "item");
     }
+    row->AddTableHeaderCell("");
 }
 
-void AddSummaryRow(HtmlElement* table, int rowCount, int month, int year,
-                   std::map<int, std::map<int, std::map<std::string, CsvTable>>>& sortedTables,
-                   const std::vector<std::string>& categories, int filter, const std::string& title)
+void AddSummaryCell(HtmlElement* row, int rowCount, const std::string& category, int month, int year,
+                    std::map<int, std::map<int, std::map<std::string, CsvTable>>>& sortedTables, int filter)
+{
+    double sum = 0;
+    for (auto& item : sortedTables[year][month][category])
+    {
+        if ((!item->Category.empty() && item->Category.back() == '!') && category != item->Category)
+        {
+            continue;
+        }
+        const double value = item->Value.ToDouble();
+        if ((filter == 0) || (filter >= 0 && value >= 0) || (filter < 0 && value < 0))
+        {
+            sum += value;
+        }
+    }
+
+    std::string cellStyle = "link";
+    if (sum > 0)
+    {
+        cellStyle += fmt::format(" pos pos-bg{}", rowCount % 2);
+    }
+    if (sum < 0)
+    {
+        cellStyle += fmt::format(" neg neg-bg{}", rowCount % 2);
+    }
+    if (month == 0)
+    {
+        cellStyle += fmt::format(" year");
+    }
+
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("class", cellStyle);
+    cell->SetAttribute("onclick",
+                       fmt::format("window.location='{}?year={}&amp;month={}&amp;category={}&amp;filter={}';",
+                                   HtmlGenerator::ITEMS_HTML, year, month, category, filter));
+    cell->AddText(fmt::format("{:.2f}&euro;", sum));
+}
+
+void AddSummaryRow(HtmlElement* table, int rowCount, int minYear, int maxYear, const std::string& category,
+                   std::map<int, std::map<int, std::map<std::string, CsvTable>>>& sortedTables, int filter,
+                   const std::string& title)
 {
     auto row = table->AddTableRow();
     row->SetAttribute("title", title);
@@ -188,48 +235,24 @@ void AddSummaryRow(HtmlElement* table, int rowCount, int month, int year,
     {
         row->SetAttribute("style", "display: none;");
     }
-    std::string name = fmt::format("{}.{}", month, year);
-    if (month == 0)
+
+    for (int year = minYear; year <= maxYear; ++year)
     {
-        row->SetAttribute("class", "year");
-        name = fmt::format("{}", year);
+        auto cell = row->AddTableCell();
+        cell->SetAttribute("class", "name");
+        cell->AddText(category.empty() ? "*" : category);
+
+        for (int month = 1; month <= 12; ++month)
+        {
+            AddSummaryCell(row, rowCount, category, month, year, sortedTables, filter);
+        }
+
+        AddSummaryCell(row, rowCount, category, 0, year, sortedTables, filter);
     }
 
-    auto cell = row->AddTableCell(name);
-    cell->SetAttribute("class", "item");
-    for (auto& cat : categories)
-    {
-        double sum = 0;
-        for (auto& item : sortedTables[year][month][cat])
-        {
-            if ((!item->Category.empty() && item->Category.back() == '!') && cat != item->Category)
-            {
-                continue;
-            }
-            const double value = item->Value.ToDouble();
-            if ((filter == 0) || (filter >= 0 && value >= 0) || (filter < 0 && value < 0))
-            {
-                sum += value;
-            }
-        }
-
-        std::string cellStyle = "link";
-        if (sum > 0)
-        {
-            cellStyle += fmt::format(" pos pos-bg{}", rowCount % 2);
-        }
-        if (sum < 0)
-        {
-            cellStyle += fmt::format(" neg neg-bg{}", rowCount % 2);
-        }
-
-        cell = row->AddTableCell();
-        cell->SetAttribute("class", cellStyle);
-        cell->SetAttribute("onclick",
-                           fmt::format("window.location='{}?year={}&amp;month={}&amp;category={}&amp;filter={}';",
-                                       HtmlGenerator::ITEMS_HTML, year, month, cat, filter));
-        cell->AddText(fmt::format("{:.2f}&euro;", sum));
-    }
+    auto cell = row->AddTableCell();
+    cell->SetAttribute("class", "name");
+    cell->AddText(category.empty() ? "*" : category);
 }
 
 std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
@@ -239,6 +262,7 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
 
     auto body = html.AddBody();
     body->AddScript("filterSummary.js");
+    body->SetAttribute("onload", "scrollSummary();");
     auto box = AddNavigationHeader(body, database);
 
     auto table = box->AddTable();
@@ -303,23 +327,23 @@ std::string HtmlGenerator::GetSummaryPage(const CsvDatabase& database)
         }
     }
 
-    table = main->AddTable();
+    div = main->AddDivision();
+    div->SetAttribute("class", "tab");
+
+    table = div->AddTable();
     table->SetAttribute("id", "summary");
     table->SetAttribute("class", "item mar-20");
 
     int rowCount = 0;
-    for (int year = minYear; year <= maxYear; ++year)
+    AddSummaryTableHeader(table, minYear, maxYear);
+    for (auto& category : categories)
     {
-        AddSummaryTableHeader(table, categories);
-
-        for (int month = 0; month <= 12; ++month)
-        {
-            rowCount++;
-            AddSummaryRow(table, rowCount, month, year, sortedTables, categories, 0, "sum");
-            AddSummaryRow(table, rowCount, month, year, sortedTables, categories, +1, "profit");
-            AddSummaryRow(table, rowCount, month, year, sortedTables, categories, -1, "expenses");
-        }
+        rowCount++;
+        AddSummaryRow(table, rowCount, minYear, maxYear, category, sortedTables, 0, "sum");
+        AddSummaryRow(table, rowCount, minYear, maxYear, category, sortedTables, +1, "profit");
+        AddSummaryRow(table, rowCount, minYear, maxYear, category, sortedTables, -1, "expenses");
     }
+
     return html.ToString();
 }
 
@@ -687,7 +711,7 @@ std::string HtmlGenerator::GetSettingsPage(const CsvDatabase& database, const fs
     AddInputForm(table, "Browser", config.GetBrowser(), "Webbrowser start command:");
     AddInputForm(table, "Explorer", config.GetExplorer(), "Fileexplorer start command:");
     AddInputForm(table, "Port", std::to_string(config.GetServerPort()), "Http-Server port (0 == dynamic):");
-    
+
     main->AddParagraph(fmt::format("*Paths can be absolute or relative to \"{}\"", file.parent_path().string()));
 
     return html.ToString();
@@ -913,7 +937,7 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         cell->SetAttribute("onclick", fmt::format("deleteRule('{}', '{}')", DELETE_CMD, id));
         body->AddScript("deleteRule.js");
     }
-    
+
     row->SetAttribute("class", "form");
     cell = row->AddTableCell();
 
@@ -1020,10 +1044,10 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
             option = select->AddOption("--------------------");
             option->SetAttribute("disabled", "");
         }
-        for (auto& cat : categories)
+        for (auto& category : categories)
         {
-            option = select->AddOption(cat);
-            if (item->Category == cat)
+            option = select->AddOption(category);
+            if (item->Category == category)
             {
                 option->SetAttribute("selected", "");
             }
@@ -1110,7 +1134,6 @@ std::string HtmlGenerator::GetItemPage(const CsvDatabase& database, int id, int 
         input->SetAttribute("placeholder", "0.00");
         input->SetAttribute("value", item->Value.ToString());
     }
-
 
     if (isItem)
     {

@@ -16,3 +16,9 @@ function filterSummary(tableId, filter)
         }
     }
 }
+
+function scrollSummary() 
+{
+    let div = document.getElementsByClassName("tab")[0];
+    div.scrollLeft = div.scrollWidth;
+}

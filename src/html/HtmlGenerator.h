@@ -12,7 +12,7 @@ class HtmlGenerator
 {
     static HtmlElement* AddHtmlHead(HtmlElement* html);
     static HtmlElement* AddNavigationHeader(HtmlElement* body, const CsvDatabase& database);
-    static void AddSummaryTableHeader(HtmlElement* table, const std::vector<std::string>& categories);
+    static void AddSummaryTableHeader(HtmlElement* table, int minYear, int maxYear);
     static void AddItemTableHeader(HtmlElement* table);
     static void AddItemTableRow(HtmlElement* table, CsvItem* row);
 
