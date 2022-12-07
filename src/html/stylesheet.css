@@ -170,6 +170,11 @@ td.link:hover, tr.link:hover {
   opacity: 0.5;
 }
 
+td.name {
+  background: linear-gradient(180deg, #88A 0%, #BBF 65%, #77A 100%);
+  color: darkblue;
+}
+
 td.pos {
   color: #080;
 }
@@ -194,8 +199,16 @@ td.neg-bg0 {
   background-color: #EBB;
 }
 
+td.year {
+  font-weight: bold;
+}
+
 tr.year {
   font-weight: bold;
+}
+
+div.tab {
+  overflow: auto;
 }
 
 div.nav {
